@@ -3,8 +3,6 @@ package com.teambr.nucleus.common.tiles.nbt;
 import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 
 public interface INBTHandler<T> {
 
@@ -30,10 +28,8 @@ public interface INBTHandler<T> {
      * Reads the value from the NBT to be stored in the Field.
      *
      * @param compound The NBT that stores all the information.
-     * @param field    The field that will have the object stored to.
      * @param name     The name of the object stored in the NBT.
-     * @param object   The object that will be stored into the Field.
      * @return The object if it was successfully stored or null if it wasn't giving the next handlers a chance to store the value.
      */
-    T readFromNBT(@Nonnull NBTTagCompound compound, @Nullable Field field, @Nonnull String name, @Nullable T object);
+    T readFromNBT(@Nonnull NBTTagCompound compound, @Nonnull String name);
 }

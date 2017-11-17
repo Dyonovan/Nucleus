@@ -36,8 +36,8 @@ public class CommonProxy {
      */
     public void preInit(FMLPreInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(new RegistrationEvents());
-        findBookBlocks(event);
-        findBookItems(event);
+        findRegisteringBlocks(event);
+        findRegisteringtems(event);
     }
 
     /**
@@ -53,7 +53,7 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {}
 
 
-    private void findBookBlocks(FMLPreInitializationEvent event) {
+    private void findRegisteringBlocks(FMLPreInitializationEvent event) {
         AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringBlock.class).stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
             try {
                 BLOCKS.add((Block) aClass.newInstance());
@@ -64,7 +64,7 @@ public class CommonProxy {
         event.getModLog().info("Found " + BLOCKS.size() + " RegisteringBlocks");
     }
 
-    private void findBookItems(FMLPreInitializationEvent event) {
+    private void findRegisteringtems(FMLPreInitializationEvent event) {
         AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringItem.class).stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
             try {
                 ITEMS.add((Item) aClass.newInstance());
