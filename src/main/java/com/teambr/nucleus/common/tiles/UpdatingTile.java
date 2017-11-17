@@ -4,7 +4,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -21,7 +20,7 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public class UpdatingTile extends TileEntity implements ITickable {
+public class UpdatingTile extends AutoSavingTile implements ITickable {
 
 
     /*******************************************************************************************************************

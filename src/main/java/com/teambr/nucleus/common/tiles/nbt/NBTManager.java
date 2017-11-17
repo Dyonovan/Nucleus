@@ -33,11 +33,14 @@ public class NBTManager {
      */
     public void scanTileClassForAnnotations(Class<? extends TileEntity> entity) {
         List<Field> fields = new ArrayList<>();
-        for (Field field : entity.getFields()) {
+        for (Field field : entity.getDeclaredFields()) {
             if (field.isAnnotationPresent(NBTSave.class)) {
                 field.setAccessible(true);
                 fields.add(field);
             }
+        }
+        for (Field field : entity.getFields()) {
+            if (field.isAnnotationPresent(NBTSave.class)) fields.add(field);
         }
         if (!fields.isEmpty()) tileFieldList.put(entity, fields);
     }

@@ -4,6 +4,7 @@ import com.teambr.nucleus.annotation.IRegistrable;
 import com.teambr.nucleus.common.CommonProxy;
 import com.teambr.nucleus.common.IRegistersOreDictionary;
 import com.teambr.nucleus.common.blocks.IRegistersTileEntity;
+import com.teambr.nucleus.common.tiles.nbt.NBTManager;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -50,9 +51,11 @@ public class RegistrationEvents {
             ((IRegistrable<Block>) block).registerObject(event.getRegistry());
 
             // Register the tile, if present
-            if (block instanceof IRegistersTileEntity)
+            if (block instanceof IRegistersTileEntity) {
                 GameRegistry.registerTileEntity(((IRegistersTileEntity) block).getTileEntityClass(),
                         block.getRegistryName().toString());
+                NBTManager.getInstance().scanTileClassForAnnotations(((IRegistersTileEntity) block).getTileEntityClass());
+            }
 
             // Add ore dict tag if present
             if(block instanceof IRegistersOreDictionary)
