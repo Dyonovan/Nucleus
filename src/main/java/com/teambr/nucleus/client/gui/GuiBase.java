@@ -211,6 +211,7 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        drawDefaultBackground();
         GlStateManager.pushMatrix();
         RenderUtils.prepareRenderState();
         GlStateManager.translate(guiLeft, guiTop, 0);
