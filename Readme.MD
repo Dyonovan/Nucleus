@@ -1,4 +1,4 @@
-**Bookshelf API <a href='http://teambrmodding.com:8111/viewType.html?buildTypeId=Bookshelf_Build&tab=buildTypeStatusDiv&branch_Bookshelf=%3Cdefault%3E'><img src="http://teambrmodding.com:8111/app/rest/builds/buildType:(id:Bookshelf_Build)/statusIcon"/></a><a href='https://minecraft.curseforge.com/projects/bookshelf-api-library'><img src='http://cf.way2muchnoise.eu/full_bookshelf-api-library_downloads.svg'><img src='http://cf.way2muchnoise.eu/versions/bookshelf-api-library_latest.svg'></a>**
+Nucleus <a href='http://dyonovan.com:8111/viewType.html?buildTypeId=Nucleus_Build&tab=buildTypeStatusDiv&branch_Nucleus=%3Cdefault%3E'><img src="http://dyonovan.com:8111/app/rest/builds/buildType:(id:Nucleus_Build)/statusIcon"/></a><a href='https://minecraft.curseforge.com/projects/nucleus'><img src='http://cf.way2muchnoise.eu/full_nucleus_downloads.svg'><img src='http://cf.way2muchnoise.eu/versions/nucleus_latest.svg'></a>
 ======
 
 Library used by TeamBRModding mods. Contains base class helpers for energy/inventories/fluid and a simple GUI system.
