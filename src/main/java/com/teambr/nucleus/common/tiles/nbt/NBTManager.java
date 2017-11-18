@@ -1,7 +1,7 @@
 package com.teambr.nucleus.common.tiles.nbt;
 
 import com.teambr.nucleus.annotation.NBTSave;
-import com.teambr.nucleus.common.tiles.nbt.java.IntegerNBTHandler;
+import com.teambr.nucleus.common.tiles.nbt.data.IntegerNBTHandler;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 

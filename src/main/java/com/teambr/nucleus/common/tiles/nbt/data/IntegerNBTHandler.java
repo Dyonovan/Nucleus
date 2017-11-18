@@ -1,4 +1,4 @@
-package com.teambr.nucleus.common.tiles.nbt.java;
+package com.teambr.nucleus.common.tiles.nbt.data;
 
 import com.teambr.nucleus.common.tiles.nbt.INBTHandler;
 import net.minecraft.nbt.NBTTagCompound;
