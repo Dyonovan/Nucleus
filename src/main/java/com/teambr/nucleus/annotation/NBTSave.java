@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
  * @author Buuz135
  * @since 11/17/2018
  * <p>
- * Add this annotation over a fieldd in the tile entity object to have it stored automatically
+ * Add this annotation over a field in the tile entity object to have it stored automatically
  */
 
 @Retention(RetentionPolicy.RUNTIME)

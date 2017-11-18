@@ -10,6 +10,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * This file was created for Nucleus
+ * <p>
+ * Nucleus - Java is licensed under the
+ * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
+ * http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ * @author Buuz135
+ * @since 11/17/2018
+ * <p>
+ */
 public class NBTManager {
 
     private static NBTManager ourInstance = new NBTManager();
