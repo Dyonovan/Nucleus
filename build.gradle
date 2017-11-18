@@ -90,8 +90,14 @@ task javadocJar(type: Zip, dependsOn: javadoc) {
     classifier = 'javadoc'
 }
 
+task sourceJarJava(type: Jar, dependsOn: "classes") {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
 artifacts {
     archives devJar
+    archives sourceJarJava
     //archives javadocJar
 }
 
