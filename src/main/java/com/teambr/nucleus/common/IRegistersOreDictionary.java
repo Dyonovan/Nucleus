@@ -1,5 +1,7 @@
 package com.teambr.nucleus.common;
 
+import javax.annotation.Nullable;
+
 /**
  * This file was created for Nucleus
  * <p>
@@ -15,5 +17,6 @@ public interface IRegistersOreDictionary {
      * Get the ore dict tag to register with
      * @return The string to attach
      */
+    @Nullable
     String getOreDictionaryTag();
 }

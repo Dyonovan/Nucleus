@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  * @author Paul Davis - pauljoda
  * @since 2/9/2017
  */
+@SuppressWarnings("ConstantConditions")
 public class CommonProxy {
 
     public static final ArrayListMultimap<String, Block> BLOCKS = ArrayListMultimap.create();
@@ -32,7 +33,7 @@ public class CommonProxy {
      */
     public void preInit(FMLPreInitializationEvent event) {
         findRegisteringBlocks(event);
-        findRegisteringtems(event);
+        findRegisteringItems(event);
     }
 
     /**
@@ -48,8 +49,13 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {}
 
 
+    /**
+     * Find all fields with the {@link RegisteringBlock} annotation and hold them for later
+     * @param event PreInit event
+     */
     private void findRegisteringBlocks(FMLPreInitializationEvent event) {
-        AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringBlock.class).stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
+        AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringBlock.class)
+                .stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
             try {
                 Block block = (Block) aClass.newInstance();
                 BLOCKS.put(block.getRegistryName().getResourceDomain(), block);
@@ -60,8 +66,13 @@ public class CommonProxy {
         event.getModLog().info("Found " + BLOCKS.size() + " RegisteringBlocks");
     }
 
-    private void findRegisteringtems(FMLPreInitializationEvent event) {
-        AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringItem.class).stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
+    /**
+     * Find all fields with the {@link RegisteringItem} annotation and hold them for later
+     * @param event PreInit event
+     */
+    private void findRegisteringItems(FMLPreInitializationEvent event) {
+        AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringItem.class)
+                .stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
             try {
                 Item item = (Item) aClass.newInstance();
                 ITEMS.put(item.getRegistryName().getResourceDomain(), item);
