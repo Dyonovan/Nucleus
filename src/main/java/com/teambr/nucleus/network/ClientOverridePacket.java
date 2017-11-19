@@ -71,7 +71,7 @@ public class ClientOverridePacket implements IMessage, IMessageHandler<ClientOve
     public IMessage onMessage(ClientOverridePacket message, MessageContext ctx) {
         if(ctx.side.isServer()) {
             if(message.tag != null) {
-                World world = ctx.getServerHandler().playerEntity.world;
+                World world = ctx.getServerHandler().player.world;
                 if(world.getTileEntity(message.blockPosition) != null) {
                     world.getTileEntity(message.blockPosition).setPos(message.blockPosition);
                     world.getTileEntity(message.blockPosition).readFromNBT(message.tag);

@@ -159,7 +159,7 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
             drawBlock();
 
         if(tile != null && renderTile)
-            TileEntityRendererDispatcher.instance.renderTileEntityAt(tile, -0.5F, -0.5F, -0.5F, 0.0F);
+            TileEntityRendererDispatcher.instance.render(tile, -0.5F, -0.5F, -0.5F, 0.0F);
 
         SidePicker picker = new SidePicker(0.5);
 

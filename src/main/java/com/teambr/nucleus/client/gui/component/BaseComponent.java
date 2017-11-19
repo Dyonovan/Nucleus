@@ -35,7 +35,7 @@ public abstract class BaseComponent extends Gui {
     protected IMouseEventListener mouseEventListener;
     protected IKeyboardListener   keyboardEventListener;
 
-    protected FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+    protected FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
     /**
      * Main constructor for all components
@@ -100,9 +100,9 @@ public abstract class BaseComponent extends Gui {
      */
     public void renderToolTip(int mouseX, int mouseY) {
         if(toolTip != null && !toolTip.isEmpty())
-            drawHoveringText(toolTip, mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
+            drawHoveringText(toolTip, mouseX, mouseY, Minecraft.getMinecraft().fontRenderer);
         else if(getDynamicToolTip(mouseX, mouseY) != null)
-            drawHoveringText(getDynamicToolTip(mouseX, mouseY), mouseX, mouseY, Minecraft.getMinecraft().fontRendererObj);
+            drawHoveringText(getDynamicToolTip(mouseX, mouseY), mouseX, mouseY, Minecraft.getMinecraft().fontRenderer);
 
     }
 
