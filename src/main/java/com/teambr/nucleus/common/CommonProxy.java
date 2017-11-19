@@ -1,20 +1,16 @@
 package com.teambr.nucleus.common;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.teambr.nucleus.annotation.IRegistrable;
 import com.teambr.nucleus.annotation.RegisteringBlock;
 import com.teambr.nucleus.annotation.RegisteringItem;
-import com.teambr.nucleus.events.RegistrationEvents;
 import com.teambr.nucleus.util.AnnotationUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This file was created for Nucleus - Java
@@ -28,14 +24,13 @@ import java.util.List;
  */
 public class CommonProxy {
 
-    public static final List<Block> BLOCKS = new ArrayList<>();
-    public static final List<Item>  ITEMS  = new ArrayList<>();
+    public static final ArrayListMultimap<String, Block> BLOCKS = ArrayListMultimap.create();
+    public static final ArrayListMultimap<String, Item> ITEMS = ArrayListMultimap.create();
 
     /**
      * Called on preInit
      */
     public void preInit(FMLPreInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(new RegistrationEvents());
         findRegisteringBlocks(event);
         findRegisteringtems(event);
     }
@@ -56,7 +51,8 @@ public class CommonProxy {
     private void findRegisteringBlocks(FMLPreInitializationEvent event) {
         AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringBlock.class).stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
             try {
-                BLOCKS.add((Block) aClass.newInstance());
+                Block block = (Block) aClass.newInstance();
+                BLOCKS.put(block.getRegistryName().getResourceDomain(), block);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -67,7 +63,8 @@ public class CommonProxy {
     private void findRegisteringtems(FMLPreInitializationEvent event) {
         AnnotationUtils.getAnnotatedClasses(event.getAsmData(), RegisteringItem.class).stream().filter(IRegistrable.class::isAssignableFrom).forEach(aClass -> {
             try {
-                ITEMS.add((Item) aClass.newInstance());
+                Item item = (Item) aClass.newInstance();
+                ITEMS.put(item.getRegistryName().getResourceDomain(), item);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();
             }

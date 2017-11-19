@@ -17,6 +17,12 @@ import net.minecraftforge.oredict.OreDictionary;
 @SuppressWarnings({"ConstantConditions", "unchecked"})
 public class RegistrationEvents {
 
+    private final String modID;
+
+    public RegistrationEvents(String modID) {
+        this.modID = modID;
+    }
+
     /**
      * Adds the items to the registry, including block ItemBlocks
      *
@@ -25,11 +31,11 @@ public class RegistrationEvents {
     @SubscribeEvent
     public void addItems(RegistryEvent.Register<Item> event) {
         // Create ItemBlocks
-        CommonProxy.BLOCKS.forEach(block ->
+        CommonProxy.BLOCKS.get(modID).forEach(block ->
                 event.getRegistry().register(new ItemBlock(block).setRegistryName(block.getRegistryName())));
 
         // Add Items
-        CommonProxy.ITEMS.forEach(item -> {
+        CommonProxy.ITEMS.get(modID).forEach(item -> {
             // Register the item itself
             ((IRegistrable<Item>) item).registerObject(event.getRegistry());
 
@@ -39,14 +45,14 @@ public class RegistrationEvents {
         });
 
         if (FMLCommonHandler.instance().getSide().isClient()) {
-            CommonProxy.BLOCKS.forEach(block -> ((IRegistrable<?>) block).registerRender());
-            CommonProxy.ITEMS.forEach(item -> ((IRegistrable<?>) item).registerRender());
+            CommonProxy.BLOCKS.get(modID).forEach(block -> ((IRegistrable<?>) block).registerRender());
+            CommonProxy.ITEMS.get(modID).forEach(item -> ((IRegistrable<?>) item).registerRender());
         }
     }
 
     @SubscribeEvent
     public void addBlocks(RegistryEvent.Register<Block> event) {
-        CommonProxy.BLOCKS.forEach(block -> {
+        CommonProxy.BLOCKS.get(modID).forEach(block -> {
             // Register the block itself
             ((IRegistrable<Block>) block).registerObject(event.getRegistry());
 
