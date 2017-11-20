@@ -15,13 +15,13 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
  * @author Buuz135 + Paul Davis
  * @since 11/14/2019
  */
-public interface IRegistrable<T extends IForgeRegistryEntry<T>> {
-
-    /**
-     * Registers an object to the ForgeRegistry
-     *
-     * @param registry The Block Forge Registry
-     */
+public interface IRegisterable<T extends
+        /**
+         * Registers an object to the ForgeRegistry
+         *
+         * @param registry The Block Forge Registry
+         */
+        IForgeRegistryEntry<T>> {
     void registerObject(IForgeRegistry<T> registry);
 
     /**

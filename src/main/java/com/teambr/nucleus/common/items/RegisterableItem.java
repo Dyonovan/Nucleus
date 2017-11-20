@@ -1,9 +1,8 @@
-package com.teambr.nucleus.common.blocks;
+package com.teambr.nucleus.common.items;
 
-import com.teambr.nucleus.annotation.IRegistrable;
+import com.teambr.nucleus.annotation.IRegisterable;
 import com.teambr.nucleus.client.ModelHelper;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
+import net.minecraft.item.Item;
 import net.minecraftforge.registries.IForgeRegistry;
 
 /**
@@ -16,19 +15,7 @@ import net.minecraftforge.registries.IForgeRegistry;
  * @author Buuz135 + Paul Davis
  * @since 11/14/2019
  */
-public class RegistrableBlock extends Block implements IRegistrable<Block> {
-
-    // Held instance of class
-    public static RegistrableBlock INSTANCE;
-
-    /**
-     * Basic constructor
-     * @param materialIn Block material
-     */
-    public RegistrableBlock(Material materialIn) {
-        super(materialIn);
-        INSTANCE = this;
-    }
+public class RegisterableItem extends Item implements IRegisterable<Item> {
 
     /**
      * Registers an object to the ForgeRegistry
@@ -36,7 +23,7 @@ public class RegistrableBlock extends Block implements IRegistrable<Block> {
      * @param registry The Block Forge Registry
      */
     @Override
-    public void registerObject(IForgeRegistry<Block> registry) {
+    public void registerObject(IForgeRegistry<Item> registry) {
         registry.register(this);
     }
 
@@ -45,6 +32,6 @@ public class RegistrableBlock extends Block implements IRegistrable<Block> {
      */
     @Override
     public void registerRender() {
-        ModelHelper.registerSimpleRenderBlock(this);
+        ModelHelper.registerSimpleRenderItem(this);
     }
 }

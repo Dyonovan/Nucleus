@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
  * @author Paul Davis - pauljoda
  * @since 2/9/2017
  */
-public class ToolWrench extends RegistrableItem {
+public class ToolWrench extends RegisterableItem {
 
     /**
      * Called when a Block is right-clicked with this Item

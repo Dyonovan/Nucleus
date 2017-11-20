@@ -23,7 +23,7 @@ import java.util.Arrays;
  * @author Paul Davis - pauljoda
  * @since 2/9/2017
  */
-public class BlockFourWayRotating extends RegistrableBlock {
+public class BlockFourWayRotating extends RegisterableBlock {
 
     // Instance of the property for rotation
     public static PropertyDirection FOUR_WAY =
