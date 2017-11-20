@@ -12,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
@@ -50,11 +49,6 @@ public class RegistrationHelper {
                     ((IRegistersOreDictionary) item).getOreDictionaryTag() != null)
                 OreDictionary.registerOre(((IRegistersOreDictionary) item).getOreDictionaryTag(), item);
         });
-
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            data.getBlocks().forEach(block -> ((IRegisterable<?>) block).registerRender());
-            data.getItems().forEach(item -> ((IRegisterable<?>) item).registerRender());
-        }
     }
 
     /**
@@ -98,8 +92,7 @@ public class RegistrationHelper {
                 e.printStackTrace();
             }
         });
-        AnnotationUtils.getAllAnnotatedFields(event.getAsmData(), RegisteringBlock.class) // Gets fields annotated
-                .stream().filter(Block.class::isInstance).forEach(field -> {
+        AnnotationUtils.getAllAnnotatedFields(event.getAsmData(), RegisteringBlock.class).forEach(field -> {
             try {
                 Block block = (Block) field.get(field.getDeclaringClass());
                 data.getBlocks().add(block);
@@ -119,7 +112,7 @@ public class RegistrationHelper {
             }
         });
         AnnotationUtils.getAllAnnotatedFields(event.getAsmData(), RegisteringItem.class) // By field
-                .stream().filter(Item.class::isInstance).forEach(field -> {
+         .forEach(field -> {
             try {
                 Item item = (Item) field.get(field.getDeclaringClass());
                 data.getItems().add(item);
