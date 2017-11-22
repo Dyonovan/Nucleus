@@ -1,6 +1,7 @@
 package com.teambr.nucleus;
 
 import com.teambr.nucleus.common.CommonProxy;
+import com.teambr.nucleus.events.ToolTipEvent;
 import com.teambr.nucleus.lib.Reference;
 import com.teambr.nucleus.manager.ConfigManager;
 import com.teambr.nucleus.manager.EventManager;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 import java.io.File;
 
@@ -73,6 +75,10 @@ public class Nucleus {
 
         // Register Events
         EventManager.init();
+
+        // Register Tool tips
+        if(event.getSide() == Side.CLIENT)
+            EventManager.registerEvent(new ToolTipEvent());
 
         // Send to proxy
         proxy.init(event);

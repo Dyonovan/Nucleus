@@ -21,7 +21,6 @@ public class EventManager {
      * Registers the events
      */
     public static void init() {
-        registerEvent(new ToolTipEvent());
         registerEvent(new TimeUtils());
         registerEvent(new CraftingEvents());
     }
@@ -30,7 +29,7 @@ public class EventManager {
      * Registers an event to the event registry
      * @param event The event to register
      */
-    private static void registerEvent(Object event) {
+    public static void registerEvent(Object event) {
         MinecraftForge.EVENT_BUS.register(event);
     }
 }
