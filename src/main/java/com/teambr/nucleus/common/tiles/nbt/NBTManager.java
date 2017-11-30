@@ -1,6 +1,7 @@
 package com.teambr.nucleus.common.tiles.nbt;
 
 import com.teambr.nucleus.annotation.NBTSave;
+import com.teambr.nucleus.common.tiles.nbt.data.BlockPosNBTHandler;
 import com.teambr.nucleus.common.tiles.nbt.data.IntegerNBTHandler;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -30,6 +31,8 @@ public class NBTManager {
     private NBTManager() {
         handlerList = new ArrayList<>();
         tileFieldList = new HashMap<>();
+        handlerList.add(new IntegerNBTHandler());
+        handlerList.add(new BlockPosNBTHandler());
         handlerList.add(new IntegerNBTHandler());
     }
 
