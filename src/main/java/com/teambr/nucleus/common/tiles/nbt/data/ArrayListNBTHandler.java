@@ -37,15 +37,15 @@ public class ArrayListNBTHandler implements INBTHandler<ArrayList> {
 
     @Override
     public ArrayList readFromNBT(@Nonnull NBTTagCompound compound, @Nonnull String name) {
-        if (compound.hasKey(CLASS_NAME)) {
+        if (compound.getCompoundTag(name).hasKey(CLASS_NAME)) {
             try {
-                Class cl = Class.forName(compound.getString(CLASS_NAME));
+                Class cl = Class.forName(compound.getCompoundTag(name).getString(CLASS_NAME));
                 for (INBTHandler handler : NBTManager.getInstance().getHandlerList()) {
                     ArrayList list = new ArrayList();
                     if (handler.isClassValid(cl)) {
-                        for (String key : compound.getKeySet()) {
+                        for (String key : compound.getCompoundTag(name).getKeySet()) {
                             if (!key.equals(CLASS_NAME)) {
-                                list.add(handler.readFromNBT(compound, key));
+                                list.add(handler.readFromNBT(compound.getCompoundTag(name), key));
                             }
                         }
                     }

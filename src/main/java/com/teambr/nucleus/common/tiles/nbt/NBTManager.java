@@ -141,4 +141,8 @@ public class NBTManager {
     public List<INBTHandler> getHandlerList() {
         return handlerList;
     }
+
+    public HashMap<Class<? extends TileEntity>, List<Field>> getTileFieldList() {
+        return tileFieldList;
+    }
 }
