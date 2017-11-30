@@ -133,4 +133,8 @@ public class NBTManager {
         }
         return value;
     }
+
+    public List<INBTHandler> getHandlerList() {
+        return handlerList;
+    }
 }
