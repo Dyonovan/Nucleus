@@ -29,6 +29,7 @@ public class ArrayListNBTHandler implements INBTHandler<ArrayList> {
                     handler.storeToNBT(listCompound, i + "", item);
                     ++i;
                 }
+                compound.setTag(name, listCompound);
                 return true;
             }
         }
