@@ -78,8 +78,9 @@ public class RegistrationHelper {
 
     /**
      * Fills the {@link RegisteringBlock} provided with the items and blocks needed for later registering
+     *
      * @param event PreInit event
-     * @param data New data object to fill
+     * @param data  New data object to fill
      */
     public static void fillRegistrationData(FMLPreInitializationEvent event, RegistrationData data) {
         // Find Blocks, either by annotated class or field
@@ -87,7 +88,8 @@ public class RegistrationHelper {
                 .stream().filter(IRegisterable.class::isAssignableFrom).forEach(aClass -> {
             try {
                 Block block = (Block) aClass.newInstance();
-                data.getBlocks().add(block);
+                if (block.getRegistryName().getResourceDomain().toLowerCase().equals(data.getRegistryName().toLowerCase()))
+                    data.getBlocks().add(block);
             } catch (IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
             }
@@ -95,7 +97,8 @@ public class RegistrationHelper {
         AnnotationUtils.getAllAnnotatedFields(event.getAsmData(), RegisteringBlock.class).forEach(field -> {
             try {
                 Block block = (Block) field.get(field.getDeclaringClass());
-                data.getBlocks().add(block);
+                if (block.getRegistryName().getResourceDomain().toLowerCase().equals(data.getRegistryName().toLowerCase()))
+                    data.getBlocks().add(block);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -106,19 +109,21 @@ public class RegistrationHelper {
                 .stream().filter(IRegisterable.class::isAssignableFrom).forEach(aClass -> {
             try {
                 Item item = (Item) aClass.newInstance();
-                data.getItems().add(item);
+                if (item.getRegistryName().getResourceDomain().toLowerCase().equals(data.getRegistryName().toLowerCase()))
+                    data.getItems().add(item);
             } catch (IllegalAccessException | InstantiationException e) {
                 e.printStackTrace();
             }
         });
         AnnotationUtils.getAllAnnotatedFields(event.getAsmData(), RegisteringItem.class) // By field
-         .forEach(field -> {
-            try {
-                Item item = (Item) field.get(field.getDeclaringClass());
-                data.getItems().add(item);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        });
+                .forEach(field -> {
+                    try {
+                        Item item = (Item) field.get(field.getDeclaringClass());
+                        if (item.getRegistryName().getResourceDomain().toLowerCase().equals(data.getRegistryName().toLowerCase()))
+                            data.getItems().add(item);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 }

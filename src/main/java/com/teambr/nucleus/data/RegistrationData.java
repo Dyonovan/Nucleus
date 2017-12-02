@@ -27,6 +27,10 @@ public class RegistrationData {
     // Name, used mainly for debugging
     private String registryName;
 
+    /**
+     * Creates a registry holder
+     * @param name Name of the registry, should be modid
+     */
     public RegistrationData(String name) {
         this.registryName = name;
     }
@@ -49,5 +53,13 @@ public class RegistrationData {
      */
     public ArrayList<Item> getItems() {
         return items;
+    }
+
+    /**
+     * Gets the name for this registry
+     * @return
+     */
+    public String getRegistryName() {
+        return registryName;
     }
 }
