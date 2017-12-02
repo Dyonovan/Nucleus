@@ -1,6 +1,8 @@
 package com.teambr.nucleus.common.tiles.nbt;
 
 import com.teambr.nucleus.annotation.NBTSave;
+import com.teambr.nucleus.common.tiles.nbt.data.ArrayListNBTHandler;
+import com.teambr.nucleus.common.tiles.nbt.data.BlockPosNBTHandler;
 import com.teambr.nucleus.common.tiles.nbt.data.IntegerNBTHandler;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -31,6 +33,8 @@ public class NBTManager {
         handlerList = new ArrayList<>();
         tileFieldList = new HashMap<>();
         handlerList.add(new IntegerNBTHandler());
+        handlerList.add(new BlockPosNBTHandler());
+        handlerList.add(new ArrayListNBTHandler());
     }
 
     public static NBTManager getInstance() {
@@ -132,5 +136,13 @@ public class NBTManager {
             }
         }
         return value;
+    }
+
+    public List<INBTHandler> getHandlerList() {
+        return handlerList;
+    }
+
+    public HashMap<Class<? extends TileEntity>, List<Field>> getTileFieldList() {
+        return tileFieldList;
     }
 }
