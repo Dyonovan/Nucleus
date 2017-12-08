@@ -4,6 +4,7 @@ import com.teambr.nucleus.common.container.IInventoryCallback;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
@@ -15,7 +16,7 @@ import java.util.List;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -57,6 +58,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
 
     /**
      * Add a callback to this inventory
+     *
      * @param iInventoryCallback The callback you wish to add
      * @return This object, to enable chaining
      */
@@ -80,10 +82,10 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param inventory The inventory to copy from
      */
     public void copyFrom(IItemHandler inventory) {
-        for(int i = 0; i < inventory.getSlots(); i++) {
-            if(i < inventoryContents.size()) {
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            if (i < inventoryContents.size()) {
                 ItemStack stack = inventory.getStackInSlot(i);
-                if(!stack.isEmpty())
+                if (!stack.isEmpty())
                     inventoryContents.set(i, stack.copy());
                 else
                     inventoryContents.set(i, ItemStack.EMPTY);
@@ -93,6 +95,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
 
     /**
      * Makes sure this slot is within our range
+     *
      * @param slot Which slot
      */
     protected boolean isValidSlot(int slot) {
@@ -112,6 +115,21 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         ItemStackHelper.saveAllItems(compound, inventoryContents);
+
+        NBTTagList nbttaglist = new NBTTagList();
+
+        for (int i = 0; i < inventoryContents.size(); ++i) {
+            ItemStack itemstack = inventoryContents.get(i);
+            NBTTagCompound nbttagcompound = new NBTTagCompound();
+            nbttagcompound.setByte("Slot", (byte) i);
+            itemstack.writeToNBT(nbttagcompound);
+            nbttaglist.appendTag(nbttagcompound);
+        }
+
+        if (!nbttaglist.hasNoTags()) {
+            compound.setTag("Items", nbttaglist);
+        }
+
         return compound;
     }
 
@@ -128,8 +146,9 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
 
     /**
      * Tests if this object has a certain capability
+     *
      * @param capability The questioned capability
-     * @param facing Which face
+     * @param facing     Which face
      * @return Only true if Item Handler capability
      */
     @Override
@@ -139,14 +158,15 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
 
     /**
      * Used to access the capability
+     *
      * @param capability The capability
-     * @param facing Which face
-     * @param <T> The object to case
+     * @param facing     Which face
+     * @param <T>        The object to case
      * @return Us as INSTANCE of T
      */
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
             return (T) this;
         else
             return super.getCapability(capability, facing);
@@ -165,11 +185,11 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param slot  Slot to modify
      * @param stack ItemStack to set slot to (may be null)
      * @throws RuntimeException if the handler is called in a way that the handler
-     * was not expecting.
+     *                          was not expecting.
      **/
     @Override
     public void setStackInSlot(int slot, ItemStack stack) {
-        if(!isValidSlot(slot))
+        if (!isValidSlot(slot))
             return;
         if (ItemStack.areItemStacksEqual(this.inventoryContents.get(slot), stack))
             return;
@@ -193,13 +213,13 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
 
     /**
      * Returns the ItemStack in a given slot.
-     *
+     * <p>
      * The result's stack size may be greater than the itemstacks max size.
-     *
+     * <p>
      * If the result is null, then the slot is empty.
      * If the result is not null but the stack size is zero, then it represents
      * an empty slot that will only accept* a specific itemstack.
-     *
+     * <p>
      * <p/>
      * IMPORTANT: This ItemStack MUST NOT be modified. This method is not for
      * altering an inventories contents. Any implementers who are able to detect
@@ -213,7 +233,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     @Override
     @Nonnull
     public ItemStack getStackInSlot(int slot) {
-        if(!isValidSlot(slot))
+        if (!isValidSlot(slot))
             return ItemStack.EMPTY;
         return inventoryContents.get(slot);
     }
@@ -227,7 +247,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param stack    ItemStack to insert.
      * @param simulate If true, the insertion is only simulated
      * @return The remaining ItemStack that was not inserted (if the entire stack is accepted, then return null).
-     *         May be the same as the input ItemStack if unchanged, otherwise a new ItemStack.
+     * May be the same as the input ItemStack if unchanged, otherwise a new ItemStack.
      **/
     @Nonnull
     @Override
@@ -235,7 +255,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
         if (!isItemValidForSlot(slot, stack))
             return stack;
 
-        if(stack.isEmpty() || !isValidSlot(slot))
+        if (stack.isEmpty() || !isValidSlot(slot))
             return stack;
 
         ItemStack existing = this.inventoryContents.get(slot);
@@ -257,8 +277,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
         if (!simulate) {
             if (existing.isEmpty()) {
                 this.inventoryContents.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
-            }
-            else {
+            } else {
                 existing.setCount(existing.getCount() + (reachedLimit ? limit : stack.getCount()));
             }
             onInventoryChanged(slot);
@@ -283,7 +302,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
         if (amount == 0)
             return ItemStack.EMPTY;
 
-        if(!isValidSlot(slot))
+        if (!isValidSlot(slot))
             return ItemStack.EMPTY;
         ItemStack existing = this.inventoryContents.get(slot);
 
@@ -298,8 +317,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
                 onInventoryChanged(slot);
             }
             return existing;
-        }
-        else {
+        } else {
             if (!simulate) {
                 this.inventoryContents.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
                 onInventoryChanged(slot);
