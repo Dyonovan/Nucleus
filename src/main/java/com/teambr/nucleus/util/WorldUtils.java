@@ -89,6 +89,7 @@ public class WorldUtils {
 
         structure.blocks.stream()
                 .filter(blockInfo -> blockInfo.blockState != Blocks.AIR.getDefaultState())
+                .filter(blockInfo -> blockInfo.pos.getY() == 0)
                 .forEach(blockInfo -> {
             blockPosList.add(blockInfo.pos);
         });
