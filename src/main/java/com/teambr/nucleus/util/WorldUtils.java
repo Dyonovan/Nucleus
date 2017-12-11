@@ -2,15 +2,18 @@ package com.teambr.nucleus.util;
 
 import com.teambr.nucleus.common.blocks.IToolable;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.Template;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,6 +76,41 @@ public class WorldUtils {
             default :
                 return toTurn;
         }
+    }
+
+    /**
+     * Reads the given template, and creates a list of block positions representing the floor. Useful when
+     * you need to fill empty space below a generated structure
+     * @param structure The structure
+     * @return A list of positions (offsets) that represent the bottom layer of the structure
+     */
+    public static List<BlockPos> getMatchingFloor(Template structure) {
+        ArrayList<BlockPos> blockPosList = new ArrayList<>();
+
+        structure.blocks.stream()
+                .filter(blockInfo -> blockInfo.blockState != Blocks.AIR.getDefaultState())
+                .forEach(blockInfo -> {
+            blockPosList.add(blockInfo.pos);
+        });
+
+        return blockPosList;
+    }
+
+    /**
+     * Checks if there is air within the given list
+     * @param world The world
+     * @param blocks The list of offsets from the origin
+     * @param origin The origin to compare against
+     * @return True if any block in the list has air
+     */
+    public static boolean doesContainAirBlock(World world, List<BlockPos> blocks, BlockPos origin) {
+        for(BlockPos pos : blocks)
+            if(world.isAirBlock(new BlockPos(
+                    origin.getX() + pos.getX(),
+                    origin.getY() + pos.getY(),
+                    origin.getZ() + pos.getZ())))
+                return true;
+        return false;
     }
 
     /*******************************************************************************************************************
