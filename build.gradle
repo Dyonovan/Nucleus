@@ -77,6 +77,12 @@ processResources {
     }
 }
 
+jar {
+    manifest {
+        attributes 'FMLAT': 'nucleus_at.cfg'
+    }
+}
+
 task devJar(type: Jar, dependsOn: 'classes') {
     from(sourceSets.main.output) {
         include '**'
