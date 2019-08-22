@@ -1,9 +1,9 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 
 /**
  * This file was created for Nucleus
@@ -46,9 +46,9 @@ public class GuiComponentTexture extends BaseComponent {
     @Override
     public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.translated(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
-        drawTexturedModalRect(0, 0, u, v, width, height);
+        blit(0, 0, u, v, width, height);
         GlStateManager.popMatrix();
     }
 

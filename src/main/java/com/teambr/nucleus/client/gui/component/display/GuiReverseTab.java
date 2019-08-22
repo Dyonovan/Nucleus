@@ -1,9 +1,9 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.NinePatchRenderer;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
@@ -84,7 +84,7 @@ public class GuiReverseTab extends GuiTab {
 
         // Render the children
         if(areChildrenActive()) {
-            GlStateManager.translate(-expandedWidth, 0, 0);
+            GlStateManager.translated(-expandedWidth, 0, 0);
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
                 component.render(-expandedWidth, 0, mouseX, mouseY);
@@ -103,7 +103,7 @@ public class GuiReverseTab extends GuiTab {
     public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Render the children
         if(areChildrenActive()) {
-            GlStateManager.translate(-expandedWidth, 0, 0);
+            GlStateManager.translated(-expandedWidth, 0, 0);
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
                 component.renderOverlay(-expandedWidth, 0, mouseX, mouseY);

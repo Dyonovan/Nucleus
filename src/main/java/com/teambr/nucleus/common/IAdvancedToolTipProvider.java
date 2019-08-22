@@ -2,8 +2,8 @@ package com.teambr.nucleus.common;
 
 import com.teambr.nucleus.util.ClientUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,7 +28,7 @@ public interface IAdvancedToolTipProvider extends IToolTipProvider {
      * @return      The list to display
      */
     @Nullable
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     List<String> getAdvancedToolTip(@Nonnull ItemStack stack);
 
     /**
@@ -39,7 +39,7 @@ public interface IAdvancedToolTipProvider extends IToolTipProvider {
      *
      * @return True to display
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default boolean displayShiftForInfo(ItemStack stack) {
         return true;
     }
@@ -52,7 +52,7 @@ public interface IAdvancedToolTipProvider extends IToolTipProvider {
      */
     @Nullable
     @Override
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     default List<String> getToolTip(@Nonnull ItemStack stack) {
         return ClientUtils.isShiftPressed() ?
                 getAdvancedToolTip(stack) :

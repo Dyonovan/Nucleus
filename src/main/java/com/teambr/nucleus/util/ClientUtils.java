@@ -2,7 +2,7 @@ package com.teambr.nucleus.util;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -36,7 +36,16 @@ public class ClientUtils {
      * @return A formated number string, eg 1,000,000
      */
     public static String formatNumber(double number) {
-        return NumberFormat.getNumberInstance(Locale.forLanguageTag(Minecraft.getMinecraft().gameSettings.language)).format(number);
+        return NumberFormat.getNumberInstance(Locale.forLanguageTag(Minecraft.getInstance().gameSettings.language)).format(number);
+    }
+
+    /**
+     * Get if key is currently pressed
+     * @param key {@link GLFW} key that is pressed
+     * @return True if pressed
+     */
+    public static boolean isKeyPressed(int key) {
+        return GLFW.glfwGetKey(Minecraft.getInstance().mainWindow.getHandle(), key) == GLFW.GLFW_PRESS;
     }
 
     /**
@@ -45,12 +54,7 @@ public class ClientUtils {
      * @return True if CTRL is pressed
      */
     public static boolean isCtrlPressed() {
-        boolean standardControl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
-
-        // Check for Macs
-        if(!standardControl && Minecraft.IS_RUNNING_ON_MAC)
-            standardControl = Keyboard.isKeyDown(Keyboard.KEY_LMETA) || Keyboard.isKeyDown(Keyboard.KEY_RMETA);
-        return standardControl;
+        return isKeyPressed(GLFW.GLFW_KEY_LEFT_CONTROL) || isKeyPressed(GLFW.GLFW_KEY_RIGHT_CONTROL);
     }
 
     /**
@@ -59,6 +63,6 @@ public class ClientUtils {
      * @return True if pressed
      */
     public static boolean isShiftPressed() {
-        return Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        return isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || isKeyPressed(GLFW.GLFW_KEY_RIGHT_SHIFT);
     }
 }

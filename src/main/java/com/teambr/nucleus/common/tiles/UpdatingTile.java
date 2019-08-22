@@ -1,13 +1,14 @@
 package com.teambr.nucleus.common.tiles;
 
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
+import net.minecraft.client.renderer.texture.ITickable;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -20,8 +21,12 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public class UpdatingTile extends AutoSavingTile implements ITickable {
+public class UpdatingTile extends TileEntity implements ITickable {
 
+
+    public UpdatingTile(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
 
     /*******************************************************************************************************************
      * UpdatingTile                                                                                                    *
@@ -41,6 +46,7 @@ public class UpdatingTile extends AutoSavingTile implements ITickable {
      * Call to mark this block for update in the world
      * @param flags 6 to avoid re-render, 3 to force client changes
      */
+    @SuppressWarnings("ConstantConditions")
     public void markForUpdate(int flags) {
         getWorld().notifyBlockUpdate(getPos(), getWorld().getBlockState(getPos()), getWorld().getBlockState(getPos()), flags);
         markDirty();
@@ -50,9 +56,10 @@ public class UpdatingTile extends AutoSavingTile implements ITickable {
      * ITickable                                                                                                       *
      *******************************************************************************************************************/
 
+    @SuppressWarnings("ConstantConditions")
     @Override
-    public void update() {
-        if(getWorld().isRemote)
+    public void tick() {
+        if(hasWorld() && getWorld().isRemote)
             onClientTick();
         else
             onServerTick();
@@ -66,25 +73,18 @@ public class UpdatingTile extends AutoSavingTile implements ITickable {
      * We want the update tag to take in outside info
      * @return Our tag
      */
+    @Nonnull
     @Override
-    public NBTTagCompound getUpdateTag() {
-        return writeToNBT(new NBTTagCompound());
-    }
-
-    /**
-     * We only want a refresh when the block actually changes
-     */
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
-        return oldState.getBlock() != newSate.getBlock();
+    public CompoundNBT getUpdateTag() {
+        return write(new CompoundNBT());
     }
 
     /**
      * Cause tile to read new info
      */
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        readFromNBT(pkt.getNbtCompound());
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
+        read(pkt.getNbtCompound());
     }
 
     /**
@@ -92,9 +92,9 @@ public class UpdatingTile extends AutoSavingTile implements ITickable {
      */
     @Nullable
     @Override
-    public SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound tag = new NBTTagCompound();
-        writeToNBT(tag);
-        return new SPacketUpdateTileEntity(getPos(), 1, tag);
+    public SUpdateTileEntityPacket getUpdatePacket() {
+        CompoundNBT tag = new CompoundNBT();
+        write(tag);
+        return new SUpdateTileEntityPacket(getPos(), 1, tag);
     }
 }

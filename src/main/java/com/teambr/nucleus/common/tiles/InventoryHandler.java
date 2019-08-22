@@ -3,11 +3,13 @@ package com.teambr.nucleus.common.tiles;
 import com.teambr.nucleus.common.container.IInventoryCallback;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
 
 import javax.annotation.Nonnull;
@@ -31,6 +33,10 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     private List<IInventoryCallback> callBacks = new ArrayList<>();
     // List of Inventory contents
     public NonNullList<ItemStack> inventoryContents = NonNullList.withSize(getInventorySize(), ItemStack.EMPTY);
+
+    public InventoryHandler(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
 
     /*******************************************************************************************************************
      * Abstract Methods                                                                                                *
@@ -112,22 +118,22 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param compound The tag to save to
      */
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
+    public CompoundNBT write(CompoundNBT compound) {
+        super.write(compound);
         ItemStackHelper.saveAllItems(compound, inventoryContents);
 
-        NBTTagList nbttaglist = new NBTTagList();
+        ListNBT nbttaglist = new ListNBT();
 
         for (int i = 0; i < inventoryContents.size(); ++i) {
             ItemStack itemstack = inventoryContents.get(i);
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            nbttagcompound.setByte("Slot", (byte) i);
-            itemstack.writeToNBT(nbttagcompound);
-            nbttaglist.appendTag(nbttagcompound);
+            CompoundNBT nbttagcompound = new CompoundNBT();
+            nbttagcompound.putByte("Slot", (byte) i);
+            itemstack.write(nbttagcompound);
+            nbttaglist.add(nbttagcompound);
         }
 
-        if (!nbttaglist.hasNoTags()) {
-            compound.setTag("Items", nbttaglist);
+        if (!nbttaglist.isEmpty()) {
+            compound.put("Items", nbttaglist);
         }
 
         return compound;
@@ -139,22 +145,12 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param compound The tag to read from
      */
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
+    public void read(CompoundNBT compound) {
+        super.read(compound);
         ItemStackHelper.loadAllItems(compound, inventoryContents);
     }
 
-    /**
-     * Tests if this object has a certain capability
-     *
-     * @param capability The questioned capability
-     * @param facing     Which face
-     * @return Only true if Item Handler capability
-     */
-    @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
-    }
+    private LazyOptional<?> lazyHandler = LazyOptional.of(() -> this);
 
     /**
      * Used to access the capability
@@ -164,10 +160,11 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param <T>        The object to case
      * @return Us as INSTANCE of T
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return (T) this;
+            return (LazyOptional<T>) lazyHandler;
         else
             return super.getCapability(capability, facing);
     }

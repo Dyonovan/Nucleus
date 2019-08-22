@@ -1,11 +1,11 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,20 +108,21 @@ public class GuiComponentLongText extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseDown(int x, int y, int button) {
+    public boolean mouseClicked(double x, double y, int button) {
         if(GuiHelper.isInBounds(x, y, xPos + width - 15, yPos, xPos + width, yPos + 8)) {
             upSelected = true;
             currentLine -= 1;
             if(currentLine < 0)
                 currentLine = 0;
             GuiHelper.playButtonSound();
-        } else if(GuiHelper.isInBounds(x, y, xPos + width - 15, yPos + height - 8, x + width, yPos + height)) {
+        } else if(GuiHelper.isInBounds(x, y, xPos + width - 15, yPos + height - 8, (int) (x + width), yPos + height)) {
             downSelected = true;
             currentLine += 1;
             if(currentLine > getLastLineToRender())
                 currentLine = getLastLineToRender();
             GuiHelper.playButtonSound();
         }
+        return false;
     }
 
     /**
@@ -132,8 +133,9 @@ public class GuiComponentLongText extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseUp(int x, int y, int button) {
+    public boolean mouseReleased(double x, double y, int button) {
         upSelected = downSelected = false;
+        return false;
     }
 
     /**
@@ -155,11 +157,11 @@ public class GuiComponentLongText extends BaseComponent {
     @Override
     public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.translated(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
 
-        drawTexturedModalRect(width - 15, 0, u, v, 15, 8);
-        drawTexturedModalRect(width - 15, height - 7, u, v + 8, 15, 8);
+        blit(width - 15, 0, u, v, 15, 8);
+        blit(width - 15, height - 7, u, v + 8, 15, 8);
         GlStateManager.popMatrix();
     }
 
@@ -170,15 +172,15 @@ public class GuiComponentLongText extends BaseComponent {
     public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
 
-        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.translated(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
 
-        boolean uniCode = fontRenderer.getUnicodeFlag();
-        fontRenderer.setUnicodeFlag(false);
+        boolean uniCode = fontRenderer.getBidiFlag();
+        fontRenderer.setBidiFlag(false);
 
         int yPos = -9;
         int actualY = 0;
-        GlStateManager.scale(textScale / 100F, textScale / 100F, textScale / 100F);
+        GlStateManager.scalef(textScale / 100F, textScale / 100F, textScale / 100F);
         for(int x = currentLine; x < lines.size(); x++) {
             if(actualY + ((textScale * 9) / 100) > height)
                 break;
@@ -190,7 +192,7 @@ public class GuiComponentLongText extends BaseComponent {
             actualY += (textScale * 9) / 100;
         }
 
-        fontRenderer.setUnicodeFlag(uniCode);
+        fontRenderer.setBidiFlag(uniCode);
         GlStateManager.popMatrix();
     }
 

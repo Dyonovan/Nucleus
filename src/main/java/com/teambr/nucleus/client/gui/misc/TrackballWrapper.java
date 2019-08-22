@@ -1,7 +1,10 @@
 package com.teambr.nucleus.client.gui.misc;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.util.vector.Matrix4f;
+
+import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
+
+import javax.vecmath.Matrix4f;
 
 /**
  * This file was created for Nucleus
@@ -30,7 +33,7 @@ public class TrackballWrapper {
         float mx = (float) mouseX / (float) radius;
         float my = (float) mouseY / (float) radius;
 
-        boolean buttonState = Mouse.isButtonDown(mouseButton);
+        boolean buttonState = GLFW.glfwGetMouseButton(Minecraft.getInstance().mainWindow.getHandle(), mouseButton) == GLFW.GLFW_PRESS;
         if(!isDragging && buttonState) {
             isDragging = true;
             target.startDrag(mx, my);

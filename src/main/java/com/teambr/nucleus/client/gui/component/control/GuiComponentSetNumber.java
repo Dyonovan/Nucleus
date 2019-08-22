@@ -1,10 +1,11 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
@@ -22,7 +23,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
     // Variables
     protected int width, u, v, value, floor, ceiling;
     protected int height = 16;
-    protected GuiTextField textField;
+    protected TextFieldWidget textField;
     protected boolean upSelected, downSelected = false;
 
     /**
@@ -53,7 +54,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
         this.floor = lowestValue;
         this.ceiling = highestValue;
 
-        textField = new GuiTextField(0, fontRenderer, x, y, width - 10, height);
+        textField = new TextFieldWidget( fontRenderer, x, y, width - 10, height, "");
         textField.setText(String.valueOf(value));
     }
 
@@ -78,7 +79,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseDown(int x, int y, int button) {
+    public boolean mouseClicked(double x, double y, int button) {
         if(GuiHelper.isInBounds(x, y, xPos + width - 8, yPos - 1, xPos + width + 2, yPos + 7)) {
             upSelected = true;
 
@@ -99,6 +100,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
             textField.setText(String.valueOf(value));
         }
         textField.mouseClicked(x, y, button);
+        return super.mouseClicked(x, y, button);
     }
 
     /**
@@ -108,8 +110,9 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseUp(int x, int y, int button) {
+    public boolean mouseReleased(double x, double y, int button) {
         upSelected = downSelected = false;
+        return false;
     }
 
     /**
@@ -117,17 +120,18 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * @param letter The letter
      * @param keyCode The code
      */
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void keyTyped(char letter, int keyCode) {
         if (Character.isLetter(letter) && (keyCode != 8 && keyCode != 109)) return;
         if (textField.isFocused())
-            textField.textboxKeyTyped(letter, keyCode);
-        if (textField.getText() == null || (textField.getText() == "") || !isNumeric(textField.getText())) {
+            textField.charTyped(letter, keyCode);
+        if (textField.getText() == null || (textField.getText().equals("")) || !isNumeric(textField.getText())) {
             textField.setTextColor(0xE62E00);
             return;
         }
         if (keyCode == 13)
-            textField.setFocused(false);
+            textField.setFocused2(false);
         textField.setTextColor(0xFFFFFF);
         if (Integer.valueOf(textField.getText()) > ceiling)
             textField.setText(String.valueOf(ceiling));
@@ -143,12 +147,12 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
     @Override
     public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos, yPos, 0);
-        drawTexturedModalRect(width - 1, -1, upSelected  ? u + 11 : u, v, 11, 8);
-        drawTexturedModalRect(width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
+        GlStateManager.translated(xPos, yPos, 0);
+        blit(width - 1, -1, upSelected  ? u + 11 : u, v, 11, 8);
+        blit(width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        textField.drawTextBox();
+        textField.render(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
         GlStateManager.popMatrix();
     }
 
@@ -224,11 +228,11 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
         this.ceiling = ceiling;
     }
 
-    public GuiTextField getTextField() {
+    public TextFieldWidget getTextField() {
         return textField;
     }
 
-    public void setTextField(GuiTextField textField) {
+    public void setTextField(TextFieldWidget textField) {
         this.textField = textField;
     }
 }

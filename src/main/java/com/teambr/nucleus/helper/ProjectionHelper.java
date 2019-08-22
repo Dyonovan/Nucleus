@@ -1,17 +1,15 @@
 package com.teambr.nucleus.helper;
 
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
+
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import net.minecraft.client.renderer.GLAllocation;
-
-import net.minecraft.util.math.Vec3d;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-
 public class ProjectionHelper {
 
-    private IntBuffer viewport = GLAllocation.createDirectIntBuffer(16);
+    private IntBuffer viewport = GLAllocation.createDirectByteBuffer(16).asIntBuffer();
 
     private FloatBuffer modelview = GLAllocation.createDirectFloatBuffer(16);
 
@@ -22,13 +20,13 @@ public class ProjectionHelper {
     private FloatBuffer winCoords = GLAllocation.createDirectFloatBuffer(3);
 
     public void updateMatrices() {
-        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelview);
-        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projection);
-        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
+        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelview);
+        GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
+        GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
     }
 
-    public Vec3d unproject(float winX, float winY, float winZ) {
-        GLU.gluUnProject(winX, winY, winZ, modelview, projection, viewport, objectCoords);
+    public Vec3d unproject(double winX, double winY, float winZ) {
+       // GLU.gluUnProject(winX, winY, winZ, modelview, projection, viewport, objectCoords);
 
         float objectX = objectCoords.get(0);
         float objectY = objectCoords.get(1);
@@ -38,7 +36,7 @@ public class ProjectionHelper {
     }
 
     public Vec3d project(float objX, float objY, float objZ) {
-        GLU.gluProject(objX, objY, objZ, modelview, projection, viewport, winCoords);
+     //   GLU.gluProject(objX, objY, objZ, modelview, projection, viewport, winCoords);
 
         float winX = winCoords.get(0);
         float winY = winCoords.get(1);

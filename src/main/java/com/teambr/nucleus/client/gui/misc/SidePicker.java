@@ -1,13 +1,11 @@
 package com.teambr.nucleus.client.gui.misc;
-import java.util.Map;
-
-import com.teambr.nucleus.helper.ProjectionHelper;
-import net.minecraft.util.EnumFacing;
-
-import net.minecraft.util.math.Vec3d;
-import org.lwjgl.input.Mouse;
-
 import com.google.common.collect.Maps;
+import com.teambr.nucleus.helper.ProjectionHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.Vec3d;
+
+import java.util.Map;
 
 public class SidePicker {
 
@@ -21,7 +19,7 @@ public class SidePicker {
         ZNeg,
         ZPos;
 
-        public static Side fromEnumFacing(EnumFacing dir) {
+        public static Side fromDirection(Direction dir) {
             switch (dir) {
                 case WEST:
                     return XNeg;
@@ -41,20 +39,20 @@ public class SidePicker {
             return null;
         }
 
-        public EnumFacing toEnumFacing() {
+        public Direction toDirection() {
             switch (this) {
                 case XNeg:
-                    return EnumFacing.WEST;
+                    return Direction.WEST;
                 case XPos:
-                    return EnumFacing.EAST;
+                    return Direction.EAST;
                 case YNeg:
-                    return EnumFacing.DOWN;
+                    return Direction.DOWN;
                 case YPos:
-                    return EnumFacing.UP;
+                    return Direction.UP;
                 case ZNeg:
-                    return EnumFacing.NORTH;
+                    return Direction.NORTH;
                 case ZPos:
-                    return EnumFacing.SOUTH;
+                    return Direction.SOUTH;
                 default:
                     throw new IllegalArgumentException(toString());
             }
@@ -89,7 +87,7 @@ public class SidePicker {
     }
 
     private static Vec3d getMouseVector(float z) {
-        return projectionHelper.unproject(Mouse.getX(), Mouse.getY(), z);
+        return projectionHelper.unproject(Minecraft.getInstance().mouseHelper.getMouseX(), Minecraft.getInstance().mouseHelper.getMouseY(), z);
     }
 
     private Vec3d calculateXPoint(Vec3d near, Vec3d diff, double x) {
@@ -166,7 +164,7 @@ public class SidePicker {
 
         // yeah, I know there are two entries max, but... meh
         for (Map.Entry<Side, Vec3d> e : hits.entrySet()) {
-            double dist = e.getValue().subtract(near).lengthVector();
+            double dist = e.getValue().subtract(near).length();
             if (dist < minDist) {
                 minDist = dist;
                 minSide = e.getKey();

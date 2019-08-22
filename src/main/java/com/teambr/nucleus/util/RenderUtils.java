@@ -1,16 +1,12 @@
 package com.teambr.nucleus.util;
 
-import com.teambr.nucleus.client.shapes.DrawableShape;
-import com.teambr.nucleus.client.shapes.TexturedCylinder;
-import com.teambr.nucleus.client.shapes.TexturedSphere;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.lib.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
@@ -19,10 +15,9 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
-import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 import java.awt.*;
 import java.nio.FloatBuffer;
 
@@ -41,7 +36,7 @@ public class RenderUtils {
     public static final ResourceLocation GUI_COMPONENTS_RESOURCE_LOCATION =
             new ResourceLocation(Reference.MOD_ID, "textures/gui/guiComponents.png");
     public static final ResourceLocation MC_BLOCKS_RESOURCE_LOCATION =
-            TextureMap.LOCATION_BLOCKS_TEXTURE;
+            AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     public static final ResourceLocation MC_ITEMS_RESOURCE_LOCATION =
             new ResourceLocation("textures/atlas/items.png");
 
@@ -54,7 +49,7 @@ public class RenderUtils {
      * @param resource The resource to bind
      */
     public static void bindTexture(ResourceLocation resource) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(resource);
+        Minecraft.getInstance().getTextureManager().bindTexture(resource);
     }
 
     /**
@@ -84,7 +79,7 @@ public class RenderUtils {
      * @param color The color to set
      */
     public static void setColor(Color color) {
-        GlStateManager.color(color.getRed() / 255F, color.getGreen() / 255F,
+        GlStateManager.color4f(color.getRed() / 255F, color.getGreen() / 255F,
                 color.getBlue() / 255F, color.getAlpha() / 255F);
     }
 
@@ -129,9 +124,9 @@ public class RenderUtils {
      */
     public static void loadMatrix(Matrix4f transform) {
         FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
-        transform.store(matrixBuffer);
+        store(transform, matrixBuffer);
         matrixBuffer.flip();
-        GL11.glMultMatrix(matrixBuffer);
+        GL11.glMultMatrixf(matrixBuffer);
     }
 
     /**
@@ -140,13 +135,123 @@ public class RenderUtils {
      * @return A rotation matrix representing what the entity sees
      */
     public static Matrix4f createEntityRotateMatrix(Entity entity) {
-        double yaw   = Math.toRadians(entity.rotationYaw - 180);
-        double pitch = Math.toRadians(entity.rotationPitch);
-
         Matrix4f rotationMatrix = new Matrix4f();
-        rotationMatrix.rotate((float) pitch, new Vector3f(1, 0, 0));
-        rotationMatrix.rotate((float) yaw,   new Vector3f(0, 1, 0));
+        rotateMatrix4f(rotationMatrix, entity.rotationPitch, new Vector3f(1, 0, 0));
+        rotateMatrix4f(rotationMatrix, entity.rotationYaw - 180,   new Vector3f(0, 1, 0));
         return rotationMatrix;
+    }
+
+    /*******************************************************************************************************************
+     * Rendering math helpers                                                                                          *
+     *******************************************************************************************************************/
+
+    /**
+     * Creates a rotation matrix. Similar to
+     * <code>glRotate(angle, x, y, z)</code>.
+     *
+     * Credit to https://github.com/SilverTiger/lwjgl3-tutorial/blob/master/src/silvertiger/tutorial/lwjgl/math/Matrix4f.java
+     *
+     * @param angle Angle of rotation in degrees
+     *
+     */
+    public static void rotateMatrix4f(Matrix4f rotation, float angle, Vector3f vector) {
+        float c = (float) Math.cos(Math.toRadians(angle));
+        float s = (float) Math.sin(Math.toRadians(angle));
+        Vector3f vec = new Vector3f(vector.x, vector.y, vector.z);
+        if (vec.length() != 1f) {
+            vec.normalize();
+            vector.x = vec.x;
+            vector.y = vec.y;
+            vector.z = vec.z;
+        }
+
+        rotation.m00 = vector.x * vector.x * (1f - c) + c;
+        rotation.m10 = vector.y * vector.x * (1f - c) + vector.z * s;
+        rotation.m20 = vector.x * vector.z * (1f - c) - vector.y * s;
+        rotation.m01 = vector.x * vector.y * (1f - c) - vector.z * s;
+        rotation.m11 = vector.y * vector.y * (1f - c) + c;
+        rotation.m21 = vector.y * vector.z * (1f - c) + vector.x * s;
+        rotation.m02 = vector.x * vector.z * (1f - c) + vector.y * s;
+        rotation.m12 = vector.y * vector.z * (1f - c) - vector.x * s;
+        rotation.m22 = vector.z * vector.z * (1f - c) + c;
+    }
+
+    /**
+     * Store this matrix in a float buffer. The matrix is stored in column
+     * major (openGL) order.
+     *
+     * Ported from older opengl
+     *
+     * @param buf The buffer to store this matrix in
+     */
+    public static void store(Matrix4f vec, FloatBuffer buf) {
+        buf.put(vec.m00);
+        buf.put(vec.m01);
+        buf.put(vec.m02);
+        buf.put(vec.m03);
+        buf.put(vec.m10);
+        buf.put(vec.m11);
+        buf.put(vec.m12);
+        buf.put(vec.m13);
+        buf.put(vec.m20);
+        buf.put(vec.m21);
+        buf.put(vec.m22);
+        buf.put(vec.m23);
+        buf.put(vec.m30);
+        buf.put(vec.m31);
+        buf.put(vec.m32);
+        buf.put(vec.m33);
+    }
+
+    /**
+     * Multiply the right matrix by the left and place the result in a third matrix.
+     *
+     * Pulled from older opengl
+     *
+     * @param left The left source matrix
+     * @param right The right source matrix
+     * @param dest The destination matrix, or null if a new one is to be created
+     * @return the destination matrix
+     */
+    public static Matrix4f mul(Matrix4f left, Matrix4f right, Matrix4f dest) {
+        if (dest == null)
+            dest = new Matrix4f();
+
+        float m00 = left.m00 * right.m00 + left.m10 * right.m01 + left.m20 * right.m02 + left.m30 * right.m03;
+        float m01 = left.m01 * right.m00 + left.m11 * right.m01 + left.m21 * right.m02 + left.m31 * right.m03;
+        float m02 = left.m02 * right.m00 + left.m12 * right.m01 + left.m22 * right.m02 + left.m32 * right.m03;
+        float m03 = left.m03 * right.m00 + left.m13 * right.m01 + left.m23 * right.m02 + left.m33 * right.m03;
+        float m10 = left.m00 * right.m10 + left.m10 * right.m11 + left.m20 * right.m12 + left.m30 * right.m13;
+        float m11 = left.m01 * right.m10 + left.m11 * right.m11 + left.m21 * right.m12 + left.m31 * right.m13;
+        float m12 = left.m02 * right.m10 + left.m12 * right.m11 + left.m22 * right.m12 + left.m32 * right.m13;
+        float m13 = left.m03 * right.m10 + left.m13 * right.m11 + left.m23 * right.m12 + left.m33 * right.m13;
+        float m20 = left.m00 * right.m20 + left.m10 * right.m21 + left.m20 * right.m22 + left.m30 * right.m23;
+        float m21 = left.m01 * right.m20 + left.m11 * right.m21 + left.m21 * right.m22 + left.m31 * right.m23;
+        float m22 = left.m02 * right.m20 + left.m12 * right.m21 + left.m22 * right.m22 + left.m32 * right.m23;
+        float m23 = left.m03 * right.m20 + left.m13 * right.m21 + left.m23 * right.m22 + left.m33 * right.m23;
+        float m30 = left.m00 * right.m30 + left.m10 * right.m31 + left.m20 * right.m32 + left.m30 * right.m33;
+        float m31 = left.m01 * right.m30 + left.m11 * right.m31 + left.m21 * right.m32 + left.m31 * right.m33;
+        float m32 = left.m02 * right.m30 + left.m12 * right.m31 + left.m22 * right.m32 + left.m32 * right.m33;
+        float m33 = left.m03 * right.m30 + left.m13 * right.m31 + left.m23 * right.m32 + left.m33 * right.m33;
+
+        dest.m00 = m00;
+        dest.m01 = m01;
+        dest.m02 = m02;
+        dest.m03 = m03;
+        dest.m10 = m10;
+        dest.m11 = m11;
+        dest.m12 = m12;
+        dest.m13 = m13;
+        dest.m20 = m20;
+        dest.m21 = m21;
+        dest.m22 = m22;
+        dest.m23 = m23;
+        dest.m30 = m30;
+        dest.m31 = m31;
+        dest.m32 = m32;
+        dest.m33 = m33;
+
+        return dest;
     }
 
     /*******************************************************************************************************************
@@ -173,7 +278,7 @@ public class RenderUtils {
 
         VertexFormat POSITION_TEX_NORMALF = new VertexFormat();
         VertexFormatElement NORMAL_3F =
-                new VertexFormatElement(0, VertexFormatElement.EnumType.FLOAT, VertexFormatElement.EnumUsage.NORMAL, 3);
+                new VertexFormatElement(0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.NORMAL, 3);
         POSITION_TEX_NORMALF.addElement(DefaultVertexFormats.POSITION_3F);
         POSITION_TEX_NORMALF.addElement(DefaultVertexFormats.TEX_2F);
         POSITION_TEX_NORMALF.addElement(NORMAL_3F);
@@ -219,58 +324,5 @@ public class RenderUtils {
         tes.pos(x2, y2, z2).tex(u1, v1).normal(0, -1, 0).endVertex();
         tes.pos(x2, y2, z1).tex(u1, v).normal(0, -1, 0).endVertex();
         Tessellator.getInstance().draw();
-    }
-
-    /**
-     * Draws a sphere, bind texture first!
-     * @param radius The radius of the sphere
-     * @param stacks How many squares in a slice
-     * @param slices How manay slices (try to match stacks)
-     * @param tex The texture to place
-     * @param drawMode The draw mode
-     * @param color The color to apply
-     */
-    public static void renderSphere(float radius, int stacks, int slices, TextureAtlasSprite tex,
-                                    DrawableShape.TEXTURE_MODE drawMode, Color color) {
-        GL11.glPushMatrix();
-        GL11.glEnable(GL11.GL_BLEND);
-
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        setColor(color);
-        GL11.glEnable(GL11. GL_ALPHA_TEST);
-
-        TexturedSphere sphere = new TexturedSphere();
-        GL11.glShadeModel(GL11.GL_SMOOTH);
-        sphere.setDrawStyle(GLU.GLU_FILL);
-        sphere.setNormals(GLU.GLU_SMOOTH);
-        sphere.setTextureFlag(true);
-        sphere.setTextureMode(drawMode);
-        sphere.setOrientation(GLU.GLU_OUTSIDE);
-        GL11.glTexCoord4f(tex.getMinU(), tex.getMaxU(), tex.getMinV(), tex.getMaxV());
-        sphere.draw(radius, slices, stacks, tex.getMinU(), tex.getMaxU(), tex.getMinV(), tex.getMaxV());
-
-        GL11.glPopMatrix();
-    }
-
-    public static void renderCylinder(float radius, int stacks, int slices, TextureAtlasSprite tex,
-                                      DrawableShape.TEXTURE_MODE drawMode, Color color) {
-        GL11.glPushMatrix();
-        GL11.glEnable(GL11.GL_BLEND);
-
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        setColor(color);
-        GL11.glEnable(GL11. GL_ALPHA_TEST);
-
-        TexturedCylinder cylinder = new TexturedCylinder();
-        GL11.glShadeModel(GL11.GL_SMOOTH);
-        cylinder.setDrawStyle(GLU.GLU_FILL);
-        cylinder.setNormals(GLU.GLU_SMOOTH);
-        cylinder.setTextureFlag(true);
-        cylinder.setTextureMode(drawMode);
-        cylinder.setOrientation(GLU.GLU_OUTSIDE);
-        GL11.glTexCoord4f(tex.getMinU(), tex.getMaxU(), tex.getMinV(), tex.getMaxV());
-        cylinder.draw(radius, slices, stacks, tex.getMinU(), tex.getMaxU(), tex.getMinV(), tex.getMaxV());
-
-        GL11.glPopMatrix();
     }
 }

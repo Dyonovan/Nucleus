@@ -2,10 +2,13 @@ package com.teambr.nucleus.common.tiles;
 
 import com.teambr.nucleus.common.container.SidedInventoryWrapper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
+
+import javax.annotation.Nonnull;
 
 /**
  * This file was created for Nucleus - Java
@@ -20,12 +23,16 @@ import net.minecraftforge.items.IItemHandler;
 public abstract class InventorySided extends InventoryHandler {
 
     // Side Handlers
-    private IItemHandler handlerTop    = new SidedInventoryWrapper(this, EnumFacing.UP);
-    private IItemHandler handlerDown   = new SidedInventoryWrapper(this, EnumFacing.DOWN);
-    private IItemHandler handlerNorth  = new SidedInventoryWrapper(this, EnumFacing.NORTH);
-    private IItemHandler handlerSouth  = new SidedInventoryWrapper(this, EnumFacing.SOUTH);
-    private IItemHandler handlerEast   = new SidedInventoryWrapper(this, EnumFacing.EAST);
-    private IItemHandler handlerWest   = new SidedInventoryWrapper(this, EnumFacing.WEST);
+    private LazyOptional<?> handlerTop    = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.UP));
+    private LazyOptional<?> handlerDown   = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.DOWN));
+    private LazyOptional<?> handlerNorth  = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.NORTH));
+    private LazyOptional<?> handlerSouth  = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.SOUTH));
+    private LazyOptional<?> handlerEast   = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.EAST));
+    private LazyOptional<?> handlerWest   = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.WEST));
+
+    public InventorySided(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
 
     /*******************************************************************************************************************
      * Abstract Methods                                                                                                *
@@ -36,7 +43,7 @@ public abstract class InventorySided extends InventoryHandler {
      * @param face The face
      * @return What slots can be accessed
      */
-    public abstract int[] getSlotsForFace(EnumFacing face);
+    public abstract int[] getSlotsForFace(Direction face);
 
     /**
      * Can insert the item into the inventory
@@ -45,7 +52,7 @@ public abstract class InventorySided extends InventoryHandler {
      * @param dir The dir
      * @return True if can insert
      */
-    public abstract boolean canInsertItem(int slot, ItemStack itemStackIn, EnumFacing dir);
+    public abstract boolean canInsertItem(int slot, ItemStack itemStackIn, Direction dir);
 
     /**
      * Can this extract the item
@@ -54,28 +61,29 @@ public abstract class InventorySided extends InventoryHandler {
      * @param dir The dir
      * @return True if can extract
      */
-    public abstract boolean canExtractItem(int slot, ItemStack stack, EnumFacing dir);
+    public abstract boolean canExtractItem(int slot, ItemStack stack, Direction dir);
 
     /*******************************************************************************************************************
      * TileEntity                                                                                                      *
      *******************************************************************************************************************/
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
         if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             switch (facing) {
                 case UP :
-                    return (T) handlerTop;
+                    return (LazyOptional<T>) handlerTop;
                 case DOWN :
-                    return (T) handlerDown;
+                    return (LazyOptional<T>) handlerDown;
                 case NORTH :
-                    return (T) handlerNorth;
+                    return (LazyOptional<T>) handlerNorth;
                 case SOUTH :
-                    return (T) handlerSouth;
+                    return (LazyOptional<T>) handlerSouth;
                 case EAST :
-                    return (T) handlerEast;
+                    return (LazyOptional<T>) handlerEast;
                 case WEST :
-                    return (T) handlerWest;
+                    return (LazyOptional<T>) handlerWest;
                 default :
             }
         }

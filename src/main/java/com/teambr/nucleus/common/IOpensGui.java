@@ -1,6 +1,6 @@
 package com.teambr.nucleus.common;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 /**
@@ -28,7 +28,7 @@ public interface IOpensGui {
      * @param z Z Pos
      * @return The container to open
      */
-    Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z);
+    Object getServerGuiElement(int id, PlayerEntity player, World world, int x, int y, int z);
 
     /**
      * Return the gui for this tile
@@ -41,5 +41,5 @@ public interface IOpensGui {
      * @param z Z Pos
      * @return The gui to open
      */
-    Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z);
+    Object getClientGuiElement(int id, PlayerEntity player, World world, int x, int y, int z);
 }

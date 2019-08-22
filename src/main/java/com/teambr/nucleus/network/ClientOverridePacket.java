@@ -1,15 +1,13 @@
 package com.teambr.nucleus.network;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.network.NetworkDirection;
+import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.io.IOException;
+import java.util.function.Supplier;
 
 /**
  * This file was created for Nucleus - Java
@@ -21,11 +19,11 @@ import java.io.IOException;
  * @author Paul Davis - pauljoda
  * @since 2/8/2017
  */
-public class ClientOverridePacket implements IMessage, IMessageHandler<ClientOverridePacket, IMessage> {
+public class ClientOverridePacket implements INetworkMessage {
 
     // Variables
     public BlockPos blockPosition;
-    private NBTTagCompound tag;
+    public CompoundNBT tag;
 
     /**
      * Stub to allow registration
@@ -37,7 +35,7 @@ public class ClientOverridePacket implements IMessage, IMessageHandler<ClientOve
      * @param pos The position to write the tag
      * @param nbt The tag to write
      */
-    public ClientOverridePacket(BlockPos pos, NBTTagCompound nbt) {
+    public ClientOverridePacket(BlockPos pos, CompoundNBT nbt) {
         super();
         blockPosition = pos;
         tag = nbt;
@@ -48,39 +46,36 @@ public class ClientOverridePacket implements IMessage, IMessageHandler<ClientOve
      *******************************************************************************************************************/
 
     @Override
-    public void fromBytes(ByteBuf buf) {
+    public void decode(PacketBuffer buf) {
         blockPosition = BlockPos.fromLong(buf.readLong());
-        try {
-            tag = new PacketBuffer(buf).readCompoundTag();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        tag = new PacketBuffer(buf).readCompoundTag();
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void encode(PacketBuffer buf) {
         buf.writeLong(blockPosition.toLong());
-        new PacketBuffer(buf).writeCompoundTag(tag);
+        buf.writeCompoundTag(tag);
     }
 
     /*******************************************************************************************************************
      * IMessageHandler                                                                                                 *
      *******************************************************************************************************************/
 
-    @Override
-    public IMessage onMessage(ClientOverridePacket message, MessageContext ctx) {
-        if(ctx.side.isServer()) {
-            if(message.tag != null) {
-                World world = ctx.getServerHandler().player.world;
-                if(world.getTileEntity(message.blockPosition) != null) {
-                    world.getTileEntity(message.blockPosition).setPos(message.blockPosition);
-                    world.getTileEntity(message.blockPosition).readFromNBT(message.tag);
-                    world.notifyBlockUpdate(message.blockPosition,
-                            world.getBlockState(message.blockPosition), world.getBlockState(message.blockPosition),
-                            3);
+    public static void process(ClientOverridePacket message, Supplier<NetworkEvent.Context> ctx) {
+        if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
+            ctx.get().enqueueWork(() -> {
+                if(message.tag != null) {
+                    World world = ctx.get().getSender().world;
+                    if(world.getTileEntity(message.blockPosition) != null) {
+                        world.getTileEntity(message.blockPosition).setPos(message.blockPosition);
+                        world.getTileEntity(message.blockPosition).read(message.tag);
+                        world.notifyBlockUpdate(message.blockPosition,
+                                world.getBlockState(message.blockPosition), world.getBlockState(message.blockPosition),
+                                3);
+                    }
                 }
-            }
+            });
+            ctx.get().setPacketHandled(true);
         }
-        return null;
     }
 }

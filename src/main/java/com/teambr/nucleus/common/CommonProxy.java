@@ -1,10 +1,5 @@
 package com.teambr.nucleus.common;
 
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLInterModComms;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
 /**
  * This file was created for Nucleus - Java
  *
@@ -17,21 +12,10 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
  */
 @SuppressWarnings("ConstantConditions")
 public class CommonProxy {
-
-    /**
-     * Called on preInit
-     */
-    public void preInit(FMLPreInitializationEvent event) { }
-
     /**
      * Called on init
      */
-    public void init(FMLInitializationEvent event) {
-        FMLInterModComms.sendMessage("Waila", "register", "com.teambr.nucleus.api.waila.WailaModPlugin.registerServerCallback");
+    public void init() {
     }
 
-    /**
-     * Called on postInit
-     */
-    public void postInit(FMLPostInitializationEvent event) {}
 }

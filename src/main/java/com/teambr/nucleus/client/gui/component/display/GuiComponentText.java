@@ -1,10 +1,10 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -58,7 +58,7 @@ public class GuiComponentText extends BaseComponent {
     public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
 
-        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.translated(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
 
 

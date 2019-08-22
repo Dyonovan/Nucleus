@@ -2,8 +2,10 @@ package com.teambr.nucleus.common.container;
 
 import com.teambr.nucleus.common.tiles.InventorySided;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandlerModifiable;
+
+import javax.annotation.Nonnull;
 
 /**
  * This file was created for NeoTech
@@ -17,14 +19,14 @@ import net.minecraftforge.items.IItemHandlerModifiable;
  */
 public class SidedInventoryWrapper implements IItemHandlerModifiable {
     protected final InventorySided inv;
-    protected final EnumFacing side;
+    protected final Direction side;
 
-    public SidedInventoryWrapper(InventorySided inv, EnumFacing side) {
+    public SidedInventoryWrapper(InventorySided inv, Direction side) {
         this.inv = inv;
         this.side = side;
     }
 
-    public static int getSlot(InventorySided inv, int slot, EnumFacing side) {
+    public static int getSlot(InventorySided inv, int slot, Direction side) {
         int[] slots = inv.getSlotsForFace(side);
         if (slot < slots.length)
             return slots[slot];
@@ -119,5 +121,29 @@ public class SidedInventoryWrapper implements IItemHandlerModifiable {
     @Override
     public int getSlotLimit(int slot) {
         return inv.getSlotLimit(slot);
+    }
+
+    /**
+     * <p>
+     * This function re-implements the vanilla function IInventory#isItemValidForSlot(int, ItemStack).
+     * It should be used instead of simulated insertions in cases where the contents and state of the inventory are
+     * irrelevant, mainly for the purpose of automation and logic (for instance, testing if a minecart can wait
+     * to deposit its items into a full inventory, or if the items in the minecart can never be placed into the
+     * inventory and should move on).
+     * </p>
+     * <ul>
+     * <li>isItemValid is false when insertion of the item is never valid.</li>
+     * <li>When isItemValid is true, no assumptions can be made and insertion must be simulated case-by-case.</li>
+     * <li>The actual items in the inventory, its fullness, or any other state are <strong>not</strong> considered by isItemValid.</li>
+     * </ul>
+     *
+     * @param slot  Slot to query for validity
+     * @param stack Stack to test with for validity
+     * @return true if the slot can insert the ItemStack, not considering the current state of the inventory.
+     * false if the slot can never insert the ItemStack in any situation.
+     */
+    @Override
+    public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
+        return inv.isItemValid(slot, stack);
     }
 }

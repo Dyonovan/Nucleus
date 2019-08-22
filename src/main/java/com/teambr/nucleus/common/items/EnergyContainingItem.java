@@ -2,10 +2,11 @@ package com.teambr.nucleus.common.items;
 
 import com.teambr.nucleus.energy.implementations.EnergyBank;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -13,7 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * This file was created for NeoTech
+ * This file was created for Nucleus
  * <p>
  * NeoTech is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
@@ -44,9 +45,9 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
      */
     protected void checkStackTag() {
         // Give the stack a tag
-        if(!heldStack.hasTagCompound()) {
-            heldStack.setTagCompound(new NBTTagCompound());
-            localEnergy.writeToNBT(heldStack.getTagCompound());
+        if(!heldStack.hasTag()) {
+            heldStack.setTag(new CompoundNBT());
+            localEnergy.writeToNBT(heldStack.getTag());
         }
     }
 
@@ -64,9 +65,9 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTagCompound());
+        localEnergy.readFromNBT(heldStack.getTag());
         int energyReceived = localEnergy.receivePower(maxReceive, !simulate);
-        localEnergy.writeToNBT(heldStack.getTagCompound());
+        localEnergy.writeToNBT(heldStack.getTag());
         return energyReceived;
     }
 
@@ -80,9 +81,9 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTagCompound());
+        localEnergy.readFromNBT(heldStack.getTag());
         int extractedEnergy = localEnergy.providePower(maxExtract, !simulate);
-        localEnergy.writeToNBT(heldStack.getTagCompound());
+        localEnergy.writeToNBT(heldStack.getTag());
         return extractedEnergy;
     }
 
@@ -92,7 +93,7 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     @Override
     public int getEnergyStored() {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTagCompound());
+        localEnergy.readFromNBT(heldStack.getTag());
         return localEnergy.getEnergyStored();
     }
 
@@ -102,7 +103,7 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     @Override
     public int getMaxEnergyStored() {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTagCompound());
+        localEnergy.readFromNBT(heldStack.getTag());
         return localEnergy.getMaxEnergyStored();
     }
 
@@ -128,25 +129,7 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
      * ICapabilityProvider                                                                                             *
      *******************************************************************************************************************/
 
-    /**
-     * Determines if this object has support for the capability in question on the specific side.
-     * The return value of this MIGHT change during runtime if this object gains or looses support
-     * for a capability.
-     * <p>
-     * Example:
-     * A Pipe getting a cover placed on one side causing it loose the Inventory attachment function for that side.
-     * <p>
-     * This is a light weight version of getCapability, intended for metadata uses.
-     *
-     * @param capability The capability to check
-     * @param facing     The Side to check from:
-     *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
-     * @return True if this object supports the capability.
-     */
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityEnergy.ENERGY;
-    }
+    private LazyOptional<?> capabilityEnergy = LazyOptional.of(() -> this);
 
     /**
      * Retrieves the handler for the capability requested on the specific side.
@@ -158,10 +141,12 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
      *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
      * @return True if this object supports the capability.
      */
+    @Nonnull
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
         if(capability == CapabilityEnergy.ENERGY)
-            return (T) this;
-        return null;
+            return (LazyOptional<T>) capabilityEnergy;
+        return LazyOptional.empty();
     }
 }

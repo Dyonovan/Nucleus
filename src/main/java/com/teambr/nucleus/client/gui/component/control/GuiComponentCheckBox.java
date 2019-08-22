@@ -1,10 +1,10 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 
 import java.awt.*;
 
@@ -21,7 +21,7 @@ import java.awt.*;
 public abstract class GuiComponentCheckBox extends BaseComponent {
     // Variables
     protected int u, v;
-    protected boolean selcted;
+    protected boolean selected;
     protected String label;
 
     /**
@@ -40,7 +40,7 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
         super(parent, x, y);
         this.u = u;
         this.v = v;
-        selcted = initialValue;
+        selected = initialValue;
         label = ClientUtils.translate(text);
     }
 
@@ -67,10 +67,10 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseDown(int x, int y, int button) {
+    public void mouseDown(double x, double y, int button) {
         if(x > xPos && x < xPos + 10 && y > yPos && y < yPos + 10) {
-            selcted = !selcted;
-            setValue(selcted);
+            selected = !selected;
+            setValue(selected);
         }
     }
 
@@ -80,9 +80,9 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
     @Override
     public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.translated(xPos, yPos, 0);
         GlStateManager.disableLighting();
-        drawTexturedModalRect(0, 0, selcted ? u + 10 : u, v, 10, 10);
+        blit(0, 0, selected ? u + 10 : u, v, 10, 10);
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
@@ -93,7 +93,7 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
     @Override
     public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos + 10, yPos, 0);
+        GlStateManager.translated(xPos + 10, yPos, 0);
         RenderUtils.setColor(Color.darkGray);//Minecraft doesn't play nice with GL, so we will just set our own color
         fontRenderer.drawString(label, 0, 0, Color.darkGray.getRGB());
         RenderUtils.restoreColor();

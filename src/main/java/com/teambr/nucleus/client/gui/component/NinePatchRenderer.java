@@ -1,7 +1,7 @@
 package com.teambr.nucleus.client.gui.component;
 
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -63,65 +63,65 @@ public class NinePatchRenderer {
      */
 
     // Corners
-    protected void renderTopLeftCorner(Gui gui) {
-        gui.drawTexturedModalRect(0, 0, u, v, cellSize, cellSize);
+    protected void renderTopLeftCorner(Screen gui) {
+        gui.blit(0, 0, u, v, cellSize, cellSize);
     }
 
-    protected void renderTopRightCorner(Gui gui, int width) {
-        gui.drawTexturedModalRect(width - cellSize, 0, u + cellSize + cellSize, v, cellSize, cellSize);
+    protected void renderTopRightCorner(Screen gui, int width) {
+        gui.blit(width - cellSize, 0, u + cellSize + cellSize, v, cellSize, cellSize);
     }
 
-    protected void renderBottomLeftCorner(Gui gui, int height) {
-        gui.drawTexturedModalRect(0, height - cellSize, u, v + cellSize + cellSize, cellSize, cellSize);
+    protected void renderBottomLeftCorner(Screen gui, int height) {
+        gui.blit(0, height - cellSize, u, v + cellSize + cellSize, cellSize, cellSize);
     }
 
-    protected void renderBottomRightCorner(Gui gui, int width, int height) {
-        gui.drawTexturedModalRect(width - cellSize, height - cellSize, u + cellSize + cellSize, v + cellSize + cellSize, cellSize, cellSize);
+    protected void renderBottomRightCorner(Screen gui, int width, int height) {
+        gui.blit(width - cellSize, height - cellSize, u + cellSize + cellSize, v + cellSize + cellSize, cellSize, cellSize);
     }
 
     // Edges
-    protected void renderTopEdge(Gui gui, int width) {
+    protected void renderTopEdge(Screen gui, int width) {
         GL11.glPushMatrix();
         GL11.glTranslatef(cellSize, 0, 0);
         GL11.glScalef(width - (cellSize * 2), 1, 0);
-        gui.drawTexturedModalRect(0, 0, u + cellSize, v, 1, cellSize);
+        gui.blit(0, 0, u + cellSize, v, 1, cellSize);
         GL11.glPopMatrix();
     }
 
-    protected void renderBottomEdge(Gui gui, int width, int height) {
+    protected void renderBottomEdge(Screen gui, int width, int height) {
         GL11.glPushMatrix();
         GL11.glTranslatef(cellSize, height - cellSize, 0);
         GL11.glScalef(width - (cellSize * 2), 1, 0);
-        gui.drawTexturedModalRect(0, 0, u + cellSize, v + cellSize + cellSize, 1, cellSize);
+        gui.blit(0, 0, u + cellSize, v + cellSize + cellSize, 1, cellSize);
         GL11.glPopMatrix();
     }
 
-    protected void renderLeftEdge(Gui gui, int height) {
+    protected void renderLeftEdge(Screen gui, int height) {
         GL11.glPushMatrix();
         GL11.glTranslatef(0, cellSize, 0);
         GL11.glScalef(1, height - (cellSize * 2), 0);
-        gui.drawTexturedModalRect(0, 0, u, v + cellSize, cellSize, 1);
+        gui.blit(0, 0, u, v + cellSize, cellSize, 1);
         GL11.glPopMatrix();
     }
 
-    protected void renderRightEdge(Gui gui, int width, int height) {
+    protected void renderRightEdge(Screen gui, int width, int height) {
         GL11.glPushMatrix();
         GL11.glTranslatef(width - cellSize, cellSize, 0);
         GL11.glScalef(1, height - (cellSize * 2), 0);
-        gui.drawTexturedModalRect(0, 0, u + cellSize + cellSize, v + cellSize, cellSize, 1);
+        gui.blit(0, 0, u + cellSize + cellSize, v + cellSize, cellSize, 1);
         GL11.glPopMatrix();
     }
 
     // Background
-    protected void renderBackground(Gui gui, int width, int height) {
+    protected void renderBackground(Screen gui, int width, int height) {
         GL11.glPushMatrix();
         GL11.glTranslatef(cellSize - 1, cellSize - 1, 0);
         GL11.glScalef(width - (cellSize * 2) + 2, height - (cellSize * 2) + 2, 0);
-        gui.drawTexturedModalRect(0, 0, u + cellSize, v + cellSize, 1, 1);
+        gui.blit(0, 0, u + cellSize, v + cellSize, 1, 1);
         GL11.glPopMatrix();
     }
 
-    public void render(Gui gui, int x, int y, int width, int height) {
+    public void render(Screen gui, int x, int y, int width, int height) {
         render(gui, x, y, width, height, null);
     }
 
@@ -137,7 +137,7 @@ public class NinePatchRenderer {
      * @param height Height
      * @param color Color to render
      */
-    public void render(Gui gui, int x, int y, int width, int height, Color color) {
+    public void render(Screen gui, int x, int y, int width, int height, Color color) {
         GL11.glPushMatrix();
         if (color != null)
             RenderUtils.setColor(color);

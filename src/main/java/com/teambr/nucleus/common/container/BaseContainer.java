@@ -2,14 +2,17 @@ package com.teambr.nucleus.common.container;
 
 import com.teambr.nucleus.common.container.slots.IPhantomSlot;
 import com.teambr.nucleus.util.InventoryUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.ClickType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
+
+import javax.annotation.Nullable;
 
 /**
  * This file was created for Nucleus
@@ -33,7 +36,9 @@ public abstract class BaseContainer extends ContainerGeneric {
      * @param playerInventory The players inventory
      * @param inventory The tile/object inventory
      */
-    public BaseContainer(IInventory playerInventory, IItemHandler inventory) {
+    public BaseContainer(@Nullable ContainerType<?> type, int id,
+                         IInventory playerInventory, IItemHandler inventory) {
+        super(type, id);
         this.playerInventory = playerInventory;
         this.inventory = inventory;
 
@@ -66,14 +71,14 @@ public abstract class BaseContainer extends ContainerGeneric {
     protected void addPlayerInventorySlots(int offsetX, int offsetY) {
         for(int row = 0; row < 3; row++) {
             for(int column = 0; column < 9; column++)
-                addSlotToContainer(new Slot(playerInventory,
+                addSlot(new Slot(playerInventory,
                         column + row * 9 + 9,
                         offsetX + column * 18,
                         offsetY + row * 18));
         }
 
         for(int slot = 0; slot < 9; slot++)
-            addSlotToContainer(new Slot(playerInventory, slot, offsetX + slot * 18, offsetY + 58));
+            addSlot(new Slot(playerInventory, slot, offsetX + slot * 18, offsetY + 58));
     }
 
     /**
@@ -100,7 +105,7 @@ public abstract class BaseContainer extends ContainerGeneric {
     protected void addInventoryLine(int xOffset, int yOffset, int start, int count, int margin) {
         int slotID = start;
         for(int x = 0; x < count; x++) {
-            addSlotToContainer(new SlotItemHandler(inventory, slotID, xOffset + x * (18 + margin), yOffset));
+            addSlot(new SlotItemHandler(inventory, slotID, xOffset + x * (18 + margin), yOffset));
             slotID++;
         }
     }
@@ -118,7 +123,7 @@ public abstract class BaseContainer extends ContainerGeneric {
         int slotID = start;
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
-                addSlotToContainer(new SlotItemHandler(inventory, slotID, xOffset + x * 18, yOffset + y * 18));
+                addSlot(new SlotItemHandler(inventory, slotID, xOffset + x * 18, yOffset + y * 18));
                 slotID++;
             }
         }
@@ -132,14 +137,14 @@ public abstract class BaseContainer extends ContainerGeneric {
      * @param player The player
      * @return The stack
      */
-    private ItemStack slotClickPhantom(Slot slot, int mouseButton, ClickType modifier, EntityPlayer player) {
+    private ItemStack slotClickPhantom(Slot slot, int mouseButton, ClickType modifier, PlayerEntity player) {
         ItemStack stack = ItemStack.EMPTY;
 
         if(mouseButton == 2) {
             if(((IPhantomSlot)slot).canAdjust())
                 slot.putStack(ItemStack.EMPTY);
         } else if(mouseButton == 0 || mouseButton == 1) {
-            InventoryPlayer playerInv = player.inventory;
+            PlayerInventory playerInv = player.inventory;
             slot.onSlotChanged();
             ItemStack stackSlot = slot.getStack();
             ItemStack stackHeld = playerInv.getItemStack();
@@ -225,7 +230,7 @@ public abstract class BaseContainer extends ContainerGeneric {
      * @return The stack
      */
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
         Slot slot = (slotId < 0) ? null : inventorySlots.get(slotId);
         if(slot != null) {
             if(slot instanceof IPhantomSlot)
@@ -238,7 +243,7 @@ public abstract class BaseContainer extends ContainerGeneric {
      * Take a stack from the specified inventory slot.
      */
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         if(index < 0 || index > inventorySlots.size())
             return super.transferStackInSlot(playerIn, index);
         Slot slot = inventorySlots.get(index);

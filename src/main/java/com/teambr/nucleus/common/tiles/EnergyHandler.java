@@ -1,9 +1,11 @@
 package com.teambr.nucleus.common.tiles;
 
 import com.teambr.nucleus.energy.implementations.EnergyBank;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
@@ -40,7 +42,8 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     /**
      * Main Constructor
      */
-    public EnergyHandler() {
+    public EnergyHandler(TileEntityType<?> type) {
+        super(type);
         energyStorage = new EnergyBank(getDefaultEnergyStorageSize());
     }
 
@@ -87,15 +90,15 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
+    public CompoundNBT write(CompoundNBT compound) {
+        super.write(compound);
         energyStorage.writeToNBT(compound);
         return compound;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
+    public void read(CompoundNBT compound) {
+        super.read(compound);
 
         energyStorage.readFromNBT(compound);
 
@@ -108,16 +111,14 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
             energyStorage.setMaxExtract(getDefaultEnergyStorageSize());
     }
 
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
-        return capability == CapabilityEnergy.ENERGY;
-    }
+    private LazyOptional<?> lazyOptional = LazyOptional.of(() -> this);
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
         if(capability == CapabilityEnergy.ENERGY)
-            return (T) this;
-        return null;
+            return (LazyOptional<T>) lazyOptional;
+        return super.getCapability(capability, facing);
     }
 
     /**

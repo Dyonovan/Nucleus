@@ -4,7 +4,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -98,7 +98,7 @@ public class InventoryUtils {
      * @return True if something was moved
      */
     public static boolean moveItemInto(Object source, int fromSlot, Object target, int intoSlot,
-                                       int maxAmount, EnumFacing dir, boolean doMove, boolean checkSidedSource, boolean checkSidedTarget) {
+                                       int maxAmount, Direction dir, boolean doMove, boolean checkSidedSource, boolean checkSidedTarget) {
         // Null Checks
         if(source == null || target == null)
             return false;
@@ -123,8 +123,8 @@ public class InventoryUtils {
         if(checkSidedSource) {
             if(source instanceof TileEntity) {
                 TileEntity tile = (TileEntity) source;
-                if(tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir))
-                    fromInventory = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir);
+                if(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).isPresent())
+                    fromInventory = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).orElse(null);
                 else
                     return false; // Source does not want to expose access
             }
@@ -149,8 +149,8 @@ public class InventoryUtils {
         if(checkSidedTarget) {
             if(target instanceof TileEntity) {
                 TileEntity tile = (TileEntity) target;
-                if(tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()))
-                    targetInventory = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
+                if(tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent())
+                    targetInventory = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).orElse(null);
                 else
                     return false; // Target does not want to expose access
             }
@@ -176,7 +176,7 @@ public class InventoryUtils {
 
         // Do actual movement
         for (Integer fromSlot1 : fromSlots) { // Cycle fromInventory
-            if (fromInventory.getStackInSlot(fromSlot1) != null) { // If we have something
+            if (!fromInventory.getStackInSlot(fromSlot1).isEmpty()) { // If we have something
                 ItemStack fromStack = fromInventory.extractItem(fromSlot1, maxAmount, true); // Simulate to get stack
                 if (!fromStack.isEmpty()) { // Make sure we got something
                     for (Integer toSlot : toSlots) { // Cycle to inventory

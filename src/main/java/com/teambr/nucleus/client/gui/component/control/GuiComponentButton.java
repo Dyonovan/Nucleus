@@ -1,11 +1,11 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -94,7 +94,7 @@ public abstract class GuiComponentButton extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseDown(int mouseX, int mouseY, int button) {
+    public void mouseDown(double mouseX, double mouseY, int button) {
         if(mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height) {
             GuiHelper.playButtonSound();
             doAction();
@@ -122,8 +122,8 @@ public abstract class GuiComponentButton extends BaseComponent {
         GlStateManager.pushMatrix();
         RenderUtils.prepareRenderState();
         RenderUtils.bindTexture(parent.textureLocation);
-        GlStateManager.translate(xPos, yPos, 0);
-        drawTexturedModalRect(0, 0, u, isOver ? v + height : v, width, height);
+        GlStateManager.translated(xPos, yPos, 0);
+        blit(0, 0, u, isOver ? v + height : v, width, height);
         RenderUtils.restoreRenderState();
         GlStateManager.popMatrix();
     }
@@ -138,7 +138,7 @@ public abstract class GuiComponentButton extends BaseComponent {
             RenderUtils.prepareRenderState();
             RenderUtils.restoreColor();
             int size = fontRenderer.getStringWidth(label);
-            GlStateManager.translate(xPos + (width / 2 - size / 2), yPos + 6, 0);
+            GlStateManager.translated(xPos + (width / 2 - size / 2), yPos + 6, 0);
             fontRenderer.drawString(label, 0, 0, Color.darkGray.getRGB());
             RenderUtils.restoreColor();
             RenderUtils.restoreRenderState();

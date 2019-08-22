@@ -1,10 +1,10 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraftforge.fluids.FluidTank;
 
 /**
@@ -56,7 +56,7 @@ public class GuiComponentFluidTank extends BaseComponent {
     @Override
     public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.translated(xPos, yPos, 0);
         GuiHelper.renderFluid(tank, 0, height, height, width);
         RenderUtils.bindTexture(parent.textureLocation);
         GlStateManager.popMatrix();

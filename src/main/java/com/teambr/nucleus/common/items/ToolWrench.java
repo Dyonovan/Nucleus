@@ -1,14 +1,10 @@
 package com.teambr.nucleus.common.items;
 
 import com.teambr.nucleus.common.blocks.IToolable;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResultType;
+import net.minecraftforge.common.ToolType;
 
 /**
  * This file was created for Nucleus - Java
@@ -20,19 +16,26 @@ import javax.annotation.Nonnull;
  * @author Paul Davis - pauljoda
  * @since 2/9/2017
  */
-public class ToolWrench extends RegisterableItem {
+public class ToolWrench extends Item {
+
+    public ToolWrench() {
+        super(new Properties()
+        .maxStackSize(1)
+        .addToolType(ToolType.get("wrench"), 1));
+    }
 
     /**
-     * Called when a Block is right-clicked with this Item
+     * Called when item is right clicked
+     * @param context The context of the action
+     * @return Result of action
      */
-    @Nonnull
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand,
-                                      EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(worldIn.getBlockState(pos).getBlock() instanceof IToolable) {
-            IToolable toolableBlock = (IToolable) worldIn.getBlockState(pos).getBlock();
-            return toolableBlock.onWrench(player.getHeldItem(hand), player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-        } else
-            return EnumActionResult.PASS;
+    public ActionResultType onItemUse(ItemUseContext context) {
+        if(context.getWorld().getBlockState(context.getPos()).getBlock() instanceof IToolable)
+            return ((IToolable) context.getWorld().getBlockState(context.getPos()).getBlock())
+                    .onWrench(context);
+        else
+            return ActionResultType.FAIL;
+
     }
 }

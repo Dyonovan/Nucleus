@@ -3,14 +3,14 @@ package com.teambr.nucleus.util;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.math.RoundingMode;
@@ -37,7 +37,7 @@ public class EnergyUtils {
      * @param energy The number
      * @return A readable number
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static String getEnergyDisplay(int energy) {
         // If shift is press, give normal amount
         if(ClientUtils.isShiftPressed())
@@ -91,12 +91,12 @@ public class EnergyUtils {
 
         final List<T> capabilities = new ArrayList<>();
 
-        for (final EnumFacing side : EnumFacing.values()) {
+        for (final Direction side : Direction.values()) {
 
             final TileEntity tile = world.getTileEntity(pos.offset(side));
 
-            if (tile != null && !tile.isInvalid() && tile.hasCapability(capability, side.getOpposite()))
-                capabilities.add(tile.getCapability(capability, side.getOpposite()));
+            if (tile != null && !tile.isRemoved() && tile.getCapability(capability, side.getOpposite()).isPresent())
+                capabilities.add(tile.getCapability(capability, side.getOpposite()).orElse(null));
         }
 
         return capabilities;
@@ -114,10 +114,10 @@ public class EnergyUtils {
     public static int distributePowerToFaces(IEnergyStorage source, World world, BlockPos pos, int amountPerFace, boolean simulated) {
         int consumedPower = 0;
 
-        for(EnumFacing dir : EnumFacing.values()) {
+        for(Direction dir : Direction.values()) {
             TileEntity tile = world.getTileEntity(pos.offset(dir));
-            if (tile != null && !tile.isInvalid() && tile.hasCapability(CapabilityEnergy.ENERGY, dir.getOpposite()))
-                consumedPower += transferPower(source, tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()), amountPerFace, simulated);
+            if (tile != null && tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).isPresent())
+                consumedPower += transferPower(source, tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).orElse(null), amountPerFace, simulated);
         }
 
         return consumedPower;
@@ -135,10 +135,10 @@ public class EnergyUtils {
     public static int consumePowerFromFaces(IEnergyStorage source, World world, BlockPos pos, int amountPerFace, boolean simulated) {
         int receivedPower = 0;
 
-        for(EnumFacing dir : EnumFacing.values()) {
+        for(Direction dir : Direction.values()) {
             TileEntity tile = world.getTileEntity(pos.offset(dir));
-            if (tile != null && !tile.isInvalid() && tile.hasCapability(CapabilityEnergy.ENERGY, dir.getOpposite()))
-                receivedPower += transferPower(tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()), source, amountPerFace, simulated);
+            if (tile != null && tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).isPresent())
+                receivedPower += transferPower(tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).orElse(null), source, amountPerFace, simulated);
         }
 
         return receivedPower;
@@ -149,10 +149,10 @@ public class EnergyUtils {
      * @param stack   The stack
      * @param toolTip The tip list
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void addToolTipInfo(ItemStack stack, List<String> toolTip) {
-        if(stack.hasCapability(CapabilityEnergy.ENERGY, null)) {
-            IEnergyStorage energyStorage = stack.getCapability(CapabilityEnergy.ENERGY, null);
+        if(stack.getCapability(CapabilityEnergy.ENERGY, null).isPresent()) {
+            IEnergyStorage energyStorage = stack.getCapability(CapabilityEnergy.ENERGY, null).orElse(null);
             addToolTipInfo(energyStorage, toolTip, -1, -1);
         }
     }
@@ -164,7 +164,7 @@ public class EnergyUtils {
      * @param insert         The max insert, -1 to skip
      * @param extract        The max extract, -1 to skip
      */
-    @SideOnly(Side.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     public static void addToolTipInfo(IEnergyStorage energyStorage, List<String> toolTip, int insert, int extract) {
         toolTip.add(ChatFormatting.GOLD + ClientUtils.translate("nucleus.energy.energyStored"));
         toolTip.add("  " + EnergyUtils.getEnergyDisplay(energyStorage.getEnergyStored()) + " / " +

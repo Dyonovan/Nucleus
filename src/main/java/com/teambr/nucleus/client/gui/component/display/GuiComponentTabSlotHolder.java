@@ -2,7 +2,7 @@ package com.teambr.nucleus.client.gui.component.display;
 
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 
 /**
  * This file was created for Nucleus

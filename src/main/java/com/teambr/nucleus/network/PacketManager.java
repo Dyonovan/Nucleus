@@ -1,11 +1,16 @@
 package com.teambr.nucleus.network;
 
 import com.teambr.nucleus.lib.Reference;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import net.minecraftforge.fml.relauncher.Side;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkRegistry;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fml.network.simple.SimpleChannel;
+
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 /**
  * This file was created for Nucleus - Java
@@ -19,15 +24,20 @@ import net.minecraftforge.fml.relauncher.Side;
  */
 public class PacketManager {
     // Our network wrapper
-    public static SimpleNetworkWrapper net;
+    private static final String PROTOCOL_VERSION = "1";
+    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
+            new ResourceLocation(Reference.MOD_ID, "main"),
+            () -> PROTOCOL_VERSION,
+            PROTOCOL_VERSION::equals,
+            PROTOCOL_VERSION::equals
+    );
 
     /**
      * Registers all packets
      */
     public static void initPackets() {
-        net = NetworkRegistry.INSTANCE.newSimpleChannel(Reference.MOD_ID.toUpperCase());
-        registerMessage(ClientOverridePacket.class, ClientOverridePacket.class);
-        registerMessage(SyncableFieldPacket.class, SyncableFieldPacket.class);
+        registerMessage(ClientOverridePacket.class, ClientOverridePacket::process);
+        registerMessage(SyncableFieldPacket.class,  SyncableFieldPacket::process);
     }
 
     // Local hold for next packet id
@@ -36,12 +46,22 @@ public class PacketManager {
     /**
      * Registers a message to the network registry
      * @param packet The packet class
-     * @param message The return packet class
      */
     @SuppressWarnings("unchecked")
-    private static void registerMessage(Class packet, Class message) {
-        net.registerMessage(packet, message, nextPacketId, Side.CLIENT);
-        net.registerMessage(packet, message, nextPacketId, Side.SERVER);
+    private static <T extends INetworkMessage> void registerMessage(Class<T> packet,
+                                                                    BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {
+        INSTANCE.registerMessage(nextPacketId, packet,
+                INetworkMessage::encode,
+                (buf) -> {
+                    try {
+                        T msg = packet.newInstance();
+                        msg.decode(buf);
+                        return msg;
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                },
+                messageConsumer);
         nextPacketId++;
     }
 
@@ -54,9 +74,9 @@ public class PacketManager {
      * @param tile The tile you wish to update to server
      */
     public static void updateTileWithClientInfo(TileEntity tile) {
-        NBTTagCompound tag = new NBTTagCompound();
-        tile.writeToNBT(tag);
+        CompoundNBT tag = new CompoundNBT();
+        tile.write(tag);
         ClientOverridePacket updateMessage = new ClientOverridePacket(tile.getPos(), tag);
-        net.sendToServer(updateMessage);
+        INSTANCE.send(PacketDistributor.ALL.noArg(), updateMessage);
     }
 }

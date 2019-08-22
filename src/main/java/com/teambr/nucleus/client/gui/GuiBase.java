@@ -1,20 +1,20 @@
 package com.teambr.nucleus.client.gui;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.component.display.GuiComponentText;
 import com.teambr.nucleus.client.gui.component.display.GuiTabCollection;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.inventory.Container;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Mouse;
+import net.minecraft.util.text.ITextComponent;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +28,8 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class GuiBase<T extends Container> extends GuiContainer {
+public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
     // Variables
-    protected String name;
     protected GuiComponentText titleComponent;
 
     public ResourceLocation textureLocation;
@@ -47,19 +46,18 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
      * @param title The title of the gui
      * @param texture The location of the background texture
      */
-    public GuiBase(T inventory, int width, int height, String title, ResourceLocation texture) {
-        super(inventory);
+    public GuiBase(T inventory, PlayerInventory playerInventory, ITextComponent title, int width, int height, ResourceLocation texture) {
+        super(inventory, playerInventory, title);
         this.xSize = width;
         this.ySize = height;
-        this.name = title;
         this.textureLocation = texture;
 
         rightTabs = new GuiTabCollection(this, xSize + 1);
         leftTabs = new GuiTabCollection(this, -1);
 
         titleComponent = new GuiComponentText(this,
-                xSize / 2 - (Minecraft.getMinecraft().fontRenderer.getStringWidth(ClientUtils.translate(name)) / 2),
-                3, name, null);
+                xSize / 2 - (Minecraft.getInstance().fontRenderer.getStringWidth(ClientUtils.translate(title.getFormattedText())) / 2),
+                3, title.getFormattedText(), null);
         components.add(titleComponent);
 
         addComponents();
@@ -103,19 +101,18 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
 
     /**
      * Called when the mouse is clicked
-     *
-     * @param mouseX The X Position
+     *  @param mouseX The X Position
      * @param mouseY The Y Position
      * @param mouseButton The button pressed
      */
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        super.mouseClicked(mouseX, mouseY, mouseButton);
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         components.forEach((baseComponent -> {
             if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop)) {
                 baseComponent.mouseDown(mouseX - guiLeft, mouseY - guiTop, mouseButton);
             }
         }));
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     /**
@@ -126,13 +123,13 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
      * @param state The button released
      */
     @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        super.mouseReleased(mouseX, mouseY, state);
+    public boolean mouseReleased(double mouseX, double mouseY, int state) {
         components.forEach((baseComponent -> {
             if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop)) {
                 baseComponent.mouseUp(mouseX - guiLeft, mouseY - guiTop, state);
             }
         }));
+        return super.mouseReleased(mouseX, mouseY, state);
     }
 
     /**
@@ -141,27 +138,25 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
      * @param mouseX The Current X Position
      * @param mouseY The Current Y Position
      * @param clickedMouseButton The button being dragged
-     * @param timeSinceLastClick How long it has been pressed
      */
     @Override
-    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
-        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+    public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double xDragAmount, double yDragAmount) {
         components.forEach((baseComponent -> {
             if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop)) {
-                baseComponent.mouseDrag(mouseX - guiLeft, mouseY - guiTop, clickedMouseButton, timeSinceLastClick);
+                baseComponent.mouseDrag(mouseX - guiLeft, mouseY - guiTop, clickedMouseButton, xDragAmount, yDragAmount);
             }
         }));
+        return super.mouseDragged(mouseX, mouseY, clickedMouseButton, xDragAmount, yDragAmount);
     }
 
     /**
      * Handle the mouse input
      */
     @Override
-    public void handleMouseInput() throws IOException {
-        super.handleMouseInput();
-        int scrollDirection = Mouse.getEventDWheel();
-        if(scrollDirection != 0)
-            components.forEach((baseComponent -> baseComponent.mouseScrolled(scrollDirection > 0 ? 1 : -1)));
+    public boolean mouseScrolled(double mouseX, double mouseY, double mouseDelta) {
+        if(mouseDelta != 0)
+            components.forEach((baseComponent -> baseComponent.mouseScrolled(mouseDelta > 0 ? 1 : -1)));
+        return super.mouseScrolled(mouseX, mouseY, mouseDelta);
     }
 
     /**
@@ -171,9 +166,9 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
      * @param keyCode The Java key code
      */
     @Override
-    protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
+    public boolean charTyped(char typedChar, int keyCode) {
         components.forEach((baseComponent -> baseComponent.keyTyped(typedChar, keyCode)));
+        return super.charTyped(typedChar, keyCode);
     }
 
     /**
@@ -198,6 +193,7 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
         RenderUtils.restoreRenderState();
         RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.popMatrix();
+        drawTopLayer(mouseX, mouseY);
     }
 
     /**
@@ -213,10 +209,10 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         RenderUtils.prepareRenderState();
-        GlStateManager.translate(guiLeft, guiTop, 0);
+        GlStateManager.translated(guiLeft, guiTop, 0);
 
         RenderUtils.bindTexture(textureLocation);
-        drawTexturedModalRect(0, 0, 0, 0, xSize + 1, ySize + 1);
+        blit(0, 0, 0, 0, xSize + 1, ySize + 1);
 
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
@@ -236,12 +232,8 @@ public abstract class GuiBase<T extends Container> extends GuiContainer {
      *
      * @param mouseX The Mouse X Position
      * @param mouseY The mouse Y Position
-     * @param partialTicks partial ticks
      */
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    public void drawTopLayer(int mouseX, int mouseY) {
         this.renderHoveredToolTip(mouseX, mouseY);
         components.forEach((baseComponent -> {
             if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop))
