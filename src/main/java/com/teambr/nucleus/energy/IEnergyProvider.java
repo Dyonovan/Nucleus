@@ -9,7 +9,7 @@ package com.teambr.nucleus.energy;
  *
  * The interface to produce energy
  *
- * @author Paul Davis <pauljoda>
+ * @author Paul Davis -pauljoda-
  * @since 9/2/2016
  */
 public interface IEnergyProvider {

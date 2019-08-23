@@ -9,7 +9,7 @@ package com.teambr.nucleus.energy;
  *
  * The interface for an object that can store power, not used to send or receive just store
  *
- * @author Paul Davis <pauljoda>
+ * @author Paul Davis -pauljoda-
  * @since 9/2/2016
  */
 public interface IEnergyHolder {

@@ -249,7 +249,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
 
     /**
      * Drains fluid out of internal tanks, distribution is left entirely to the IFluidHandler.
-     * <p/>
+     *
      * This method is not Fluid-sensitive.
      *
      * @param maxDrain Maximum amount of fluid to drain.

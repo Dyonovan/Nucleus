@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundNBT;
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
- * @author Paul Davis <pauljoda>
+ * @author Paul Davis (pauljoda)
  * @since 9/2/2016
  */
 public class EnergyBank implements IEnergyHolder, IEnergyProvider, IEnergyReceiver {

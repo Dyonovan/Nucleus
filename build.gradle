@@ -1,33 +1,32 @@
 buildscript {
-  repositories {
-    maven { url = 'https://files.minecraftforge.net/maven' }
-    jcenter()
-    mavenCentral()
-  }
-  dependencies {
-    classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
-  }
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+    }
 }
 apply plugin: 'net.minecraftforge.gradle'
 
 apply plugin: 'maven-publish'
-/**
-Disabling while updating
+
 String APIToken = ''
 if (file('APIToken').exists()) {
-APIToken = new File('APIToken').text
+    APIToken = new File('APIToken').text
 }
 
 String build = ""
 if (project.hasProperty("teamcity")) {
-build = "B" +"${project.ext['build.number']}"
+    build = "B" +"${project.ext['build.number']}"
 }
 if (build == null || build == '') {
-version = "${project.minecraft_version}-${project.mod_version}"
+    version = "${project.minecraft_version}-${project.mod_version}"
 } else {
-version = "${project.minecraft_version}-${project.mod_version}-" + build
+    version = "${project.minecraft_version}-${project.mod_version}-" + build
 }
-**/
+
 
 group= "com.teambr.nucleus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Nucleus"
@@ -35,197 +34,151 @@ archivesBaseName = "Nucleus"
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
 
 minecraft {
-//  version = project.minecraft_version + "-" + project.forge_version
+    runs {
+        client {
+            workingDirectory project.file('run')
 
-//  replace "@VERSION@", project.mod_version
-//  replaceIn "Reference.java"
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
-  runs {
-    client {
-      workingDirectory project.file('run')
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
 
-      // Recommended logging data for a userdev environment
-      property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-      // Recommended logging level for the console
-      property 'forge.logging.console.level', 'debug'
-
-      mods {
-        nucleus {
-          source sourceSets.main
+            mods {
+                nucleus {
+                    source sourceSets.main
+                }
+            }
         }
-      }
-    }
 
-    server {
-      workingDirectory project.file('run')
+        server {
+            workingDirectory project.file('run')
 
-      // Recommended logging data for a userdev environment
-      property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
-      // Recommended logging level for the console
-      property 'forge.logging.console.level', 'debug'
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
 
-      mods {
-        nucleus {
-          source sourceSets.main
+            mods {
+                nucleus {
+                    source sourceSets.main
+                }
+            }
         }
-      }
-    }
 
-    mappings channel: 'snapshot', version: "${project.MAPPINGS}"
+        mappings channel: 'snapshot', version: "${project.MAPPINGS}"
 //    makeObfSourceJar = false
-  }
+    }
 }
 
 dependencies {
     minecraft 'net.minecraftforge:forge:' + project.minecraft_version + "-" + project.forge_version
 }
-/**
+
 configurations.all {
-resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-}
-
-processResources {
-// this will ensure that this task is redone when the versions change.
-inputs.property "version", project.version
-inputs.property "mcversion", project.minecraft.version
-
-// replace stuff in mcmod.info, nothing else
-from(sourceSets.main.resources.srcDirs) {
-include 'mcmod.info'
-
-// replace version and mcversion
-expand 'version':project.version, 'mcversion':project.minecraft.version
-}
-
-// copy everything else, thats not the mcmod.info
-from(sourceSets.main.resources.srcDirs) {
-exclude 'mcmod.info'
-}
-
-// Move access transformers to META-INF
-rename '(.+_at.cfg)', 'META-INF/$1'
-}
-
-jar {
-manifest {
-attributes 'FMLAT': 'nucleus_at.cfg'
-}
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
 }
 
 task devJar(type: Jar, dependsOn: 'classes') {
-from(sourceSets.main.output) {
-include '**'
-}
-extension = 'jar'
-classifier = 'dev'
+    from(sourceSets.main.output) {
+        include '**'
+    }
+    extension = 'jar'
+    classifier = 'dev'
 }
 
 task javadocJar(type: Zip, dependsOn: javadoc) {
-from 'build/docs/javadoc'
-classifier = 'javadoc'
+    from 'build/docs/javadoc'
+    classifier = 'javadoc'
 }
 
 task sourceJarJava(type: Jar, dependsOn: "classes") {
-from sourceSets.main.allSource
-classifier = 'sources'
+    from sourceSets.main.allSource
+    classifier = 'sources'
 }
 
 artifacts {
-archives devJar
-archives sourceJarJava
-//archives javadocJar
+    archives devJar
+    archives sourceJarJava
+    archives javadocJar
 }
 
 configurations {
-deployerJars
+    deployerJars
 }
 
 dependencies {
-deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
-//deobfCompile "mezz.jei:jei_${project.minecraft_version}:${project.JEI_version}"
-//compile "mcp.mobius.waila:Waila:${project.WAILA_version}:dev"
-}
-
-repositories {
-mavenCentral()
-maven { // The repo from which to get waila
-name "Mobius Repo"
-url "http://mobiusstrip.eu/maven"
-}
-maven { //JEI
-name 'DVS1 Maven FS'
-url "http://dvs1.progwml6.com/files/maven"
-}
+    deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
 }
 
 uploadArchives {
-if (project.hasProperty('username') && project.hasProperty('password')) {
-repositories {
-mavenDeployer {
-configuration = configurations.deployerJars
+    if (project.hasProperty('username') && project.hasProperty('password')) {
+        repositories {
+            mavenDeployer {
+                configuration = configurations.deployerJars
 //repository(url: System.properties['URL']) {
-repository(url: "ftp://dyonovan.com/srv/http/maven2") {
-authentication(userName: "${username}", password: "${password}")
+                repository(url: "ftp://dyonovan.com/srv/http/maven2") {
+                    authentication(userName: "${username}", password: "${password}")
+                }
+
+                pom {
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.archivesBaseName
+
+                    pom.project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description 'Nucleus'
+                        url 'https://github.com/TeamBR-Modding/Nucleus'
+                        scm {
+                            url 'https://github.com/TeamBR-Modding/Nucleus'
+                            connection 'scm:git:git@github.com/TeamBR-Modding/Nucleus.git'
+                            developerConnection 'scm:git:git@github.com/TeamBR-Modding/Nucleus.git'
+                        }
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/TeamBR-Modding/Nucleus/issues'
+                        }
+                        licenses {
+                            license {
+                                name 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License'
+                                url 'http://creativecommons.org/licenses/by-nc-sa/4.0/'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'Dyonovan'
+                                name 'Dyonovan'
+                                roles {
+                                    role 'developer'
+                                }
+                            }
+                            developer {
+                                id 'pauljoda'
+                                name 'pauljoda'
+                                roles {
+                                    role 'developer'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
-pom {
-groupId = project.group
-version = project.version
-artifactId = project.archivesBaseName
-
-pom.project {
-name project.archivesBaseName
-packaging 'jar'
-description 'Nucleus'
-url 'https://github.com/TeamBR-Modding/Nucleus'
-scm {
-url 'https://github.com/TeamBR-Modding/Nucleus'
-connection 'scm:git:git@github.com/TeamBR-Modding/Nucleus.git'
-developerConnection 'scm:git:git@github.com/TeamBR-Modding/Nucleus.git'
-}
-issueManagement {
-system 'github'
-url 'https://github.com/TeamBR-Modding/Nucleus/issues'
-}
-licenses {
-license {
-name 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License'
-url 'http://creativecommons.org/licenses/by-nc-sa/4.0/'
-distribution 'repo'
-}
-}
-developers {
-developer {
-id 'Dyonovan'
-name 'Dyonovan'
-roles {
-role 'developer'
-}
-}
-developer {
-id 'pauljoda'
-name 'pauljoda'
-roles {
-role 'developer'
-}
-}
-}
-}
-}
-}
-}
-}
-}
-
+/**
 curseforge  {
-apiKey = APIToken
-project {
-id = '232784'
-changelog = ''
-releaseType = 'release'
-addArtifact devJar
-addGameVersion '1.10.2'
-}
+    apiKey = APIToken
+    project {
+        id = '232784'
+        changelog = ''
+        releaseType = 'release'
+        addArtifact devJar
+        addGameVersion '1.10.2'
+    }
 }**/
