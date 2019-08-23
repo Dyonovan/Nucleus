@@ -1,8 +1,8 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 
@@ -36,16 +36,16 @@ public abstract class GuiComponentItemStackButton extends GuiComponentButton {
     public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
         super.renderOverlay(guiLeft, guiTop, mouseX, mouseY);
         GlStateManager.pushMatrix();
-        GlStateManager.pushAttrib();
-        GlStateManager.translate(xPos, yPos, 1);
+        GlStateManager.pushLightingAttributes();
+        GlStateManager.translated(xPos, yPos, 1);
 
         RenderHelper.enableGUIStandardItemLighting();
 
-        Minecraft.getMinecraft().getRenderItem().renderItemAndEffectIntoGUI(displayStack, (width / 2) - 8, (height / 2) - 8);
+        Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(displayStack, (width / 2) - 8, (height / 2) - 8);
 
         RenderHelper.disableStandardItemLighting();
 
-        GlStateManager.popAttrib();
+        GlStateManager.popAttributes();
         GlStateManager.popMatrix();
     }
 

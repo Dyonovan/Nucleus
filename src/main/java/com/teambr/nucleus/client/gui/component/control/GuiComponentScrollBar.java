@@ -1,9 +1,9 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
-import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
+import net.minecraft.client.Minecraft;
 
 /**
  * This file was created for Nucleus
@@ -15,6 +15,7 @@ import org.lwjgl.input.Mouse;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
+@SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public abstract class GuiComponentScrollBar extends BaseComponent {
     // Variables
     protected int nubU, nubV, height, maxRange;
@@ -34,7 +35,7 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * @param nV The nub texture v
      * @param height The height of this scroll bar
      */
-    public GuiComponentScrollBar(GuiBase<?> parent, int x, int y,int nU, int nV, int height) {
+    public GuiComponentScrollBar(GuiBase<?> parent, int x, int y, int nU, int nV, int height) {
         super(parent, x, y);
         nubU = nU;
         nubV = nV;
@@ -63,14 +64,15 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseDown(int x, int y, int button) {
+    public boolean mouseClicked(double x, double y, int button) {
         isMoving = true;
-        currentPosition = (y - yPos) - 7;
+        currentPosition = (int) ((y - yPos) - 7);
         if(currentPosition > maxRange)
             currentPosition = maxRange;
         else if(currentPosition < 0)
             currentPosition = 0;
         onScroll(currentPosition / maxRange);
+        return false;
     }
 
     /**
@@ -78,16 +80,16 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * @param x Mouse X Position
      * @param y Mouse Y Position
      * @param button Mouse Button
-     * @param time How long
      */
     @Override
-    public void mouseDrag(int x, int y, int button, long time) {
-        currentPosition = (y - yPos) - 7;
+    public boolean mouseDragged(double x, double y, int button, double xAmount, double yAmount) {
+        currentPosition = (int) ((y - yPos) - 7);
         if(currentPosition > maxRange)
             currentPosition = maxRange;
         else if(currentPosition < 0)
             currentPosition = 0;
         onScroll(currentPosition / maxRange);
+        return false;
     }
 
     /**
@@ -97,9 +99,10 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseUp(int x, int y, int button) {
+    public boolean mouseReleased(double x, double y, int button) {
         isMoving = false;
         onScroll(currentPosition / maxRange);
+        return false;
     }
 
     /**
@@ -111,10 +114,10 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
             currentPosition = maxRange;
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos + 1, yPos + currentPosition + 1, 0);
-        if(isMoving && !Mouse.isButtonDown(0))
+        GlStateManager.translated(xPos + 1, yPos + currentPosition + 1, 0);
+        if(isMoving && !Minecraft.getInstance().mouseHelper.isLeftDown())
             isMoving = false;
-        drawTexturedModalRect(0, 0, isMoving ? nubU + 12 : nubU, nubV, 12, 15);
+        blit(0, 0, isMoving ? nubU + 12 : nubU, nubV, 12, 15);
     }
 
     /**

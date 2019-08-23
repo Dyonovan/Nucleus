@@ -2,7 +2,8 @@ package com.teambr.nucleus.common.tiles;
 
 import com.teambr.nucleus.network.PacketManager;
 import com.teambr.nucleus.network.SyncableFieldPacket;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 /**
  * This file was created for Nucleus - Java
@@ -15,6 +16,10 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
  * @since 2/6/2017
  */
 public abstract class Syncable extends UpdatingTile {
+
+    public Syncable(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
 
     /*******************************************************************************************************************
      * Abstract Methods                                                                                                *
@@ -42,7 +47,7 @@ public abstract class Syncable extends UpdatingTile {
      * Sends the value to the server, you should probably only call this from the client
      */
     public void sendValueToServer(int id, double value) {
-        PacketManager.net.sendToServer(new SyncableFieldPacket(false, id, value, getPos()));
+        PacketManager.INSTANCE.sendToServer(new SyncableFieldPacket(false, id, value, getPos()));
     }
 
     /**
@@ -50,16 +55,17 @@ public abstract class Syncable extends UpdatingTile {
      * Only use if you lose data and want to update from server. Few cases for this
      */
     public void updateClientValueFromServer(int id) {
-        PacketManager.net.sendToServer(new SyncableFieldPacket(true, id, 0, getPos()));
+        PacketManager.INSTANCE.sendToServer(new SyncableFieldPacket(true, id, 0, getPos()));
     }
 
     /**
      * Sends the value to the clients nearby
      */
     public void sendValueToClient(int id, double value) {
-        PacketManager.net.sendToAllAround(new SyncableFieldPacket(false, id, value, getPos()),
-                new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(),
-                        getPos().getX(), getPos().getY(), getPos().getZ(),
-                        25));
+        PacketManager.INSTANCE.send(PacketDistributor.NEAR.with( () ->
+                new PacketDistributor.TargetPoint(
+                getPos().getX(), getPos().getY(), getPos().getZ(),
+                25, getWorld().getDimension().getType())),
+                new SyncableFieldPacket(false, id, value, getPos()));
     }
 }

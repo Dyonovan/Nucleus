@@ -1,9 +1,11 @@
 package com.teambr.nucleus.common.tiles;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
@@ -36,7 +38,8 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
     /**
      * Default constructor, calls the setupTanks method to setup the tanks
      */
-    public FluidHandler() {
+    public FluidHandler(TileEntityType<?> type) {
+        super(type);
         setupTanks();
     }
 
@@ -123,21 +126,21 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      * @param compound The tag to save to
      */
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
+    public CompoundNBT write(CompoundNBT compound) {
+        super.write(compound);
         int id = 0;
-        compound.setInteger(SIZE_NBT_TAG, tanks.length);
-        NBTTagList tagList = new NBTTagList();
+        compound.putInt(SIZE_NBT_TAG, tanks.length);
+        ListNBT tagList = new ListNBT();
         for(FluidTank tank : tanks) {
             if(tank != null) {
-                NBTTagCompound tankCompound = new NBTTagCompound();
-                tankCompound.setByte(TANK_ID_NBT_TAG, (byte) id);
+                CompoundNBT tankCompound = new CompoundNBT();
+                tankCompound.putByte(TANK_ID_NBT_TAG, (byte) id);
                 id += 1;
                 tank.writeToNBT(tankCompound);
-                tagList.appendTag(tankCompound);
+                tagList.add(tankCompound);
             }
         }
-        compound.setTag(TANKS_NBT_TAG, tagList);
+        compound.put(TANKS_NBT_TAG, tagList);
         return compound;
     }
 
@@ -147,29 +150,26 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      * @param compound The tag to read from
      */
     @Override
-    public void readFromNBT(NBTTagCompound compound) {
-        super.readFromNBT(compound);
-        NBTTagList tagList = compound.getTagList(TANKS_NBT_TAG, 10);
-        int size = compound.getInteger(SIZE_NBT_TAG);
-        if(size != tanks.length && compound.hasKey(SIZE_NBT_TAG)) tanks = new FluidTank[size];
-        for(int x = 0; x < tagList.tagCount(); x++) {
-            NBTTagCompound tankCompound = tagList.getCompoundTagAt(x);
+    public void read(CompoundNBT compound) {
+        super.read(compound);
+        ListNBT tagList = compound.getList(TANKS_NBT_TAG, 10);
+        int size = compound.getInt(SIZE_NBT_TAG);
+        if(size != tanks.length && compound.contains(SIZE_NBT_TAG)) tanks = new FluidTank[size];
+        for(int x = 0; x < tagList.size(); x++) {
+            CompoundNBT tankCompound = tagList.getCompound(x);
             byte position = tankCompound.getByte(TANK_ID_NBT_TAG);
             if(position < tanks.length)
                 tanks[position].readFromNBT(tankCompound);
         }
     }
 
-    @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
-    }
+    private LazyOptional<?> lazyOptional = LazyOptional.of(() -> this);
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-            return (T) this;
+            return (LazyOptional<T>) lazyOptional;
         return super.getCapability(capability, facing);
     }
 
@@ -249,7 +249,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
 
     /**
      * Drains fluid out of internal tanks, distribution is left entirely to the IFluidHandler.
-     * <p/>
+     *
      * This method is not Fluid-sensitive.
      *
      * @param maxDrain Maximum amount of fluid to drain.

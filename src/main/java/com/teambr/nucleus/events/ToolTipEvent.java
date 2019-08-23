@@ -2,8 +2,9 @@ package com.teambr.nucleus.events;
 
 import com.teambr.nucleus.common.IToolTipProvider;
 import net.minecraft.block.Block;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class ToolTipEvent {
             List<String> tipList = itemWithTip.getToolTip(event.getItemStack());
             if(tipList != null)
                 for (String tip : tipList)
-                    event.getToolTip().add(tip);
+                    event.getToolTip().add(new StringTextComponent(tip));
         }
     }
 }

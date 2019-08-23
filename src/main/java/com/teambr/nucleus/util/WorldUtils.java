@@ -1,19 +1,16 @@
 package com.teambr.nucleus.util;
 
 import com.teambr.nucleus.common.blocks.IToolable;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.structure.template.Template;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,16 +35,16 @@ public class WorldUtils {
      * @param toTurn Starting point
      * @return The direction turned 90 left
      */
-    public static EnumFacing rotateLeft(EnumFacing toTurn) {
+    public static Direction rotateLeft(Direction toTurn) {
         switch (toTurn) {
             case NORTH :
-                return EnumFacing.WEST;
+                return Direction.WEST;
             case EAST:
-                return EnumFacing.NORTH;
+                return Direction.NORTH;
             case SOUTH:
-                return EnumFacing.EAST;
+                return Direction.EAST;
             case WEST:
-                return EnumFacing.SOUTH;
+                return Direction.SOUTH;
             case UP: // No rotation on y axis
             case DOWN:
             default :
@@ -61,40 +58,21 @@ public class WorldUtils {
      * @param toTurn Starting point
      * @return The direction turned 90 right
      */
-    public static EnumFacing rotateRight(EnumFacing toTurn) {
+    public static Direction rotateRight(Direction toTurn) {
         switch (toTurn) {
             case NORTH :
-                return EnumFacing.EAST;
+                return Direction.EAST;
             case EAST:
-                return EnumFacing.SOUTH;
+                return Direction.SOUTH;
             case SOUTH:
-                return EnumFacing.WEST;
+                return Direction.WEST;
             case WEST:
-                return EnumFacing.NORTH;
+                return Direction.NORTH;
             case UP: // No rotation on y axis
             case DOWN:
             default :
                 return toTurn;
         }
-    }
-
-    /**
-     * Reads the given template, and creates a list of block positions representing the floor. Useful when
-     * you need to fill empty space below a generated structure
-     * @param structure The structure
-     * @return A list of positions (offsets) that represent the bottom layer of the structure
-     */
-    public static List<BlockPos> getMatchingFloor(Template structure) {
-        ArrayList<BlockPos> blockPosList = new ArrayList<>();
-
-        structure.blocks.stream()
-                .filter(blockInfo -> blockInfo.blockState != Blocks.AIR.getDefaultState())
-                .filter(blockInfo -> blockInfo.pos.getY() == 0)
-                .forEach(blockInfo -> {
-            blockPosList.add(blockInfo.pos);
-        });
-
-        return blockPosList;
     }
 
     /**
@@ -142,16 +120,19 @@ public class WorldUtils {
             float ry = world.rand.nextFloat() * 0.8F;
             float rz = world.rand.nextFloat() * 0.8F;
 
-            EntityItem itemEntity = new EntityItem(world,
+            ItemEntity itemEntity = new ItemEntity(world,
                     pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
                     stack.copy());
 
             float factor = 0.05F;
 
-            itemEntity.motionX = world.rand.nextGaussian() * factor;
-            itemEntity.motionY = world.rand.nextGaussian() * factor + 0.2F;
-            itemEntity.motionZ = world.rand.nextGaussian() * factor;
-            world.spawnEntity(itemEntity);
+            itemEntity.setMotion(
+                    world.rand.nextGaussian() * factor,
+                    world.rand.nextGaussian() * factor + 0.2F,
+                    world.rand.nextGaussian() * factor
+            );
+
+            world.addEntity(itemEntity);
 
             stack.setCount(0);
         }
@@ -186,12 +167,12 @@ public class WorldUtils {
         if(world.isRemote) return false;
         if(world.getTileEntity(pos) != null) {
             TileEntity savableTile = world.getTileEntity(pos);
-            NBTTagCompound tag = savableTile.writeToNBT(new NBTTagCompound());
+            CompoundNBT tag = savableTile.write(new CompoundNBT());
             ItemStack stack = block.getStackDroppedByWrench(world, pos);
-            stack.setTagCompound(tag);
+            stack.setTag(tag);
             dropStack(world, stack, pos);
             world.removeTileEntity(pos); // Cancel drop logic
-            world.setBlockToAir(pos);
+            world.removeBlock(pos, false);
             return true;
         }
         return false;
@@ -204,14 +185,14 @@ public class WorldUtils {
      * @param stack The stack that had the tag
      */
     public static void writeStackNBTToBlock(World world, BlockPos pos, ItemStack stack) {
-        if(stack.hasTagCompound()) {
+        if(stack.hasTag()) {
             if(world.getTileEntity(pos) != null) {
                 TileEntity tile = world.getTileEntity(pos);
-                NBTTagCompound tag = stack.getTagCompound();
-                tag.setInteger("x", pos.getX()); // Add back MC tags
-                tag.setInteger("y", pos.getY());
-                tag.setInteger("z", pos.getZ());
-                tile.readFromNBT(tag);
+                CompoundNBT tag = stack.getTag();
+                tag.putInt("x", pos.getX()); // Add back MC tags
+                tag.putInt("y", pos.getY());
+                tag.putInt("z", pos.getZ());
+                tile.read(tag);
             }
         }
     }

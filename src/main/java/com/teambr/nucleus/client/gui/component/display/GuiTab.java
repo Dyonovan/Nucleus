@@ -1,13 +1,13 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.component.NinePatchRenderer;
 import com.teambr.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -39,7 +39,7 @@ public class GuiTab extends BaseComponent {
     protected List<BaseComponent> children;
 
     protected NinePatchRenderer tabRenderer;
-    protected RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
+    protected ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
     /**
      * Creates a Gui Tab
@@ -106,7 +106,7 @@ public class GuiTab extends BaseComponent {
      * @param y Mouse Y Position
      * @param button Mouse Button
      */
-    public boolean mouseDownActivated(int x, int y, int button) {
+    public boolean mouseDownActivated(double x, double y, int button) {
         if(this.mouseEventListener != null)
             this.mouseEventListener.onMouseDown(this, x, y, button);
         if(areChildrenActive()) {
@@ -129,7 +129,7 @@ public class GuiTab extends BaseComponent {
      * @param y Mouse Y Position
      * @param button Mouse Button
      */
-    public boolean mouseUpActivated(int x, int y, int button) {
+    public boolean mouseUpActivated(double x, double y, int button) {
         if(areChildrenActive()) {
             for(BaseComponent component : children){
                 if(component.isMouseOver(x, y)) {
@@ -149,13 +149,12 @@ public class GuiTab extends BaseComponent {
      * @param x Mouse X Position
      * @param y Mouse Y Position
      * @param button Mouse Button
-     * @param time How long
      */
-    public boolean mouseDragActivated(int x, int y, int button, long time) {
+    public boolean mouseDragActivated(double x, double y, int button, double xAmount, double yAmount) {
         if(areChildrenActive()) {
             for(BaseComponent component : children){
                 if(component.isMouseOver(x, y)) {
-                    component.mouseDrag(x, y, button, time);
+                    component.mouseDrag(x, y, button, xAmount, yAmount);
                     return true;
                 }
             }

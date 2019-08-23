@@ -1,9 +1,9 @@
 package com.teambr.nucleus.util;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.Hand;
 
 /**
  * This file was created for Nucleus
@@ -23,8 +23,8 @@ public class PlayerUtils {
      * @param item The item to check
      * @return True if either hand contains the item
      */
-    public static boolean isPlayerHoldingEither(EntityPlayer player, Item item) {
-        return !(player == null || item == null || player.getHeldEquipment() == null) &&
+    public static boolean isPlayerHoldingEither(PlayerEntity player, Item item) {
+        return !(player == null || item == null) &&
                 ((!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() == item) ||
                         (!player.getHeldItemOffhand().isEmpty() && player.getHeldItemOffhand().getItem() == item));
     }
@@ -34,13 +34,13 @@ public class PlayerUtils {
      * @param stack The object
      * @return What hand its in
      */
-    public static EnumHand getHandStackIsIn(EntityPlayer player, ItemStack stack) {
+    public static Hand getHandStackIsIn(PlayerEntity player, ItemStack stack) {
         if(player == null || stack.isEmpty())
-            return EnumHand.MAIN_HAND;
+            return Hand.MAIN_HAND;
 
         if(!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().equals(stack))
-            return EnumHand.MAIN_HAND;
+            return Hand.MAIN_HAND;
         else
-            return EnumHand.OFF_HAND;
+            return Hand.OFF_HAND;
     }
 }

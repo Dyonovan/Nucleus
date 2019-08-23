@@ -21,7 +21,7 @@ public interface IMouseEventListener {
      * @param mouseY Y position of the mouse
      * @param button Which button was clicked
      */
-    void onMouseDown(BaseComponent component, int mouseX, int mouseY, int button);
+    void onMouseDown(BaseComponent component, double mouseX, double mouseY, int button);
 
     /**
      * Called when the mouse releases the component
@@ -30,7 +30,7 @@ public interface IMouseEventListener {
      * @param mouseY Y position of the mouse
      * @param button Which button was clicked
      */
-    void onMouseUp(BaseComponent component, int mouseX, int mouseY, int button);
+    void onMouseUp(BaseComponent component, double mouseX, double mouseY, int button);
 
     /**
      * Called when the mouse drags an item
@@ -38,7 +38,6 @@ public interface IMouseEventListener {
      * @param mouseX X position of the mouse
      * @param mouseY Y position of the mouse
      * @param button Which button was clicked
-     * @param time How long its been clicked
      */
-    void onMouseDrag(BaseComponent component, int mouseX, int mouseY, int button, long time);
+    void onMouseDrag(BaseComponent component, double mouseX, double mouseY, int button, double xDragAmount, double yDragAmount);
 }

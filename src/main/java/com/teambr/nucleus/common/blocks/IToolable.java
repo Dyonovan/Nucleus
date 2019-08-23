@@ -1,11 +1,9 @@
 package com.teambr.nucleus.common.blocks;
 
 import com.teambr.nucleus.util.WorldUtils;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -34,22 +32,15 @@ public interface IToolable {
 
     /**
      * Called when a wrench clicks on this block
-     * @param stack The stack clicking on this block, an INSTANCE of IToolWrench
-     * @param player The player clicking
-     * @param world The world
-     * @param pos The block pos (us)
-     * @param hand The player's hand
-     * @param facing Which face was clicked
-     * @param hitX X hit
-     * @param hitY Y hit
-     * @param hitZ Z hit
+     * @param context Use info
      * @return The result, pass to send to next, success to end
      */
-    default EnumActionResult onWrench(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumHand hand,
-                                      EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if(player.isSneaking() && WorldUtils.breakBlockSavingNBT(world, pos, (IToolable) world.getBlockState(pos).getBlock()))
-            return EnumActionResult.SUCCESS;
+    @SuppressWarnings("ConstantConditions")
+    default ActionResultType onWrench(ItemUseContext context) {
+        if(context.getPlayer().isSneaking() && WorldUtils.breakBlockSavingNBT(context.getWorld(),
+                context.getPos(), (IToolable) context.getWorld().getBlockState(context.getPos()).getBlock()))
+            return ActionResultType.SUCCESS;
         else
-            return EnumActionResult.FAIL;
+            return ActionResultType.FAIL;
     }
 }

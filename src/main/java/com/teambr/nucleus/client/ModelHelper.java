@@ -1,14 +1,10 @@
 package com.teambr.nucleus.client;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.common.model.IModelPart;
 import net.minecraftforge.common.model.IModelState;
@@ -36,8 +32,8 @@ public class ModelHelper {
     public static final TRSRTransformation BLOCK_THIRD_PERSON_RIGHT;
     public static final TRSRTransformation BLOCK_THIRD_PERSON_LEFT;
 
-    public static TextureAtlasSprite getTextureFromBlockstate(IBlockState state) {
-        return Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
+    public static TextureAtlasSprite getTextureFromBlockstate(BlockState state) {
+        return Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state);
     }
 
     private static TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s) {
@@ -76,14 +72,5 @@ public class ModelHelper {
             BLOCK_THIRD_PERSON_RIGHT = get(0, 2.5f, 0, 75, 45, 0, 0.375f);
             BLOCK_THIRD_PERSON_LEFT = get(0, 0, 0, 0, 255, 0, 0.4f);
         }
-    }
-
-    public static void registerSimpleRenderBlock(Block block) {
-        registerSimpleRenderItem(Item.getItemFromBlock(block));
-    }
-
-    public static void registerSimpleRenderItem(Item item) {
-        if (item != null)
-            ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
     }
 }

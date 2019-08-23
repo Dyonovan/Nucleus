@@ -1,7 +1,11 @@
 package com.teambr.nucleus.common.container;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
+
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.ContainerType;
+
+import javax.annotation.Nullable;
 
 /**
  * This file was created for Nucleus
@@ -14,8 +18,12 @@ import net.minecraft.inventory.Container;
  * @since 2/13/2017
  */
 public class ContainerGeneric extends Container {
+    protected ContainerGeneric(@Nullable ContainerType<?> type, int id) {
+        super(type, id);
+    }
+
     @Override
-    public boolean canInteractWith(EntityPlayer playerIn) {
+    public boolean canInteractWith(PlayerEntity playerIn) {
         return true;
     }
 }

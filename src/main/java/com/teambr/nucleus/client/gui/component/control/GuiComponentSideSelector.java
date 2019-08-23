@@ -1,33 +1,34 @@
 package com.teambr.nucleus.client.gui.component.control;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.misc.SidePicker;
 import com.teambr.nucleus.client.gui.misc.TrackballWrapper;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.util.List;
+import java.util.Random;
 
 /**
  * This file was created for Nucleus
@@ -39,16 +40,17 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
+@SuppressWarnings("IntegerDivisionInFloatingPointContext")
 public abstract class GuiComponentSideSelector extends BaseComponent {
     // Variables
     protected double scale;
-    protected IBlockState blockState;
+    protected BlockState blockState;
     protected TileEntity tile;
     protected boolean highListSelectedSides, renderTile;
     protected int diameter;
     protected boolean isInInitialPosition = false;
     protected TrackballWrapper trackball;
-    protected EnumFacing lastSideHovered;
+    protected Direction lastSideHovered;
 
     /**
      * Creates the side selector object
@@ -62,7 +64,7 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
      * @param doRenderTile Render the tile?
      */
     public GuiComponentSideSelector(GuiBase<?> parent, int x, int y,
-                                    double scaleValue, @Nullable IBlockState state, @Nullable TileEntity tileEntity,
+                                    double scaleValue, @Nullable BlockState state, @Nullable TileEntity tileEntity,
                                     boolean doHighlights, boolean doRenderTile) {
         super(parent, x, y);
         this.scale = scaleValue;
@@ -88,7 +90,7 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
      *                 1 : Shift Click (you should set to default or disabled)
      *                 2 : Control Click (you should go backward)
      */
-    protected abstract void onSideToggled(EnumFacing side, int modifier);
+    protected abstract void onSideToggled(Direction side, int modifier);
 
     /**
      * This is used to color the highlight. Use whatever mode you have for each side and get the color that should
@@ -105,7 +107,7 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
      * @return The color that should be rendered, or null for no color
      */
     @Nullable
-    protected abstract Color getColorForMode(EnumFacing side);
+    protected abstract Color getColorForMode(Direction side);
 
     /*******************************************************************************************************************
      * BaseComponent                                                                                                   *
@@ -119,8 +121,9 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseDown(int x, int y, int button) {
+    public boolean mouseClicked(double x, double y, int button) {
         lastSideHovered = null;
+        return false;
     }
 
     /**
@@ -131,9 +134,10 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseUp(int x, int y, int button) {
+    public boolean mouseReleased(double x, double y, int button) {
         if(button == 0 && lastSideHovered != null)
             onSideToggled(lastSideHovered, ClientUtils.isShiftPressed() ? 1 : (ClientUtils.isCtrlPressed() ? 2 : 0));
+        return false;
     }
 
     /**
@@ -141,9 +145,10 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
      */
     @Override
     public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
-        if(!isInInitialPosition || Mouse.isButtonDown(2)) {
-            Entity renderViewEntity = Minecraft.getMinecraft().getRenderViewEntity();
-            trackball.setTransform(RenderUtils.createEntityRotateMatrix(renderViewEntity));
+        if(!isInInitialPosition || Minecraft.getInstance().mouseHelper.isRightDown()) {
+            Entity renderViewEntity = Minecraft.getInstance().getRenderViewEntity();
+            if(renderViewEntity != null)
+                trackball.setTransform(RenderUtils.createEntityRotateMatrix(renderViewEntity));
             isInInitialPosition = true;
         }
 
@@ -151,8 +156,8 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
         int height = getHeight();
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(xPos + width / 2, yPos + height / 2, (float) diameter);
-        GlStateManager.scale(scale, -scale, scale);
+        GlStateManager.translated(xPos + width / 2, yPos + height / 2, (float) diameter);
+        GlStateManager.scaled(scale, -scale, scale);
         trackball.update(mouseX - width, -(mouseY - height));
 
         if(blockState != null)
@@ -166,11 +171,11 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
         List<Pair<SidePicker.Side, Color>> selections = Lists.newArrayListWithCapacity(6 + 1);
         SidePicker.HitCoord hitCoord = picker.getNearestHit();
         if(hitCoord != null)
-            selections.add(Pair.of(hitCoord.side, getColorForMode(hitCoord.side.toEnumFacing())));
+            selections.add(Pair.of(hitCoord.side, getColorForMode(hitCoord.side.toDirection())));
 
         if(highListSelectedSides) {
-            for(EnumFacing dir : EnumFacing.values()) {
-                selections.add(Pair.of(SidePicker.Side.fromEnumFacing(dir),
+            for(Direction dir : Direction.values()) {
+                selections.add(Pair.of(SidePicker.Side.fromDirection(dir),
                         getColorForMode(dir) != null ? getColorForMode(dir) : new Color(0, 0, 0, 0)));
             }
         }
@@ -178,7 +183,7 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
         if(selections != null)
             drawHighlights(selections);
 
-        lastSideHovered = hitCoord == null ? null : hitCoord.side.toEnumFacing();
+        lastSideHovered = hitCoord == null ? null : hitCoord.side.toDirection();
 
         GlStateManager.popMatrix();
     }
@@ -188,7 +193,7 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
      */
     @Override
     public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
-       // No Op
+        // No Op
     }
 
     /**
@@ -221,15 +226,16 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
     private void drawBlock() {
         Tessellator tessellator = Tessellator.getInstance();
         GlStateManager.pushMatrix();
-        GlStateManager.translate(-0.5, -0.5, -0.5);
+        GlStateManager.translated(-0.5, -0.5, -0.5);
 
         BufferBuilder vertexBuffer = tessellator.getBuffer();
         vertexBuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 
-        BlockRendererDispatcher dispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
+        BlockRendererDispatcher dispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
         IBakedModel model = dispatcher.getModelForState(blockState);
-        dispatcher.getBlockModelRenderer().renderModel(tile.getWorld(), model,
-                blockState, new BlockPos(0, 0, 0), vertexBuffer, false);
+        if(tile.getWorld() != null)
+            dispatcher.getBlockModelRenderer().renderModel(tile.getWorld(), model,
+                    blockState, new BlockPos(0, 0, 0), vertexBuffer, false, new Random(), 0,  EmptyModelData.INSTANCE);
         vertexBuffer.setTranslation(0.0, 0.0, 0.0);
         tessellator.draw();
         GlStateManager.popMatrix();
@@ -243,9 +249,8 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
         GlStateManager.disableLighting();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.disableDepth();
-        GlStateManager.disableTexture2D();
+        GlStateManager.enableAlphaTest();
+        GlStateManager.disableDepthTest();
 
         GL11.glBegin(GL11.GL_QUADS);
         for(Pair<SidePicker.Side, Color> pair : selections) {
@@ -296,8 +301,7 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
         GL11.glEnd();
 
         GlStateManager.disableBlend();
-        GlStateManager.enableDepth();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepthTest();
     }
 
     /*******************************************************************************************************************
@@ -313,11 +317,11 @@ public abstract class GuiComponentSideSelector extends BaseComponent {
         this.diameter = MathHelper.ceil(scale * Math.sqrt(3));
     }
 
-    public IBlockState getBlockState() {
+    public BlockState getBlockState() {
         return blockState;
     }
 
-    public void setBlockState(IBlockState blockState) {
+    public void setBlockState(BlockState blockState) {
         this.blockState = blockState;
     }
 

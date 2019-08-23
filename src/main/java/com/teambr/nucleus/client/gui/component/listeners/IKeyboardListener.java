@@ -20,5 +20,5 @@ public interface IKeyboardListener {
      * @param character The character pressed
      * @param keyCode The key code
      */
-    void keyTyped(BaseComponent component, char character, int keyCode);
+    void charTyped(BaseComponent component, char character, int keyCode);
 }

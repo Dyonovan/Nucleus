@@ -1,15 +1,11 @@
 package com.teambr.nucleus.common.blocks;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.util.Direction;
 
 import java.util.Arrays;
 
@@ -23,19 +19,19 @@ import java.util.Arrays;
  * @author Paul Davis - pauljoda
  * @since 2/9/2017
  */
-public class BlockFourWayRotating extends RegisterableBlock {
+public class BlockFourWayRotating extends Block {
 
     // Instance of the property for rotation
-    public static PropertyDirection FOUR_WAY =
-            PropertyDirection.create("facing", Arrays.asList(EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.SOUTH, EnumFacing.WEST));
+    public static DirectionProperty FOUR_WAY =
+            DirectionProperty.create("facing", Arrays.asList(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST));
 
 
     /**
      * Main constructor for the block
-     * @param materialIn The material of the block
      */
-    public BlockFourWayRotating(Material materialIn) {
-        super(materialIn);
+    public BlockFourWayRotating(Properties props) {
+        super(props);
+        setDefaultState(getStateContainer().getBaseState().with(FOUR_WAY, Direction.NORTH));
     }
 
     /*******************************************************************************************************************
@@ -43,38 +39,25 @@ public class BlockFourWayRotating extends RegisterableBlock {
      *******************************************************************************************************************/
 
     /**
-     * Called when the block is placed
-     * @param worldIn The world
-     * @param pos The block position
-     * @param state The block state
-     * @param placer Who placed the block
-     * @param stack The stack that was the block
+     * Called when placing block to determine direction
+     * @param context Item use
+     * @return State for placement
      */
-    @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-        int playerFacingDirection = placer == null ? 0 : MathHelper.floor((placer.rotationYaw / 90.F) + 0.5F) & 3;
-        EnumFacing facing = EnumFacing.getHorizontal(playerFacingDirection).getOpposite();
-        worldIn.setBlockState(pos, getDefaultState().withProperty(FOUR_WAY, facing));
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
+        return this.getDefaultState().with(FOUR_WAY, context.getPlacementHorizontalFacing().getOpposite());
     }
 
+
     /*******************************************************************************************************************
-     * BlockState Methods                                                                                              *
+     * Blockstate properties                                                                                           *
      *******************************************************************************************************************/
 
     /**
-     * Convert the BlockState into the correct metadata value
+     * Add properties to our block on load
+     * @param builder Property holder
      */
     @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FOUR_WAY).getIndex();
-    }
-
-    /**
-     * Creates the block state with our properties
-     * @return The block state
-     */
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, FOUR_WAY);
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        builder.add(FOUR_WAY); // Add rotation
     }
 }

@@ -1,22 +1,22 @@
 package com.teambr.nucleus.helper;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
+import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import org.lwjgl.opengl.GL11;
 
-import static net.minecraft.client.renderer.vertex.VertexFormatElement.EnumType;
-import static net.minecraft.client.renderer.vertex.VertexFormatElement.EnumUsage;
+import static net.minecraft.client.renderer.vertex.VertexFormatElement.Type.FLOAT;
+import static net.minecraft.client.renderer.vertex.VertexFormatElement.Usage.NORMAL;
 
 /**
  * This file was created for Nucleus - Java
@@ -38,8 +38,8 @@ public class GuiHelper {
      * Used to play the button sound in a GUI
      */
     public static void playButtonSound() {
-        Minecraft.getMinecraft().getSoundHandler()
-                .playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        Minecraft.getInstance().getSoundHandler()
+                .play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
     /*******************************************************************************************************************
@@ -54,7 +54,7 @@ public class GuiHelper {
         float red   = (color >> 16 & 255) / 255F;
         float green = (color >> 8 & 255) / 255F;
         float blue  = (color & 255) / 255F;
-        GlStateManager.color(red, green, blue, 1.0F);
+        GlStateManager.color4f(red, green, blue, 1.0F);
     }
 
     /**
@@ -72,7 +72,7 @@ public class GuiHelper {
         BufferBuilder renderer = tess.getBuffer();
 
         VertexFormat POSITION_TEXT_NORMAL_F = new VertexFormat();
-        VertexFormatElement NORMAL_3F = new VertexFormatElement(0, EnumType.FLOAT, EnumUsage.NORMAL, 3);
+        VertexFormatElement NORMAL_3F = new VertexFormatElement(0, FLOAT, NORMAL, 3);
         POSITION_TEXT_NORMAL_F.addElement(DefaultVertexFormats.POSITION_3F);
         POSITION_TEXT_NORMAL_F.addElement(DefaultVertexFormats.TEX_2F);
         POSITION_TEXT_NORMAL_F.addElement(NORMAL_3F);
@@ -98,7 +98,7 @@ public class GuiHelper {
         if(fluid != null) {
             GL11.glPushMatrix();
             int level = (fluid.amount * maxHeight) / tank.getCapacity();
-            TextureAtlasSprite icon = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(fluid.getFluid().getStill(fluid).toString());
+            TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap().getAtlasSprite(fluid.getFluid().getStill(fluid).toString());
             RenderUtils.bindMinecraftBlockSheet();
             setGLColorFromInt(fluid.getFluid().getColor(fluid));
 
@@ -142,7 +142,7 @@ public class GuiHelper {
      *          -----------------(C,D)
      * @return True if in bounds
      */
-    public static boolean isInBounds(int x, int y, int a, int b, int c, int d) {
+    public static boolean isInBounds(double x, double y, int a, int b, int c, int d) {
         return x >= a && x <= c && y >= b && y <= d;
     }
 }

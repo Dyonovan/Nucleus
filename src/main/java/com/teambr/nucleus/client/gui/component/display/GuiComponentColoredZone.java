@@ -1,9 +1,9 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -61,10 +61,10 @@ public class GuiComponentColoredZone extends BaseComponent {
         GlStateManager.disableLighting();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableBlend();
-        GlStateManager.enableAlpha();
-        GlStateManager.disableDepth();
-        GlStateManager.disableTexture2D();
-        GlStateManager.translate(xPos, yPos, 10);
+        GlStateManager.enableAlphaTest();
+        GlStateManager.disableDepthTest();
+        GlStateManager.disableTexture();
+        GlStateManager.translated(xPos, yPos, 10);
         RenderUtils.setColor(color);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex3d(0, 0, 0);
@@ -73,8 +73,8 @@ public class GuiComponentColoredZone extends BaseComponent {
         GL11.glVertex3d(width, 0, 0);
         GL11.glEnd();
         GlStateManager.disableBlend();
-        GlStateManager.enableDepth();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepthTest();
+        GlStateManager.enableTexture();
         GlStateManager.popMatrix();
     }
 

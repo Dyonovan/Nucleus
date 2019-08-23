@@ -1,6 +1,6 @@
 package com.teambr.nucleus.util;
 
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -27,34 +27,34 @@ public class BlockUtils {
      * @param world             {@link net.minecraft.world.World}
      * @return                  An {@link ArrayList} of {@link net.minecraft.util.math.BlockPos}
      */
-    public static List<BlockPos> getBlockList(int size, EnumFacing facing, BlockPos pos, World world) {
+    public static List<BlockPos> getBlockList(int size, Direction facing, BlockPos pos, World world) {
 
         BlockPos pos1;
         BlockPos pos2;
         List<BlockPos> actualList = new ArrayList<>();
 
         if (facing.getAxis().isHorizontal()) {
-            if (facing == EnumFacing.NORTH || facing == EnumFacing.SOUTH) {
-                pos1 = pos.offset(EnumFacing.UP, size).offset(EnumFacing.EAST, size);
-                pos2 = pos.offset(EnumFacing.DOWN, size).offset(EnumFacing.WEST, size);
+            if (facing == Direction.NORTH || facing == Direction.SOUTH) {
+                pos1 = pos.offset(Direction.UP, size).offset(Direction.EAST, size);
+                pos2 = pos.offset(Direction.DOWN, size).offset(Direction.WEST, size);
             } else {
-                pos1 = pos.offset(EnumFacing.UP, size).offset(EnumFacing.SOUTH, size);
-                pos2 = pos.offset(EnumFacing.DOWN, size).offset(EnumFacing.NORTH, size);
+                pos1 = pos.offset(Direction.UP, size).offset(Direction.SOUTH, size);
+                pos2 = pos.offset(Direction.DOWN, size).offset(Direction.NORTH, size);
             }
 
             while(pos2.getY() < pos.getY() - 1) {
-                pos1 = pos1.offset(EnumFacing.UP);
-                pos2 = pos2.offset(EnumFacing.UP);
+                pos1 = pos1.offset(Direction.UP);
+                pos2 = pos2.offset(Direction.UP);
             }
         } else {
-            pos1 = pos.offset(EnumFacing.NORTH, size).offset(EnumFacing.WEST, size);
-            pos2 = pos.offset(EnumFacing.SOUTH, size).offset(EnumFacing.EAST, size);
+            pos1 = pos.offset(Direction.NORTH, size).offset(Direction.WEST, size);
+            pos2 = pos.offset(Direction.SOUTH, size).offset(Direction.EAST, size);
         }
 
-        for (BlockPos blockPos : BlockPos.getAllInBox(pos1, pos2)) {
+        BlockPos.getAllInBox(pos1, pos2).forEach((blockPos) -> {
             if (!world.isAirBlock(blockPos))
                 actualList.add(blockPos);
-        }
+        });
 
         return actualList;
     }

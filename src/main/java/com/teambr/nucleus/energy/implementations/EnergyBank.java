@@ -3,7 +3,7 @@ package com.teambr.nucleus.energy.implementations;
 import com.teambr.nucleus.energy.IEnergyHolder;
 import com.teambr.nucleus.energy.IEnergyProvider;
 import com.teambr.nucleus.energy.IEnergyReceiver;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * This file was created for Lux et Umbra
@@ -12,7 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
- * @author Paul Davis <pauljoda>
+ * @author Paul Davis (pauljoda)
  * @since 9/2/2016
  */
 public class EnergyBank implements IEnergyHolder, IEnergyProvider, IEnergyReceiver {
@@ -199,14 +199,14 @@ public class EnergyBank implements IEnergyHolder, IEnergyProvider, IEnergyReceiv
      * @param tag The incoming tag
      * @return The written tag
      */
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+    public CompoundNBT writeToNBT(CompoundNBT tag) {
         // Write storage values
-        tag.setInteger(ENERGY_NBT_TAG, currentStored);
-        tag.setInteger(ENERGY_CAPACITY_NBT_TAG,     maxStored);
+        tag.putInt(ENERGY_NBT_TAG, currentStored);
+        tag.putInt(ENERGY_CAPACITY_NBT_TAG,     maxStored);
 
         // IO values
-        tag.setInteger(ENERGY_MAX_RECIEVE_NBT_TAG,     maxInsert);
-        tag.setInteger(ENERGY_MAX_EXTRACT_NBT_TAG,     maxExtract);
+        tag.putInt(ENERGY_MAX_RECIEVE_NBT_TAG,     maxInsert);
+        tag.putInt(ENERGY_MAX_EXTRACT_NBT_TAG,     maxExtract);
         return tag;
     }
 
@@ -214,13 +214,13 @@ public class EnergyBank implements IEnergyHolder, IEnergyProvider, IEnergyReceiv
      * Read from the tag
      * @param tag The written tag
      */
-    public void readFromNBT(NBTTagCompound tag) {
+    public void readFromNBT(CompoundNBT tag) {
         // Read Storage Values
-        currentStored = tag.getInteger(ENERGY_NBT_TAG);
-        maxStored     = tag.getInteger(ENERGY_CAPACITY_NBT_TAG);
+        currentStored = tag.getInt(ENERGY_NBT_TAG);
+        maxStored     = tag.getInt(ENERGY_CAPACITY_NBT_TAG);
 
         // Read IO values
-        maxInsert     = tag.getInteger(ENERGY_MAX_RECIEVE_NBT_TAG);
-        maxExtract    = tag.getInteger(ENERGY_MAX_EXTRACT_NBT_TAG);
+        maxInsert     = tag.getInt(ENERGY_MAX_RECIEVE_NBT_TAG);
+        maxExtract    = tag.getInt(ENERGY_MAX_EXTRACT_NBT_TAG);
     }
 }

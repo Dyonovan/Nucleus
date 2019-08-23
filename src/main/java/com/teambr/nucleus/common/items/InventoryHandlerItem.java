@@ -3,11 +3,12 @@ package com.teambr.nucleus.common.items;
 import com.teambr.nucleus.common.container.IInventoryCallback;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -42,7 +43,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      *
      * @param stack Stack to attach to
      */
-    public InventoryHandlerItem(ItemStack stack, NBTTagCompound compound) {
+    public InventoryHandlerItem(ItemStack stack, CompoundNBT compound) {
         heldStack = stack;
         readFromNBT(compound);
         checkStackTag();
@@ -90,7 +91,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      */
     protected void onInventoryChanged(int slot) {
         callBacks.forEach((IInventoryCallback callback) -> callback.onInventoryChanged(this, slot));
-        writeToNBT(heldStack.getTagCompound());
+        writeToNBT(heldStack.getTag());
     }
 
     /**
@@ -124,11 +125,11 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      */
     protected void checkStackTag() {
         // Give the stack a tag
-        if (!heldStack.hasTagCompound()) {
-            heldStack.setTagCompound(new NBTTagCompound());
-            writeToNBT(heldStack.getTagCompound());
+        if (!heldStack.hasTag()) {
+            heldStack.setTag(new CompoundNBT());
+            writeToNBT(heldStack.getTag());
         } else
-            readFromNBT(heldStack.getTagCompound());
+            readFromNBT(heldStack.getTag());
     }
 
     /**
@@ -136,7 +137,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      *
      * @param compound The tag to save to
      */
-    public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+    public CompoundNBT writeToNBT(CompoundNBT compound) {
         ItemStackHelper.saveAllItems(compound, inventoryContents);
         return compound;
     }
@@ -146,7 +147,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      *
      * @param compound The tag to read from
      */
-    public void readFromNBT(NBTTagCompound compound) {
+    public void readFromNBT(CompoundNBT compound) {
         if (compound != null)
             ItemStackHelper.loadAllItems(compound, inventoryContents);
     }
@@ -199,12 +200,11 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      * If the result is null, then the slot is empty.
      * If the result is not null but the stack size is zero, then it represents
      * an empty slot that will only accept* a specific itemstack.
-     * <p>
-     * <p/>
+     *
      * IMPORTANT: This ItemStack MUST NOT be modified. This method is not for
      * altering an inventories contents. Any implementers who are able to detect
      * modification through this method should throw an exception.
-     * <p/>
+     *
      * SERIOUSLY: DO NOT MODIFY THE RETURNED ITEMSTACK
      *
      * @param slot Slot to query
@@ -322,25 +322,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      * ICapabilityProvider                                                                                             *
      *******************************************************************************************************************/
 
-    /**
-     * Determines if this object has support for the capability in question on the specific side.
-     * The return value of this MIGHT change during runtime if this object gains or looses support
-     * for a capability.
-     * <p>
-     * Example:
-     * A Pipe getting a cover placed on one side causing it loose the Inventory attachment function for that side.
-     * <p>
-     * This is a light weight version of getCapability, intended for metadata uses.
-     *
-     * @param capability The capability to check
-     * @param facing     The Side to check from:
-     *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
-     * @return True if this object supports the capability.
-     */
-    @Override
-    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
-    }
+    private LazyOptional<?> capabilityItemHandler = LazyOptional.of(() -> this);
 
     /**
      * Retrieves the handler for the capability requested on the specific side.
@@ -350,14 +332,14 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      * @param capability The capability to check
      * @param facing     The Side to check from:
      *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
-     * @return The requested capability. Returns null when {@link #hasCapability(Capability, EnumFacing)} would return false.
+     * @return The requested capability. Returns null when hasCapability(Capability, EnumFacing) would return false.
      */
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return (T) this;
-        return null;
+            return (LazyOptional<T>) capabilityItemHandler;
+        return LazyOptional.empty();
     }
 }

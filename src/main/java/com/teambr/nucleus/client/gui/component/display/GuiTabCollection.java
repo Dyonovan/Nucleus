@@ -1,10 +1,10 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.component.listeners.IMouseEventListener;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -172,7 +172,7 @@ public class GuiTabCollection extends BaseComponent {
         for(GuiTab tab : tabs) {
             GlStateManager.pushMatrix();
             RenderUtils.prepareRenderState();
-            GlStateManager.translate(tab.getXPos(), tab.getYPos(), 0);
+            GlStateManager.translated(tab.getXPos(), tab.getYPos(), 0);
             tab.render(0, 0, mouseX - tab.getXPos(), mouseY - tab.getYPos());
             tab.moveSlots();
             RenderUtils.restoreRenderState();
@@ -189,7 +189,7 @@ public class GuiTabCollection extends BaseComponent {
         for(GuiTab tab : tabs) {
             GlStateManager.pushMatrix();
             RenderUtils.prepareRenderState();
-            GlStateManager.translate(tab.getXPos(), tab.getYPos(), 0);
+            GlStateManager.translated(tab.getXPos(), tab.getYPos(), 0);
             tab.renderOverlay(0, 0, mouseX, mouseY);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
@@ -246,7 +246,7 @@ public class GuiTabCollection extends BaseComponent {
          * @param button Which button was clicked
          */
         @Override
-        public void onMouseDown(BaseComponent component, int mouseX, int mouseY, int button) {
+        public void onMouseDown(BaseComponent component, double mouseX, double mouseY, int button) {
             for(int i = 0; i < tabs.size(); i++) {
                 GuiTab tab = tabs.get(i);
                 if(tab.isMouseOver(mouseX, mouseY)) {
@@ -286,7 +286,7 @@ public class GuiTabCollection extends BaseComponent {
          * @param button Which button was clicked
          */
         @Override
-        public void onMouseUp(BaseComponent component, int mouseX, int mouseY, int button) {
+        public void onMouseUp(BaseComponent component, double mouseX, double mouseY, int button) {
             for(int i = 0; i < tabs.size(); i++) {
                 GuiTab tab = tabs.get(i);
                 if(tab.isMouseOver(mouseX, mouseY)) {
@@ -303,15 +303,14 @@ public class GuiTabCollection extends BaseComponent {
          * @param mouseX X position of the mouse
          * @param mouseY Y position of the mouse
          * @param button Which button was clicked
-         * @param time How long its been clicked
          */
         @Override
-        public void onMouseDrag(BaseComponent component, int mouseX, int mouseY, int button, long time) {
+        public void onMouseDrag(BaseComponent component, double mouseX, double mouseY, int button, double xAmount, double yAmount) {
             for(int i = 0; i < tabs.size(); i++) {
                 GuiTab tab = tabs.get(i);
                 if(tab.isMouseOver(mouseX, mouseY)) {
                     tab.mouseDragActivated((tab instanceof GuiReverseTab) ? mouseX + tab.expandedWidth - 5 : mouseX - parent.getXSize() + 5,
-                            mouseY - (i * 24) - 2, button, time);
+                            mouseY - (i * 24) - 2, button, xAmount, yAmount);
                     return;
                 }
             }

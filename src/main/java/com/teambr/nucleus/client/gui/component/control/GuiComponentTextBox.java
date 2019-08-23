@@ -1,10 +1,11 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.ClientUtils;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -22,7 +23,7 @@ import javax.annotation.Nullable;
 public abstract class GuiComponentTextBox extends BaseComponent {
     // Variables
     protected int width, height;
-    protected GuiTextField textField;
+    protected TextFieldWidget textField;
 
     /**
      * Creates the text box
@@ -38,9 +39,8 @@ public abstract class GuiComponentTextBox extends BaseComponent {
         this.width = boxWidth;
         this.height = boxHeight;
 
-        textField = new GuiTextField(0, fontRenderer, x, y, width, height);
-        if(defaultLabel != null)
-            textField.setText(ClientUtils.translate(defaultLabel));
+        textField = new TextFieldWidget(fontRenderer, x, y, width, height, defaultLabel);
+        textField.setText(ClientUtils.translate(defaultLabel));
     }
 
     /*******************************************************************************************************************
@@ -64,12 +64,13 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * @param button Mouse Button
      */
     @Override
-    public void mouseDown(int x, int y, int button) {
+    public boolean mouseClicked(double x, double y, int button) {
         textField.mouseClicked(x, y, button);
         if(button == 1  && textField.isFocused()) {
             textField.setText("");
             fieldUpdated(textField.getText());
         }
+        return false;
     }
 
     /**
@@ -78,11 +79,12 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * @param keyCode The code
      */
     @Override
-    public void keyTyped(char letter, int keyCode) {
+    public boolean charTyped(char letter, int keyCode) {
         if(textField.isFocused()) {
-            textField.textboxKeyTyped(letter, keyCode);
+            textField.charTyped(letter, keyCode);
             fieldUpdated(textField.getText());
         }
+        return false;
     }
 
 
@@ -92,8 +94,8 @@ public abstract class GuiComponentTextBox extends BaseComponent {
     @Override
     public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        textField.drawTextBox();
-        GlStateManager.disableAlpha();
+        textField.render(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
+        GlStateManager.disableAlphaTest();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GlStateManager.popMatrix();
     }
@@ -130,11 +132,11 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * Accessors/Mutators                                                                                              *
      *******************************************************************************************************************/
 
-    public GuiTextField getTextField() {
+    public TextFieldWidget getTextField() {
         return textField;
     }
 
-    public void setTextField(GuiTextField textField) {
+    public void setTextField(TextFieldWidget textField) {
         this.textField = textField;
     }
 }

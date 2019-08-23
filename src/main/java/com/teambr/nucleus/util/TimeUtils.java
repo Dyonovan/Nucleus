@@ -1,7 +1,8 @@
 package com.teambr.nucleus.util;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * This file was created for Nucleus
@@ -73,6 +74,6 @@ public class TimeUtils {
     @SubscribeEvent
     public void onWorldTick(TickEvent.WorldTickEvent worldTick) {
         if(worldTick.phase == TickEvent.Phase.END)
-            tick = worldTick.world.getTotalWorldTime();
+            tick = worldTick.world.getGameTime();
     }
 }

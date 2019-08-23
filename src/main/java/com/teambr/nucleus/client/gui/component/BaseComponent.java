@@ -5,10 +5,9 @@ import com.teambr.nucleus.client.gui.component.listeners.IKeyboardListener;
 import com.teambr.nucleus.client.gui.component.listeners.IMouseEventListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.RenderHelper;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -25,7 +24,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class BaseComponent extends Gui {
+public abstract class BaseComponent extends Screen {
     // Variables
     protected int xPos, yPos;
     protected GuiBase<?> parent;
@@ -35,7 +34,11 @@ public abstract class BaseComponent extends Gui {
     protected IMouseEventListener mouseEventListener;
     protected IKeyboardListener   keyboardEventListener;
 
-    protected FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+    protected FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+
+    public BaseComponent(GuiBase<?> parentGui,int x, int y) {
+        this(parentGui, new StringTextComponent("neotech:component"), x, y);
+    }
 
     /**
      * Main constructor for all components
@@ -43,7 +46,8 @@ public abstract class BaseComponent extends Gui {
      * @param x The x position
      * @param y The y position
      */
-    public BaseComponent(GuiBase<?> parentGui, int x, int y) {
+    public BaseComponent(GuiBase<?> parentGui, ITextComponent titleIn, int x, int y) {
+        super(titleIn);
         parent = parentGui;
         xPos = x;
         yPos = y;
@@ -100,9 +104,9 @@ public abstract class BaseComponent extends Gui {
      */
     public void renderToolTip(int mouseX, int mouseY) {
         if(toolTip != null && !toolTip.isEmpty())
-            drawHoveringText(toolTip, mouseX, mouseY, Minecraft.getMinecraft().fontRenderer);
+            renderTooltip(toolTip, mouseX, mouseY, Minecraft.getInstance().fontRenderer);
         else if(getDynamicToolTip(mouseX, mouseY) != null)
-            drawHoveringText(getDynamicToolTip(mouseX, mouseY), mouseX, mouseY, Minecraft.getMinecraft().fontRenderer);
+            renderTooltip(getDynamicToolTip(mouseX, mouseY), mouseX, mouseY, Minecraft.getInstance().fontRenderer);
 
     }
 
@@ -124,7 +128,7 @@ public abstract class BaseComponent extends Gui {
      * @param y Mouse Y Position
      * @param button Mouse Button
      */
-    public void mouseDown(int x, int y, int button) {
+    public void mouseDown(double x, double y, int button) {
         if(mouseEventListener != null)
             mouseEventListener.onMouseDown(this, x, y, button);
     }
@@ -136,7 +140,7 @@ public abstract class BaseComponent extends Gui {
      * @param y Mouse Y Position
      * @param button Mouse Button
      */
-    public void mouseUp(int x, int y, int button) {
+    public void mouseUp(double x, double y, int button) {
         if(mouseEventListener != null)
             mouseEventListener.onMouseUp(this, x, y, button);
     }
@@ -147,11 +151,10 @@ public abstract class BaseComponent extends Gui {
      * @param x Mouse X Position
      * @param y Mouse Y Position
      * @param button Mouse Button
-     * @param time How long
      */
-    public void mouseDrag(int x, int y, int button, long time) {
+    public void mouseDrag(double x, double y, int button, double xDragAmount, double yDragAmount) {
         if(mouseEventListener != null)
-            mouseEventListener.onMouseDrag(this, x, y, button, time);
+            mouseEventListener.onMouseDrag(this, x, y, button, xDragAmount, yDragAmount);
     }
 
     /**
@@ -181,7 +184,7 @@ public abstract class BaseComponent extends Gui {
      */
     public void keyTyped(char letter, int keyCode) {
         if(keyboardEventListener != null)
-            keyboardEventListener.keyTyped(this, letter, keyCode);
+            keyboardEventListener.charTyped(this, letter, keyCode);
     }
 
     /*******************************************************************************************************************
@@ -235,74 +238,4 @@ public abstract class BaseComponent extends Gui {
     public void setKeyboardEventListener(IKeyboardListener keyboardEventListener) {
         this.keyboardEventListener = keyboardEventListener;
     }
-
-    /*******************************************************************************************************************
-     * Helper Methods                                                                                                  *
-     *******************************************************************************************************************/
-
-    /**
-     * Used to draw a tooltip over this component
-     *
-     * @param tip The list of strings to render
-     * @param mouseX The mouse x Position
-     * @param mouseY The mouse Y position
-     * @param font The font renderer
-     */
-    protected void drawHoveringText(List<String> tip, int mouseX, int mouseY, FontRenderer font) {
-        if (!tip.isEmpty()) {
-            GL11.glPushMatrix();
-            GL11.glTranslated(0.0, 0.0, 5);
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            RenderHelper.disableStandardItemLighting();
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            int k = 0;
-            for (String s : tip) {
-                int l = font.getStringWidth(s);
-                if (l > k) {
-                    k = l;
-                }
-            }
-            int j2 = mouseX + 12;
-            int k2 = mouseY - 12;
-            int i1 = 8;
-            if (tip.size() > 1) {
-                i1 += 2 + (tip.size() - 1) * 10;
-            }
-            if (j2 + k > parent.width) {
-                j2 -= 28 + k;
-            }
-            if (k2 + i1 + 6 > parent.height) {
-                k2 = this.getHeight() - i1 - 6;
-            }
-            this.zLevel = 300.0F;
-            int j1 = -267386864;
-            this.drawGradientRect(j2 - 3, k2 - 4, j2 + k + 3, k2 - 3, j1, j1);
-            this.drawGradientRect(j2 - 3, k2 + i1 + 3, j2 + k + 3, k2 + i1 + 4, j1, j1);
-            this.drawGradientRect(j2 - 3, k2 - 3, j2 + k + 3, k2 + i1 + 3, j1, j1);
-            this.drawGradientRect(j2 - 4, k2 - 3, j2 - 3, k2 + i1 + 3, j1, j1);
-            this.drawGradientRect(j2 + k + 3, k2 - 3, j2 + k + 4, k2 + i1 + 3, j1, j1);
-            int k1 = 1347420415;
-            int l1 = (k1 & 16711422) >> 1 | k1 & -16777216;
-            this.drawGradientRect(j2 - 3, k2 - 3 + 1, j2 - 3 + 1, k2 + i1 + 3 - 1, k1, l1);
-            this.drawGradientRect(j2 + k + 2, k2 - 3 + 1, j2 + k + 3, k2 + i1 + 3 - 1, k1, l1);
-            this.drawGradientRect(j2 - 3, k2 - 3, j2 + k + 3, k2 - 3 + 1, k1, k1);
-            this.drawGradientRect(j2 - 3, k2 + i1 + 2, j2 + k + 3, k2 + i1 + 3, l1, l1);
-
-            for(String s1 : tip) {
-                font.drawStringWithShadow(s1, j2, k2, -1);
-                if(s1.equals(tip.get(0)))
-                    k2 += 2;
-                k2 += 10;
-            }
-
-            this.zLevel = 0.0F;
-            GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            RenderHelper.enableStandardItemLighting();
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            GL11.glPopMatrix();
-        }
-    }
-
 }
