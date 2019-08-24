@@ -10,7 +10,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle'
 
-apply plugin: 'maven-publish'
+//apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
 String APIToken = ''
@@ -73,8 +73,12 @@ minecraft {
     }
 }
 
+configurations {
+    deployerJars
+}
 dependencies {
     minecraft 'net.minecraftforge:forge:' + project.minecraft_version + "-" + project.forge_version
+    deployerJars 'org.apache.maven.wagon:wagon-ftp:2.8'
 }
 
 configurations.all {
@@ -105,20 +109,15 @@ artifacts {
     archives javadocJar
 }
 
-/*configurations {
-    deployerJars
+repositories {
+    mavenCentral()
 }
-
-dependencies {
-    //deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
-}*/
 
 uploadArchives {
     if (project.hasProperty('username') && project.hasProperty('password')) {
         repositories {
             mavenDeployer {
-                //configuration = configurations.deployerJars
-//repository(url: System.properties['URL']) {
+                configuration = configurations.deployerJars
                 repository(url: "ftp://dyonovan.com/maven2") {
                     authentication(userName: "http", password: "${password}")
                 }
@@ -171,7 +170,7 @@ uploadArchives {
         }
     }
 }
-
+/**
 // Paul's testing from example in forge mdk
 // Example configuration to allow publishing using the maven-publish task
 // we define a custom artifact that is sourced from the reobfJar output task
@@ -194,12 +193,12 @@ publishing {
             if (project.hasProperty('password')) {
                 credentials {
                     username 'http'
-                    password project.getProperty('password')
+                    password '2B8JD$V$k'
                 }
             }
         }
     }
-}
+}**/
 
 /**
 curseforge  {
