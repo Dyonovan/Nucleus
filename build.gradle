@@ -19,7 +19,7 @@ if (file('APIToken').exists()) {
 }
 
 String build = ""
-if (System.getenv("password") != null) {
+if (project.hasProperty("password")) {
     build = "B" + project.ext["build.number"]
 }
 if (build == null || build == '') {
@@ -114,7 +114,7 @@ repositories {
 }
 
 uploadArchives {
-    if (System.getenv("password") != null) {
+    if (project.hasProperty("password")) {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
@@ -171,43 +171,43 @@ uploadArchives {
     }
 }
 /**
-// Paul's testing from example in forge mdk
-// Example configuration to allow publishing using the maven-publish task
-// we define a custom artifact that is sourced from the reobfJar output task
-// and then declare that to be published
-// Note you'll need to add a repository here
-def reobfFile = file("$buildDir/reobfJar/output.jar")
-def reobfArtifact = artifacts.add('default', reobfFile) {
-    type 'jar'
-    builtBy 'reobfJar'
-}
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact reobfArtifact
-        }
-    }
-    repositories {
-        maven {
-            url "http://dyonovan.com/maven2"
-            if (project.hasProperty('password')) {
-                credentials {
-                    username 'http'
-                    password '2B8JD$V$k'
-                }
-            }
-        }
-    }
-}**/
+ // Paul's testing from example in forge mdk
+ // Example configuration to allow publishing using the maven-publish task
+ // we define a custom artifact that is sourced from the reobfJar output task
+ // and then declare that to be published
+ // Note you'll need to add a repository here
+ def reobfFile = file("$buildDir/reobfJar/output.jar")
+ def reobfArtifact = artifacts.add('default', reobfFile) {
+ type 'jar'
+ builtBy 'reobfJar'
+ }
+ publishing {
+ publications {
+ mavenJava(MavenPublication) {
+ artifact reobfArtifact
+ }
+ }
+ repositories {
+ maven {
+ url "http://dyonovan.com/maven2"
+ if (project.hasProperty('password')) {
+ credentials {
+ username 'http'
+ password '2B8JD$V$k'
+ }
+ }
+ }
+ }
+ }**/
 
 /**
-curseforge  {
-    apiKey = APIToken
-    project {
-        id = '232784'
-        changelog = ''
-        releaseType = 'release'
-        addArtifact devJar
-        addGameVersion '1.10.2'
-    }
-}**/
+ curseforge  {
+ apiKey = APIToken
+ project {
+ id = '232784'
+ changelog = ''
+ releaseType = 'release'
+ addArtifact devJar
+ addGameVersion '1.10.2'
+ }
+ }**/
