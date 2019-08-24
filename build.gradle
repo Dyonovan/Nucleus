@@ -118,7 +118,7 @@ uploadArchives {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
-                repository(url: "scp://dyonovan.com/srv/http/maven2") {
+                repository(url: "ftp://dyonovan.com/srv/http/maven2") {
                     authentication(userName: "http", password: "${password}")
                 }
 
@@ -193,7 +193,7 @@ uploadArchives {
  if (project.hasProperty('password')) {
  credentials {
  username 'http'
- password '2B8JD$V$k'
+ password ''
  }
  }
  }
