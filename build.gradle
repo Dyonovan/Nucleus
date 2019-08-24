@@ -117,7 +117,7 @@ uploadArchives {
     if (project.hasProperty('username') && project.hasProperty('password')) {
         repositories {
             mavenDeployer {
-                configuration = configurations.deployerJars
+                //configuration = configurations.deployerJars
 //repository(url: System.properties['URL']) {
                 repository(url: "ftp://dyonovan.com/maven2") {
                     authentication(userName: "http", password: "${password}")
