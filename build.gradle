@@ -19,8 +19,8 @@ if (file('APIToken').exists()) {
 }
 
 String build = ""
-if (System.hasProperty("password")) {
-    build = "B" + project.getProperty("build.number")
+if (System.getenv("password") != null) {
+    build = "B" + project.ext["build.number"]
 }
 if (build == null || build == '') {
     version = "${project.minecraft_version}-${project.mod_version}"
@@ -114,12 +114,12 @@ repositories {
 }
 
 uploadArchives {
-    if (System.hasProperty('password')) {
+    if (System.getenv("password") != null) {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
                 repository(url: "ftp://dyonovan.com/maven2") {
-                    authentication(userName: "http", password: System.getProperty("password"))
+                    authentication(userName: "http", password: "${password}")
                 }
 
                 pom {
