@@ -23,7 +23,7 @@ if (project.hasProperty("password")) {
     build = "B" + "${project.ext['build.number']}"
 }
 if (build == null || build == '') {
-    version = "${project.minecraft_version}-${project.mod_version}"
+    version = "${project.minecraft_version}-${project.mod_version}" + "TESTING"
 } else {
     version = "${project.minecraft_version}-${project.mod_version}-" + build
 }
@@ -124,7 +124,7 @@ uploadArchives {
 
                 pom {
                     groupId = project.group
-                    version = project.version + "B" + "${project.ext['build.number']}"
+                    version = project.version
                     artifactId = project.archivesBaseName
 
                     pom.project {
