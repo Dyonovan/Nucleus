@@ -126,7 +126,7 @@ uploadArchives {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
-                repository(url: "scp://dyonovan.com/maven2") {
+                repository(url: "scp://dyonovan.com/srv/http/maven2") {
                     authentication(userName: "http", password: "${password}")
                 }
 
