@@ -20,7 +20,7 @@ if (file('APIToken').exists()) {
 
 String build = ""
 if (project.hasProperty("password")) {
-    build = "B" + "${build.number}"
+    build = "B" + "${buildnumber}"
 }
 if (build == null || build == '') {
     version = "${project.minecraft_version}-${project.mod_version}"
