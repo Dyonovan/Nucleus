@@ -109,8 +109,16 @@ artifacts {
     archives javadocJar
 }
 
+configurations {
+    deployerJars
+}
+
 repositories {
     mavenCentral()
+}
+
+dependencies {
+    deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 }
 
 uploadArchives {
@@ -118,7 +126,7 @@ uploadArchives {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
-                repository(url: "ftp://dyonovan.com/maven2") {
+                repository(url: "scp://dyonovan.com/maven2") {
                     authentication(userName: "http", password: "${password}")
                 }
 
