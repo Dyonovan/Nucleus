@@ -19,7 +19,7 @@ if (file('APIToken').exists()) {
 }
 
 String build = ""
-if (project.hasProperty("teamcity")) {
+if (project.hasProperty("password")) {
     build = "B" +"${project.ext['build.number']}"
 }
 if (build == null || build == '') {
