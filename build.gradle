@@ -105,13 +105,13 @@ artifacts {
     archives javadocJar
 }
 
-configurations {
+/*configurations {
     deployerJars
 }
 
 dependencies {
     //deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
-}
+}*/
 
 uploadArchives {
     if (project.hasProperty('username') && project.hasProperty('password')) {
