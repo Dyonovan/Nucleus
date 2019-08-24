@@ -20,10 +20,10 @@ if (file('APIToken').exists()) {
 
 String build = ""
 if (project.hasProperty("password")) {
-    build = "B" + "${project.ext['build.number']}"
+    build = "B" + "${build.number}"
 }
 if (build == null || build == '') {
-    version = "${project.minecraft_version}-${project.mod_version}" + "TESTING"
+    version = "${project.minecraft_version}-${project.mod_version}"
 } else {
     version = "${project.minecraft_version}-${project.mod_version}-" + build
 }
@@ -114,7 +114,7 @@ repositories {
 }
 
 uploadArchives {
-    if (project.hasProperty('username') && project.hasProperty('password')) {
+    if (project.hasProperty('password')) {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
