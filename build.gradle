@@ -110,7 +110,7 @@ configurations {
 }
 
 dependencies {
-    deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
+    deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 }
 
 uploadArchives {
@@ -119,7 +119,7 @@ uploadArchives {
             mavenDeployer {
                 configuration = configurations.deployerJars
 //repository(url: System.properties['URL']) {
-                repository(url: "ftp://dyonovan.com/srv/http/maven2") {
+                repository(url: "scp://dyonovan.com/srv/http/maven2") {
                     authentication(userName: "${username}", password: "${password}")
                 }
 
