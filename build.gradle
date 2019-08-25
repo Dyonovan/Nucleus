@@ -108,6 +108,11 @@ task devJar(type: Jar, dependsOn: 'classes') {
     classifier = 'dev'
 }
 
+task deobfJar(type: Jar) {
+    classifier = "deobf"
+    from sourceSets.main.output
+}
+
 task javadocJar(type: Zip, dependsOn: javadoc) {
     from 'build/docs/javadoc'
     classifier = 'javadoc'
@@ -122,6 +127,7 @@ artifacts {
     archives devJar
     archives sourceJarJava
     archives javadocJar
+    archives deobfJar
 }
 
 configurations {
