@@ -57,7 +57,7 @@ public interface IAdvancedToolTipProvider extends IToolTipProvider {
         return ClientUtils.isShiftPressed() ?
                 getAdvancedToolTip(stack) :
                 displayShiftForInfo(stack) ?
-                        Collections.singletonList(ClientUtils.translate("nucleus.text.shiftInfo")) :
+                        Collections.singletonList(ClientUtils.translate("nucleus.text.shift_info")) :
                         null;
     }
 }

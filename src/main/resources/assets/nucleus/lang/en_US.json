@@ -9,5 +9,5 @@
   "nucleus.energy.energyOut": "Max Output",
   "nucleus.energy.energyTick": "Energy/Tick",
 
-  "nucleus.text.shiftInfo": "Press <SHIFT> for more info"
+  "nucleus.text.shift_info": "Press <SHIFT> for more info"
 }
