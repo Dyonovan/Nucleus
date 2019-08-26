@@ -1,7 +1,6 @@
 package com.teambr.nucleus.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.teambr.nucleus.lib.Reference;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderHelper;
@@ -33,8 +32,6 @@ import java.nio.FloatBuffer;
  */
 public class RenderUtils {
     // Resource Locations
-    public static final ResourceLocation GUI_COMPONENTS_RESOURCE_LOCATION =
-            new ResourceLocation(Reference.MOD_ID, "textures/gui/guiComponents.png");
     public static final ResourceLocation MC_BLOCKS_RESOURCE_LOCATION =
             AtlasTexture.LOCATION_BLOCKS_TEXTURE;
     public static final ResourceLocation MC_ITEMS_RESOURCE_LOCATION =
@@ -65,14 +62,7 @@ public class RenderUtils {
     public static void bindMinecraftBlockSheet() {
         bindTexture(MC_BLOCKS_RESOURCE_LOCATION);
     }
-
-    /**
-     * Used to bind our texture sheet for Gui Components
-     */
-    public static void bindGuiComponentsSheet() {
-        bindTexture(GUI_COMPONENTS_RESOURCE_LOCATION);
-    }
-
+    
     /**
      * Set the GL color. You should probably reset it after this
      *
