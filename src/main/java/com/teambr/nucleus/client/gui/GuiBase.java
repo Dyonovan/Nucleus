@@ -192,8 +192,8 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
         }));
         RenderUtils.restoreRenderState();
         RenderHelper.enableGUIStandardItemLighting();
-        GlStateManager.popMatrix();
         drawTopLayer(mouseX, mouseY);
+        GlStateManager.popMatrix();
     }
 
     /**
@@ -207,6 +207,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+        renderBackground();
         GlStateManager.pushMatrix();
         RenderUtils.prepareRenderState();
         GlStateManager.translated(guiLeft, guiTop, 0);
