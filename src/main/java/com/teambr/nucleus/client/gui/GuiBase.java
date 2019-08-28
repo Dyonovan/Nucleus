@@ -171,6 +171,13 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
         return super.charTyped(typedChar, keyCode);
     }
 
+    @Override
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        renderBackground();
+        super.render(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
+    }
+
     /**
      * Used to draw above the background. This will be called after the background has been drawn
      *
@@ -207,7 +214,6 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        renderBackground();
         GlStateManager.pushMatrix();
         RenderUtils.prepareRenderState();
         GlStateManager.translated(guiLeft, guiTop, 0);
@@ -235,7 +241,6 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param mouseY The mouse Y Position
      */
     public void drawTopLayer(int mouseX, int mouseY) {
-        this.renderHoveredToolTip(mouseX, mouseY);
         components.forEach((baseComponent -> {
             if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop))
                 baseComponent.renderToolTip(mouseX, mouseY);
