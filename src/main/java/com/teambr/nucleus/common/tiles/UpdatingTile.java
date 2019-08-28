@@ -1,10 +1,10 @@
 package com.teambr.nucleus.common.tiles;
 
 
-import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public class UpdatingTile extends TileEntity implements ITickable {
+public class UpdatingTile extends TileEntity implements ITickableTileEntity {
 
 
     public UpdatingTile(TileEntityType<?> tileEntityTypeIn) {
