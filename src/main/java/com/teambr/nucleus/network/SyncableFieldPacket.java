@@ -1,5 +1,6 @@
 package com.teambr.nucleus.network;
 
+import com.teambr.nucleus.Nucleus;
 import com.teambr.nucleus.common.tiles.Syncable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.PacketBuffer;
@@ -100,7 +101,7 @@ public class SyncableFieldPacket implements INetworkMessage {
                     ((Syncable) world.getTileEntity(message.blockPosition)).setVariable(message.id, message.value);
                 ctx.get().setPacketHandled(true);
             } else if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) { // Run when send to client
-                World world = Minecraft.getInstance().world;
+                World world = Nucleus.proxy.getClientWorld();
 
                 // Safety check
                 if(world == null || message.blockPosition == null ||

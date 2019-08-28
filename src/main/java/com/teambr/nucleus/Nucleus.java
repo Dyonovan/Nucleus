@@ -32,7 +32,7 @@ public class Nucleus {
     /**
      * The INSTANCE of the proxy
      */
-    public static CommonProxy proxy;
+    public static CommonProxy proxy = DistExecutor.runForDist(() -> ClientProxy::new, () -> CommonProxy::new);
 
     /**
      * The location of the config folder

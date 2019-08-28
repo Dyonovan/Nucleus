@@ -1,5 +1,7 @@
 package com.teambr.nucleus.common;
 
+import net.minecraft.world.World;
+
 /**
  * This file was created for Nucleus - Java
  *
@@ -18,4 +20,11 @@ public class CommonProxy {
     public void init() {
     }
 
+    /**
+     * Used to get client world but not crash server
+     * @return Null on server, Minecraft client world on client
+     */
+    public World getClientWorld() {
+        return null;
+    }
 }
