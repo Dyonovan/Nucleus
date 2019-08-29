@@ -29,6 +29,7 @@ public abstract class InventorySided extends InventoryHandler {
     private LazyOptional<?> handlerSouth  = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.SOUTH));
     private LazyOptional<?> handlerEast   = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.EAST));
     private LazyOptional<?> handlerWest   = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.WEST));
+    private LazyOptional<?> handlerNull   = LazyOptional.of(() -> this);
 
     public InventorySided(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
@@ -71,6 +72,8 @@ public abstract class InventorySided extends InventoryHandler {
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
         if(capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            if(facing == null)
+                return (LazyOptional<T>) handlerNull;
             switch (facing) {
                 case UP :
                     return (LazyOptional<T>) handlerTop;
