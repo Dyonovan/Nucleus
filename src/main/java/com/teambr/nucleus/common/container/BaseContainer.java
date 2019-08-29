@@ -1,5 +1,6 @@
 package com.teambr.nucleus.common.container;
 
+import com.teambr.nucleus.client.gui.ISyncingTileScreen;
 import com.teambr.nucleus.common.container.slots.IPhantomSlot;
 import com.teambr.nucleus.util.InventoryUtils;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +33,7 @@ public abstract class BaseContainer extends ContainerGeneric {
     protected int inventorySize;
 
     /**
-     * Creates the contianer object
+     * Creates the container object
      * @param playerInventory The players inventory
      * @param inventory The tile/object inventory
      */

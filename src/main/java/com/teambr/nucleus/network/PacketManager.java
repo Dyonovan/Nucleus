@@ -5,6 +5,8 @@ import com.teambr.nucleus.network.packet.ClientOverridePacket;
 import com.teambr.nucleus.network.packet.INetworkMessage;
 import com.teambr.nucleus.network.packet.SyncTileScreenPacket;
 import com.teambr.nucleus.network.packet.SyncableFieldPacket;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -73,6 +75,18 @@ public class PacketManager {
     /*******************************************************************************************************************
      * Helper Methods                                                                                                  *
      *******************************************************************************************************************/
+
+    /**
+     * Send an update to the player with this container open
+     * @param player The player to update on client end
+     * @param entity The entity to write the data
+     */
+    public static void updateClientContainerInfo(ServerPlayerEntity player, TileEntity entity) {
+        CompoundNBT tag = new CompoundNBT();
+        entity.write(tag);
+        SyncTileScreenPacket packet = new SyncTileScreenPacket(tag);
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
+    }
 
     /**
      * Reverse of normal syncing, will send client side data to server to replace
