@@ -1,4 +1,4 @@
-package com.teambr.nucleus.network;
+package com.teambr.nucleus.network.packet;
 
 import net.minecraft.network.PacketBuffer;
 

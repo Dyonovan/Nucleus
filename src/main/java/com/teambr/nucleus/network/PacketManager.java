@@ -1,6 +1,10 @@
 package com.teambr.nucleus.network;
 
 import com.teambr.nucleus.lib.Reference;
+import com.teambr.nucleus.network.packet.ClientOverridePacket;
+import com.teambr.nucleus.network.packet.INetworkMessage;
+import com.teambr.nucleus.network.packet.SyncTileScreenPacket;
+import com.teambr.nucleus.network.packet.SyncableFieldPacket;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -38,6 +42,7 @@ public class PacketManager {
     public static void initPackets() {
         registerMessage(ClientOverridePacket.class, ClientOverridePacket::process);
         registerMessage(SyncableFieldPacket.class,  SyncableFieldPacket::process);
+        registerMessage(SyncTileScreenPacket.class, SyncTileScreenPacket::process);
     }
 
     // Local hold for next packet id
@@ -48,7 +53,7 @@ public class PacketManager {
      * @param packet The packet class
      */
     @SuppressWarnings("unchecked")
-    private static <T extends INetworkMessage> void registerMessage(Class<T> packet,
+    public static <T extends INetworkMessage> void registerMessage(Class<T> packet,
                                                                     BiConsumer<T, Supplier<NetworkEvent.Context>> messageConsumer) {
         INSTANCE.registerMessage(nextPacketId, packet,
                 INetworkMessage::encode,
@@ -77,6 +82,6 @@ public class PacketManager {
         CompoundNBT tag = new CompoundNBT();
         tile.write(tag);
         ClientOverridePacket updateMessage = new ClientOverridePacket(tile.getPos(), tag);
-        INSTANCE.send(PacketDistributor.ALL.noArg(), updateMessage);
+        INSTANCE.sendToServer(updateMessage);
     }
 }

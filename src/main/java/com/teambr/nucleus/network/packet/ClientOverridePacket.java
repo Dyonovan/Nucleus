@@ -1,4 +1,4 @@
-package com.teambr.nucleus.network;
+package com.teambr.nucleus.network.packet;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -24,11 +24,6 @@ public class ClientOverridePacket implements INetworkMessage {
     // Variables
     public BlockPos blockPosition;
     public CompoundNBT tag;
-
-    /**
-     * Stub to allow registration
-     */
-    public ClientOverridePacket() {}
 
     /**
      * Creates a packet with the given info

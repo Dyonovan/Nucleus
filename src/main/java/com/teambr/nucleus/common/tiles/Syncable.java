@@ -1,7 +1,7 @@
 package com.teambr.nucleus.common.tiles;
 
 import com.teambr.nucleus.network.PacketManager;
-import com.teambr.nucleus.network.SyncableFieldPacket;
+import com.teambr.nucleus.network.packet.SyncableFieldPacket;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.network.PacketDistributor;
 

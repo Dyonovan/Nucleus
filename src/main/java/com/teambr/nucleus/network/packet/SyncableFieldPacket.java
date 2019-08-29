@@ -1,8 +1,8 @@
-package com.teambr.nucleus.network;
+package com.teambr.nucleus.network.packet;
 
 import com.teambr.nucleus.Nucleus;
 import com.teambr.nucleus.common.tiles.Syncable;
-import net.minecraft.client.Minecraft;
+import com.teambr.nucleus.network.PacketManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -28,11 +28,6 @@ public class SyncableFieldPacket implements INetworkMessage {
     public int id;
     public double value;
     public BlockPos blockPosition;
-
-    /**
-     * Stub to allow registration
-     */
-    public SyncableFieldPacket() {}
 
     /**
      * Creates the packet
