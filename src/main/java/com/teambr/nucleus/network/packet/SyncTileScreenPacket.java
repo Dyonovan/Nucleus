@@ -4,8 +4,6 @@ import com.teambr.nucleus.client.gui.ISyncingTileScreen;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -25,6 +23,11 @@ public class SyncTileScreenPacket implements INetworkMessage {
 
     // Variables
     public CompoundNBT tag;
+
+    /**
+     * Stub
+     */
+    public SyncTileScreenPacket() {}
 
     /**
      * Creates a packet with the given info

@@ -26,6 +26,11 @@ public class ClientOverridePacket implements INetworkMessage {
     public CompoundNBT tag;
 
     /**
+     * Stub
+     */
+    public ClientOverridePacket() {}
+
+    /**
      * Creates a packet with the given info
      * @param pos The position to write the tag
      * @param nbt The tag to write

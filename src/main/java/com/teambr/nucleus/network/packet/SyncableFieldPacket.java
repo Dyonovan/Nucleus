@@ -30,6 +30,11 @@ public class SyncableFieldPacket implements INetworkMessage {
     public BlockPos blockPosition;
 
     /**
+     * Stub
+     */
+    public SyncableFieldPacket() {}
+
+    /**
      * Creates the packet
      * @param ping Send value back
      * @param i The field id
