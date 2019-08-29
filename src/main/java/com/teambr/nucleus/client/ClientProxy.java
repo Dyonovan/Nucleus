@@ -3,6 +3,7 @@ package com.teambr.nucleus.client;
 import com.teambr.nucleus.common.CommonProxy;
 import com.teambr.nucleus.events.ToolTipEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -28,5 +29,10 @@ public class ClientProxy extends CommonProxy {
     @Override
     public World getClientWorld() {
         return Minecraft.getInstance().world;
+    }
+
+    @Override
+    public PlayerEntity getPlayer() {
+        return Minecraft.getInstance().player;
     }
 }

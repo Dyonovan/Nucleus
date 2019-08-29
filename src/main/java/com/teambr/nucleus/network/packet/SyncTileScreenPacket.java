@@ -1,6 +1,8 @@
 package com.teambr.nucleus.network.packet;
 
+import com.teambr.nucleus.Nucleus;
 import com.teambr.nucleus.client.gui.ISyncingTileScreen;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -59,8 +61,8 @@ public class SyncTileScreenPacket implements INetworkMessage {
     public static void process(SyncTileScreenPacket message, Supplier<NetworkEvent.Context> ctx) {
         if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
             ctx.get().enqueueWork(() -> {
-                if(message.tag != null && ctx.get().getSender() != null) {
-                    ServerPlayerEntity player = ctx.get().getSender();
+                if(message.tag != null && Nucleus.proxy.getPlayer() != null) {
+                    PlayerEntity player = Nucleus.proxy.getPlayer();
                     if(player.openContainer instanceof ISyncingTileScreen) {
                         ISyncingTileScreen syncingScreen = (ISyncingTileScreen) player.openContainer;
                         syncingScreen.acceptServerValues(message.tag);

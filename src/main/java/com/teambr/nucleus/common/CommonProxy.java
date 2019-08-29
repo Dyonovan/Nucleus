@@ -1,5 +1,6 @@
 package com.teambr.nucleus.common;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 /**
@@ -25,6 +26,10 @@ public class CommonProxy {
      * @return Null on server, Minecraft client world on client
      */
     public World getClientWorld() {
+        return null;
+    }
+
+    public PlayerEntity getPlayer() {
         return null;
     }
 }
