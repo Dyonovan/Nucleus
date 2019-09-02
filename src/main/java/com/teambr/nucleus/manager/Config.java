@@ -1,5 +1,6 @@
 package com.teambr.nucleus.manager;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -15,25 +16,20 @@ import org.apache.commons.lang3.tuple.Pair;
  */
 public class Config {
 
-    public static class Server {
-        public ForgeConfigSpec.BooleanValue debug;
+    private static ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ConfigDev CONFIGDEV = new ConfigDev(BUILDER);
+    public static final ForgeConfigSpec SPEC = BUILDER.build();
 
-        Server(ForgeConfigSpec.Builder builder) {
-            builder.comment("Development settings")
-                    .push("dev");
+    public static class ConfigDev {
+        public final ForgeConfigSpec.ConfigValue<Boolean> debug;
 
+        public ConfigDev(ForgeConfigSpec.Builder builder) {
+            builder.push("Development Settings");
             debug = builder
                     .comment("Enable debug mode")
                     .worldRestart()
                     .define("debug_mode", false);
+            builder.pop();
         }
-    }
-
-    public static final ForgeConfigSpec serverSpec;
-    public static final Server SERVER;
-    static {
-        final Pair<Server, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Server::new);
-        serverSpec = specPair.getRight();
-        SERVER = specPair.getLeft();
     }
 }

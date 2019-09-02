@@ -47,7 +47,7 @@ public class Nucleus {
         proxy.init();
 
         // Register config
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
         // Init network
         PacketManager.initPackets();
