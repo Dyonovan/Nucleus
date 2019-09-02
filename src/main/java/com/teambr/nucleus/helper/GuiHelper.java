@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import org.lwjgl.opengl.GL11;
 
 import static net.minecraft.client.renderer.vertex.VertexFormatElement.Type.FLOAT;
@@ -97,10 +97,11 @@ public class GuiHelper {
         FluidStack fluid = tank.getFluid();
         if(fluid != null) {
             GL11.glPushMatrix();
-            int level = (fluid.amount * maxHeight) / tank.getCapacity();
-            TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap().getAtlasSprite(fluid.getFluid().getStill(fluid).toString());
+            int level = (fluid.getAmount() * maxHeight) / tank.getCapacity();
+            TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap()
+                    .getAtlasSprite(fluid.getFluid().getAttributes().getStill(fluid).toString());
             RenderUtils.bindMinecraftBlockSheet();
-            setGLColorFromInt(fluid.getFluid().getColor(fluid));
+            setGLColorFromInt(fluid.getFluid().getAttributes().getColor(fluid));
 
             double timesW = Math.floor(maxWidth / 16);
             int cutW = 16;

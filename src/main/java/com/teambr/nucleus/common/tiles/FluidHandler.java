@@ -1,18 +1,19 @@
 package com.teambr.nucleus.common.tiles;
 
+import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -84,7 +85,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      * @return The amount of buckets in MB
      */
     public int bucketsToMB(int buckets) {
-        return Fluid.BUCKET_VOLUME * buckets;
+        return FluidAttributes.BUCKET_VOLUME * buckets;
     }
 
     /**
@@ -178,67 +179,20 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      *******************************************************************************************************************/
 
     /**
-     * Returns an array of objects which represent the internal tanks.
-     * These objects cannot be used to manipulate the internal tanks.
-     *
-     * @return Properties for the relevant internal tanks.
-     */
-    @Override
-    public IFluidTankProperties[] getTankProperties() {
-        IFluidTankProperties[] properties = new IFluidTankProperties[tanks.length];
-        for(int x = 0; x < tanks.length; x++) {
-            FluidTank tank = tanks[x];
-            properties[x] = new IFluidTankProperties() {
-                @Nullable
-                @Override
-                public FluidStack getContents() {
-                    return tank.getFluid();
-                }
-
-                @Override
-                public int getCapacity() {
-                    return tank.getCapacity();
-                }
-
-                @Override
-                public boolean canFill() {
-                    return tank.canFill();
-                }
-
-                @Override
-                public boolean canDrain() {
-                    return tank.canDrain();
-                }
-
-                @Override
-                public boolean canFillFluidType(FluidStack fluidStack) {
-                    return tank.canFillFluidType(fluidStack);
-                }
-
-                @Override
-                public boolean canDrainFluidType(FluidStack fluidStack) {
-                    return tank.canDrainFluidType(fluidStack);
-                }
-            };
-        }
-        return properties;
-    }
-
-    /**
      * Fills fluid into internal tanks, distribution is left entirely to the IFluidHandler.
      *
      * @param resource FluidStack representing the Fluid and maximum amount of fluid to be filled.
-     * @param doFill   If false, fill will only be simulated.
+     * @param action   If false, fill will only be simulated.
      * @return Amount of resource that was (or would have been, if simulated) filled.
      */
     @Override
-    public int fill(FluidStack resource, boolean doFill) {
+    public int fill(FluidStack resource, FluidAction action) {
         if(resource != null && resource.getFluid() != null && canFill(resource.getFluid())) {
             for(Integer x : getInputTanks()) {
                 if(x < tanks.length) {
-                    if(tanks[x].fill(resource, false) > 0) {
-                        int actual = tanks[x].fill(resource, doFill);
-                        if(doFill) onTankChanged(tanks[x]);
+                    if(tanks[x].fill(resource, action) > 0) {
+                        int actual = tanks[x].fill(resource, action);
+                        if(action.execute()) onTankChanged(tanks[x]);
                         return actual;
                     }
                 }
@@ -259,14 +213,14 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      */
     @Nullable
     @Override
-    public FluidStack drain(int maxDrain, boolean doDrain) {
+    public FluidStack drain(int maxDrain, FluidAction doDrain) {
         FluidStack fluidStack = null;
         for(Integer x : getOutputTanks()) {
             if(x < tanks.length) {
-                fluidStack = tanks[x].drain(maxDrain, false);
+                fluidStack = tanks[x].drain(maxDrain, doDrain);
                 if(fluidStack != null) {
                     tanks[x].drain(maxDrain, doDrain);
-                    if(doDrain) onTankChanged(tanks[x]);
+                    if(doDrain.execute()) onTankChanged(tanks[x]);
                     return fluidStack;
                 }
             }
@@ -284,7 +238,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      */
     @Nullable
     @Override
-    public FluidStack drain(FluidStack resource, boolean doDrain) {
-        return drain(resource.amount, doDrain);
+    public FluidStack drain(FluidStack resource, FluidAction doDrain) {
+        return drain(resource.getAmount(), doDrain);
     }
 }

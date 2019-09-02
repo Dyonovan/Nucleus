@@ -68,7 +68,7 @@ minecraft {
             }
         }
 
-        mappings channel: 'snapshot', version: "${project.MAPPINGS}"
+        mappings channel: 'snapshot', version: '20190719-1.14.3'
 //    makeObfSourceJar = false
     }
 }
@@ -77,7 +77,7 @@ configurations {
     deployerJars
 }
 dependencies {
-    minecraft 'net.minecraftforge:forge:' + project.minecraft_version + "-" + project.forge_version
+    minecraft 'net.minecraftforge:forge:1.14.4-28.0.83'
     deployerJars 'org.apache.maven.wagon:wagon-ftp:2.8'
 }
 
@@ -212,44 +212,3 @@ jar {
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
     }
 }
-/**
- // Paul's testing from example in forge mdk
- // Example configuration to allow publishing using the maven-publish task
- // we define a custom artifact that is sourced from the reobfJar output task
- // and then declare that to be published
- // Note you'll need to add a repository here
- def reobfFile = file("$buildDir/reobfJar/output.jar")
- def reobfArtifact = artifacts.add('default', reobfFile) {
- type 'jar'
- builtBy 'reobfJar'
- }
- publishing {
- publications {
- mavenJava(MavenPublication) {
- artifact reobfArtifact
- }
- }
- repositories {
- maven {
- url "http://dyonovan.com/maven2"
- if (project.hasProperty('password')) {
- credentials {
- username 'http'
- password ''
- }
- }
- }
- }
- }**/
-
-/**
- curseforge  {
- apiKey = APIToken
- project {
- id = '232784'
- changelog = ''
- releaseType = 'release'
- addArtifact devJar
- addGameVersion '1.10.2'
- }
- }**/
