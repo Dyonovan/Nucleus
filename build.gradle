@@ -77,7 +77,7 @@ configurations {
     deployerJars
 }
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-28.0.83'
+    minecraft 'net.minecraftforge:forge:1.14.4-' + project.forge_version
     deployerJars 'org.apache.maven.wagon:wagon-ftp:2.8'
 }
 
