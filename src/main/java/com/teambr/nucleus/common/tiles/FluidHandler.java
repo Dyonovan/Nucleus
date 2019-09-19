@@ -1,6 +1,7 @@
 package com.teambr.nucleus.common.tiles;
 
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntityType;
@@ -96,8 +97,8 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
     protected boolean canFill(Fluid fluid) {
         for(Integer x : getInputTanks()) {
             if(x < tanks.length)
-                if((tanks[x].getFluid() == null || tanks[x].getFluid().getFluid() == null) ||
-                        (tanks[x].getFluid() != null && tanks[x].getFluid().getFluid() == fluid))
+                if((tanks[x].getFluid().isEmpty()|| tanks[x].getFluid().getFluid() == null) ||
+                        (tanks[x].getFluid().isEmpty() && tanks[x].getFluid().getFluid() == fluid))
                     return true;
         }
         return false;
@@ -111,7 +112,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
     protected boolean canDrain(Fluid fluid) {
         for(Integer x : getOutputTanks()) {
             if(x < tanks.length)
-                if(tanks[x].getFluid() != null && tanks[x].getFluid().getFluid() != null)
+                if(!tanks[x].getFluid().isEmpty() && tanks[x].getFluid().getFluid() != Fluids.EMPTY)
                     return true;
         }
         return false;
@@ -126,8 +127,9 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      *
      * @param compound The tag to save to
      */
+    @Nonnull
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT write(@Nonnull CompoundNBT compound) {
         super.write(compound);
         int id = 0;
         compound.putInt(SIZE_NBT_TAG, tanks.length);
@@ -151,7 +153,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      * @param compound The tag to read from
      */
     @Override
-    public void read(CompoundNBT compound) {
+    public void read(@Nonnull CompoundNBT compound) {
         super.read(compound);
         ListNBT tagList = compound.getList(TANKS_NBT_TAG, 10);
         int size = compound.getInt(SIZE_NBT_TAG);
@@ -166,6 +168,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
 
     private LazyOptional<?> lazyOptional = LazyOptional.of(() -> this);
 
+    @Nonnull
     @SuppressWarnings("unchecked")
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
@@ -179,6 +182,68 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      *******************************************************************************************************************/
 
     /**
+     * Returns the number of fluid storage units ("tanks") available
+     *
+     * @return The number of tanks available
+     */
+    @Override
+    public int getTanks() {
+        return tanks.length;
+    }
+
+    /**
+     * Returns the FluidStack in a given tank.
+     *
+     * <p>
+     * <strong>IMPORTANT:</strong> This FluidStack <em>MUST NOT</em> be modified. This method is not for
+     * altering internal contents. Any implementers who are able to detect modification via this method
+     * should throw an exception. It is ENTIRELY reasonable and likely that the stack returned here will be a copy.
+     * </p>
+     *
+     * <p>
+     * <strong><em>SERIOUSLY: DO NOT MODIFY THE RETURNED FLUIDSTACK</em></strong>
+     * </p>
+     *
+     * @param tank Tank to query.
+     * @return FluidStack in a given tank. FluidStack.EMPTY if the tank is empty.
+     */
+    @Nonnull
+    @Override
+    public FluidStack getFluidInTank(int tank) {
+        FluidStack fluidStack = FluidStack.EMPTY.copy();
+        if(tank < tanks.length && tank >= 0)
+            return tanks[tank].getFluid().copy(); // Others should never modify, copy to prevent happening
+        return fluidStack;
+    }
+
+    /**
+     * Retrieves the maximum fluid amount for a given tank.
+     *
+     * @param tank Tank to query.
+     * @return The maximum fluid amount held by the tank.
+     */
+    @Override
+    public int getTankCapacity(int tank) {
+        return tank < tanks.length && tank >= 0 ?
+                tanks[tank].getCapacity()
+                : 0;
+    }
+
+    /**
+     * This function is a way to determine which fluids can exist inside a given handler. General purpose tanks will
+     * basically always return TRUE for this.
+     *
+     * @param tank  Tank to query for validity
+     * @param stack Stack to test with for validity
+     * @return TRUE if the tank can hold the FluidStack, not considering current state.
+     * (Basically, is a given fluid EVER allowed in this tank?) Return FALSE if the answer to that question is 'no.'
+     */
+    @Override
+    public boolean isFluidValid(int tank, @Nonnull FluidStack stack) {
+        return tank < tanks.length && tank >= 0 && tanks[tank].isFluidValid(stack); // First two checks prevent third
+    }
+
+    /**
      * Fills fluid into internal tanks, distribution is left entirely to the IFluidHandler.
      *
      * @param resource FluidStack representing the Fluid and maximum amount of fluid to be filled.
@@ -187,7 +252,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      */
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        if(resource != null && resource.getFluid() != null && canFill(resource.getFluid())) {
+        if(!resource.isEmpty() && resource.getFluid() != Fluids.EMPTY && canFill(resource.getFluid())) {
             for(Integer x : getInputTanks()) {
                 if(x < tanks.length) {
                     if(tanks[x].fill(resource, action) > 0) {
@@ -211,14 +276,14 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
      * simulated) drained.
      */
-    @Nullable
+    @Nonnull
     @Override
     public FluidStack drain(int maxDrain, FluidAction doDrain) {
-        FluidStack fluidStack = null;
+        FluidStack fluidStack = FluidStack.EMPTY.copy();
         for(Integer x : getOutputTanks()) {
             if(x < tanks.length) {
                 fluidStack = tanks[x].drain(maxDrain, doDrain);
-                if(fluidStack != null) {
+                if(!fluidStack.isEmpty()) {
                     tanks[x].drain(maxDrain, doDrain);
                     if(doDrain.execute()) onTankChanged(tanks[x]);
                     return fluidStack;
@@ -236,7 +301,7 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      * @return FluidStack representing the Fluid and amount that was (or would have been, if
      * simulated) drained.
      */
-    @Nullable
+    @Nonnull
     @Override
     public FluidStack drain(FluidStack resource, FluidAction doDrain) {
         return drain(resource.getAmount(), doDrain);
