@@ -26,8 +26,7 @@ jobs:
       run: ./gradlew clean build
     - name: List Directory
       run: |
-        cd /home/runner/work/Nucleus/Nucleus/
-        ls
+        ls -l
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
