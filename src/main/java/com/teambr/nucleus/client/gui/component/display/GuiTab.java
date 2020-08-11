@@ -87,15 +87,15 @@ public class GuiTab extends BaseComponent {
         return isActive && currentWidth == expandedWidth && currentHeight == expandedHeight;
     }
 
-    /**
-     * Moves the slots if need be
-     */
-    public void moveSlots() {
-        children.forEach((component -> {
-            if(component instanceof GuiComponentTabSlotHolder)
-                ((GuiComponentTabSlotHolder)component).moveSlots(areChildrenActive());
-        }));
-    }
+//    /**
+//     * Moves the slots if need be
+//     */
+//    public void moveSlots() {
+//        children.forEach((component -> {
+//            if(component instanceof GuiComponentTabSlotHolder)
+//                ((GuiComponentTabSlotHolder)component).moveSlots(areChildrenActive());
+//        }));
+//    }
 
     /**
      * Called when the mouse is pressed
@@ -231,7 +231,7 @@ public class GuiTab extends BaseComponent {
         // Render the stack, if available
         RenderUtils.restoreColor();
         if(stack != null) {
-            RenderHelper.enableGUIStandardItemLighting();
+            RenderHelper.enableStandardItemLighting();
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             itemRenderer.renderItemAndEffectIntoGUI(stack, 4, 3);
             RenderUtils.restoreColor();

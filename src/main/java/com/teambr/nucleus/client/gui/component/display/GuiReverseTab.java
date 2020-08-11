@@ -74,7 +74,7 @@ public class GuiReverseTab extends GuiTab {
         // Render the stack, if available
         RenderUtils.restoreColor();
         if(stack != null) {
-            RenderHelper.enableGUIStandardItemLighting();
+            RenderHelper.enableStandardItemLighting();
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
             itemRenderer.renderItemAndEffectIntoGUI(stack, -21, 3);
             RenderUtils.restoreColor();

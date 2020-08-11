@@ -2,6 +2,7 @@ package com.teambr.nucleus.client.gui.component.display;
 
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 
 /**
@@ -40,20 +41,20 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
         slotTexture = new GuiComponentTexture(parent, x - 1, y - 1, u, v, 18, 18);
     }
 
-    /**
-     * Called by parent tab to move around
-     * @param doRender Do the render
-     */
-    public void moveSlots(boolean doRender) {
-        this.doRender = doRender;
-        if(doRender) {
-            heldSlot.xPos = shownX;
-            heldSlot.yPos = shownY;
-        } else {
-            heldSlot.xPos = -10000;
-            heldSlot.yPos = -10000;
-        }
-    }
+//    /**
+//     * Called by parent tab to move around
+//     * @param doRender Do the render
+//     */
+//    public void moveSlots(boolean doRender) {
+//        this.doRender = doRender;
+//        if(doRender) {
+//            heldSlot.xPos = shownX;
+//            heldSlot.yPos = shownY;
+//        } else {
+//            heldSlot.xPos = -10000;
+//            heldSlot.yPos = -10000;
+//        }
+//    }
 
     /**
      * Called to render the component

@@ -68,7 +68,7 @@ minecraft {
             }
         }
 
-        mappings channel: 'snapshot', version: '20190719-1.14.3'
+        mappings channel: 'snapshot', version: '20200514-1.15.1'
 //    makeObfSourceJar = false
     }
 }
@@ -77,7 +77,7 @@ configurations {
     deployerJars
 }
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.14.4-' + project.forge_version
+    minecraft 'net.minecraftforge:forge:1.15.2-' + project.forge_version
     deployerJars 'org.apache.maven.wagon:wagon-ftp:2.8'
 }
 
@@ -205,7 +205,7 @@ jar {
         attributes([
                 "Specification-Title": project.name,
                 "Specification-Vendor": "TeamBRModding",
-                "Specification-Version": "${version}", 
+                "Specification-Version": "${version}",
                 "Implementation-Title": project.name,
                 "Implementation-Version": "${version}",
                 "Implementation-Vendor" :"TeamBRModding",

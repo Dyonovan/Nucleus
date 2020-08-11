@@ -198,7 +198,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
             RenderUtils.restoreColor();
         }));
         RenderUtils.restoreRenderState();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.enableStandardItemLighting();
         drawTopLayer(mouseX, mouseY);
         GlStateManager.popMatrix();
     }
@@ -228,7 +228,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
             RenderUtils.restoreColor();
         }));
         RenderUtils.restoreRenderState();
-        RenderHelper.enableGUIStandardItemLighting();
+        RenderHelper.enableStandardItemLighting();
         GlStateManager.popMatrix();
     }
 

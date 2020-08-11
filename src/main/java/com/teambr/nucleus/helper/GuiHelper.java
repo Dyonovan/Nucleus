@@ -1,11 +1,13 @@
 package com.teambr.nucleus.helper;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -71,11 +73,14 @@ public class GuiHelper {
         Tessellator tess = Tessellator.getInstance();
         BufferBuilder renderer = tess.getBuffer();
 
-        VertexFormat POSITION_TEXT_NORMAL_F = new VertexFormat();
-        VertexFormatElement NORMAL_3F = new VertexFormatElement(0, FLOAT, NORMAL, 3);
-        POSITION_TEXT_NORMAL_F.addElement(DefaultVertexFormats.POSITION_3F);
-        POSITION_TEXT_NORMAL_F.addElement(DefaultVertexFormats.TEX_2F);
-        POSITION_TEXT_NORMAL_F.addElement(NORMAL_3F);
+        VertexFormat POSITION_TEXT_NORMAL_F = new VertexFormat(
+                ImmutableList.<VertexFormatElement>builder()
+                        .add(new VertexFormatElement(0, FLOAT, NORMAL, 3))
+                        .add(DefaultVertexFormats.POSITION_3F)
+                        .add(DefaultVertexFormats.TEX_2F)
+                        .build()
+        );
+
 
         renderer.begin(GL11.GL_QUADS, POSITION_TEXT_NORMAL_F);
         renderer.pos(x, y + height, 0).tex(icon.getMinU(), icon.getInterpolatedV(height)).normal(0, -1, 0).endVertex();
@@ -95,11 +100,11 @@ public class GuiHelper {
      */
     public static void renderFluid(FluidTank tank, int x, int y, int maxHeight, int maxWidth) {
         FluidStack fluid = tank.getFluid();
-        if(fluid != null) {
+        if(!fluid.isEmpty()) {
             GL11.glPushMatrix();
             int level = (fluid.getAmount() * maxHeight) / tank.getCapacity();
-            TextureAtlasSprite icon = Minecraft.getInstance().getTextureMap()
-                    .getAtlasSprite(fluid.getFluid().getAttributes().getStill(fluid).toString());
+            TextureAtlasSprite icon = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+                    .apply(fluid.getFluid().getAttributes().getStillTexture());
             RenderUtils.bindMinecraftBlockSheet();
             setGLColorFromInt(fluid.getFluid().getAttributes().getColor(fluid));
 

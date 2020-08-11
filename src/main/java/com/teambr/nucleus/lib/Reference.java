@@ -13,10 +13,10 @@ package com.teambr.nucleus.lib;
 public class Reference {
 
     // Mod information
-    public static final String MOD_ID       = "nucleus";
+    public static final String MOD_ID       = "nucleus_teambr";
     public static final String MOD_NAME     = "Nucleus";
     public static final String VERSION      = "2.0";
-    public static final String DEPENDENCIES = "required-after:forge@[14.23.0.2529,)";
+    public static final String DEPENDENCIES = "required-after:forge@[31.2.36,)";
 
     // Config Categories
     public static final String DEBUG        = "Debug Mode";

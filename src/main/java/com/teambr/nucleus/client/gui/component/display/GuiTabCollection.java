@@ -174,7 +174,7 @@ public class GuiTabCollection extends BaseComponent {
             RenderUtils.prepareRenderState();
             GlStateManager.translated(tab.getXPos(), tab.getYPos(), 0);
             tab.render(0, 0, mouseX - tab.getXPos(), mouseY - tab.getYPos());
-            tab.moveSlots();
+           // tab.moveSlots();
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
             GlStateManager.popMatrix();

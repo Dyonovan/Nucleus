@@ -137,8 +137,8 @@ public abstract class GuiComponentButton extends BaseComponent {
             GlStateManager.pushMatrix();
             RenderUtils.prepareRenderState();
             RenderUtils.restoreColor();
-            int size = fontRenderer.getStringWidth(label);
-            GlStateManager.translated(xPos + (width / 2 - size / 2), yPos + 6, 0);
+            float size = fontRenderer.getStringWidth(label);
+            GlStateManager.translated(xPos + (width / 2F - size / 2F), yPos + 6, 0);
             fontRenderer.drawString(label, 0, 0, Color.darkGray.getRGB());
             RenderUtils.restoreColor();
             RenderUtils.restoreRenderState();

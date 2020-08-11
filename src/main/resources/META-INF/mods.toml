@@ -3,7 +3,7 @@ loaderVersion="[28,)"
 issueTrackerURL="https://github.com/TeamBR-Modding/Nucleus/issues"
 
 [[mods]]
-  modId="nucleus"
+  modId="nucleus_teambr"
   namespace="nucleus"
   version="${version}"
   displayName="Nucleus"
