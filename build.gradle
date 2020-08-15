@@ -149,12 +149,13 @@ dependencies {
 }
 
 uploadArchives {
+    println System.getenv("ftp_test")
     if (System.hasProperty("ftp_password")) {
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
                 repository(url: "scp://dyonovan.com/srv/http/maven2") {
-                    authentication(userName: "http", password: System.getProperty("ftp_password"))
+                    authentication(userName: "http", password: System.getenv("ftp_password"))
                 }
 
                 pom {

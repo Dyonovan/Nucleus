@@ -25,7 +25,8 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build uploadArchives
       env:
-        ftp_password: ${{ secrets.ftp_password }}
+        ftp_password: ${{ secrets.FTP_PASSWORD }}
+        ftp_test: "Just a test"
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
