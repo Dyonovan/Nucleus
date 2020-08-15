@@ -21,6 +21,7 @@ if (file('APIToken').exists()) {
 String build = ""
 if (System.getenv("build_number") != null) {
     build = "B" + System.getenv("build_number")
+    println "Build " + build
 }
 if (build == null || build == '') {
     version = "${project.minecraft_version}-${project.mod_version}"
