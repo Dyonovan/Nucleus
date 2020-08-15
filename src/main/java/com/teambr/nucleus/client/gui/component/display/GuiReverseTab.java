@@ -1,7 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.NinePatchRenderer;
 import com.teambr.nucleus.util.RenderUtils;
@@ -53,7 +52,7 @@ public class GuiReverseTab extends GuiTab {
      */
     @Override
     public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        matrixStack.push();
 
         // Set targets to stun
         double targetWidth  = isActive ? expandedWidth  : FOLDED_SIZE;
@@ -85,7 +84,7 @@ public class GuiReverseTab extends GuiTab {
 
         // Render the children
         if(areChildrenActive()) {
-            GlStateManager.translated(-expandedWidth, 0, 0);
+            matrixStack.translate(-expandedWidth, 0, 0);
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
                 component.render(matrixStack, -expandedWidth, 0, mouseX, mouseY);
@@ -94,7 +93,7 @@ public class GuiReverseTab extends GuiTab {
             }));
         }
 
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**
@@ -104,7 +103,7 @@ public class GuiReverseTab extends GuiTab {
     public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Render the children
         if(areChildrenActive()) {
-            GlStateManager.translated(-expandedWidth, 0, 0);
+            matrixStack.translate(-expandedWidth, 0, 0);
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
                 component.renderOverlay(matrixStack, -expandedWidth, 0, mouseX, mouseY);

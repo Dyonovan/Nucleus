@@ -1,7 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
@@ -56,11 +55,11 @@ public class GuiComponentFluidTank extends BaseComponent {
      */
     @Override
     public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(xPos, yPos, 0);
+        matrixStack.push();
+        matrixStack.translate(xPos, yPos, 0);
         GuiHelper.renderFluid(tank, 0, height, height, width);
         RenderUtils.bindTexture(parent.textureLocation);
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**

@@ -192,7 +192,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      */
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        matrixStack.push();
         RenderUtils.prepareRenderState();
         RenderUtils.bindTexture(textureLocation);
         components.forEach((baseComponent -> {
@@ -204,7 +204,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
         RenderUtils.restoreRenderState();
         RenderHelper.enableStandardItemLighting();
         drawTopLayer(matrixStack, mouseX, mouseY);
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**
@@ -218,9 +218,9 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      */
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        matrixStack.push();
         RenderUtils.prepareRenderState();
-        GlStateManager.translated(guiLeft, guiTop, 0);
+        matrixStack.translate(guiLeft, guiTop, 0);
 
         RenderUtils.bindTexture(textureLocation);
         blit(matrixStack, 0, 0, 0, 0, xSize + 1, ySize + 1);
@@ -233,7 +233,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
         }));
         RenderUtils.restoreRenderState();
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**

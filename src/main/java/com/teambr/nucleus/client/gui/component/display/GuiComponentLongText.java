@@ -1,13 +1,11 @@
 package com.teambr.nucleus.client.gui.component.display;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
-import net.minecraft.util.text.LanguageMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +93,7 @@ public class GuiComponentLongText extends BaseComponent {
      */
     private int getLastLineToRender() {
         int maxOnScreen = height / ((textScale * 9) / 100);
-        return (lines.size() - maxOnScreen > 0) ? lines.size() - maxOnScreen : 0;
+        return Math.max(lines.size() - maxOnScreen, 0);
     }
 
     /*******************************************************************************************************************
@@ -158,13 +156,13 @@ public class GuiComponentLongText extends BaseComponent {
      */
     @Override
     public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(xPos, yPos, 0);
+        matrixStack.push();
+        matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
 
         blit(matrixStack, width - 15, 0, u, v, 15, 8);
         blit(matrixStack, width - 15, height - 7, u, v + 8, 15, 8);
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**
@@ -172,9 +170,9 @@ public class GuiComponentLongText extends BaseComponent {
      */
     @Override
     public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        matrixStack.push();
 
-        GlStateManager.translated(xPos, yPos, 0);
+        matrixStack.translate(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
 
         boolean uniCode = fontRenderer.getBidiFlag();
@@ -182,7 +180,7 @@ public class GuiComponentLongText extends BaseComponent {
 
         int yPos = -9;
         int actualY = 0;
-        GlStateManager.scalef(textScale / 100F, textScale / 100F, textScale / 100F);
+        matrixStack.scale(textScale / 100F, textScale / 100F, textScale / 100F);
         for(int x = currentLine; x < lines.size(); x++) {
             if(actualY + ((textScale * 9) / 100) > height)
                 break;
@@ -195,7 +193,7 @@ public class GuiComponentLongText extends BaseComponent {
         }
 
         //fontRenderer.setBidiFlag(uniCode); //todo
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**

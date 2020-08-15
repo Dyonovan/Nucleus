@@ -188,13 +188,13 @@ public class GuiTabCollection extends BaseComponent {
     @Override
     public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         for(GuiTab tab : tabs) {
-            GlStateManager.pushMatrix();
+            matrixStack.push();
             RenderUtils.prepareRenderState();
-            GlStateManager.translated(tab.getXPos(), tab.getYPos(), 0);
+            matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
             tab.renderOverlay(matrixStack,0, 0, mouseX, mouseY);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
-            GlStateManager.popMatrix();
+            matrixStack.pop();
         }
     }
 

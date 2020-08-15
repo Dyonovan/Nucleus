@@ -1,7 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.ClientUtils;
@@ -57,9 +56,9 @@ public class GuiComponentText extends BaseComponent {
      */
     @Override
     public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        matrixStack.push();
 
-        GlStateManager.translated(xPos, yPos, 0);
+        matrixStack.translate(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
 
 
@@ -73,7 +72,7 @@ public class GuiComponentText extends BaseComponent {
         RenderUtils.restoreColor();
         RenderUtils.restoreRenderState();
 
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**

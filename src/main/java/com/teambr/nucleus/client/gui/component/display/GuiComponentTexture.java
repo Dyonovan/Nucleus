@@ -1,7 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.RenderUtils;
@@ -46,11 +45,11 @@ public class GuiComponentTexture extends BaseComponent {
      */
     @Override
     public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(xPos, yPos, 0);
+        matrixStack.push();
+        matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
         blit(matrixStack, 0, 0, u, v, width, height);
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**

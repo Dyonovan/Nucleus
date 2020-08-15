@@ -210,7 +210,7 @@ public class GuiTab extends BaseComponent {
      */
     @Override
     public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+        matrixStack.push();
 
         // Set targets to stun
         double targetWidth  = isActive ? expandedWidth  : FOLDED_SIZE;
@@ -250,7 +250,7 @@ public class GuiTab extends BaseComponent {
             }));
         }
 
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**
