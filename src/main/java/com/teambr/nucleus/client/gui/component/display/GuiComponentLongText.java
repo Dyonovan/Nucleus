@@ -178,7 +178,7 @@ public class GuiComponentLongText extends BaseComponent {
         RenderUtils.prepareRenderState();
 
         boolean uniCode = fontRenderer.getBidiFlag();
-        //fontRenderer.setBidiFlag(false);
+        //fontRenderer.setBidiFlag(false); //todo
 
         int yPos = -9;
         int actualY = 0;
@@ -194,7 +194,7 @@ public class GuiComponentLongText extends BaseComponent {
             actualY += (textScale * 9) / 100;
         }
 
-        //fontRenderer.setBidiFlag(uniCode);
+        //fontRenderer.setBidiFlag(uniCode); //todo
         GlStateManager.popMatrix();
     }
 
