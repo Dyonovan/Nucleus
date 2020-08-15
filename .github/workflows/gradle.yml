@@ -20,13 +20,19 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Create Known Hosts
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      shell: bash
+      env:
+        SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew clean build uploadArchives
       env:
         ftp_password: ${{ secrets.FTP_PASSWORD }}
-        ftp_test: "Just a test"
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
