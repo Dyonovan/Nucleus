@@ -1,10 +1,10 @@
 package com.teambr.nucleus.util;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -166,20 +166,20 @@ public class EnergyUtils {
      */
     @OnlyIn(Dist.CLIENT)
     public static void addToolTipInfo(IEnergyStorage energyStorage, List<String> toolTip, int insert, int extract) {
-        toolTip.add(ChatFormatting.GOLD + ClientUtils.translate("nucleus.energy.energyStored"));
+        toolTip.add(TextFormatting.GOLD + ClientUtils.translate("nucleus.energy.energyStored"));
         toolTip.add("  " + EnergyUtils.getEnergyDisplay(energyStorage.getEnergyStored()) + " / " +
                 EnergyUtils.getEnergyDisplay(energyStorage.getMaxEnergyStored()));
         if(!ClientUtils.isShiftPressed()) {
             toolTip.add("");
-            toolTip.add(ChatFormatting.GRAY + "" + ChatFormatting.ITALIC + ClientUtils.translate("nucleus.text.shiftInfo"));
+            toolTip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + ClientUtils.translate("nucleus.text.shiftInfo"));
         } else {
             if(insert > -1) {
                 toolTip.add("");
-                toolTip.add(ChatFormatting.GREEN + ClientUtils.translate("nucleus.energy.energyIn"));
+                toolTip.add(TextFormatting.GREEN + ClientUtils.translate("nucleus.energy.energyIn"));
                 toolTip.add("  " + EnergyUtils.getEnergyDisplay(insert));
             }
             if(extract > -1) {
-                toolTip.add(ChatFormatting.DARK_RED + ClientUtils.translate("nucleus.energy.energyOut"));
+                toolTip.add(TextFormatting.DARK_RED + ClientUtils.translate("nucleus.energy.energyOut"));
                 toolTip.add("  " + EnergyUtils.getEnergyDisplay(extract));
             }
         }

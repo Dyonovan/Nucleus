@@ -1,5 +1,6 @@
 package com.teambr.nucleus.common.tiles;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundNBT;
@@ -153,8 +154,8 @@ public abstract class FluidHandler extends UpdatingTile implements IFluidHandler
      * @param compound The tag to read from
      */
     @Override
-    public void read(@Nonnull CompoundNBT compound) {
-        super.read(compound);
+    public void read(BlockState blockState, @Nonnull CompoundNBT compound) {
+        super.read(blockState, compound);
         ListNBT tagList = compound.getList(TANKS_NBT_TAG, 10);
         int size = compound.getInt(SIZE_NBT_TAG);
         if(size != tanks.length && compound.contains(SIZE_NBT_TAG)) tanks = new FluidTank[size];

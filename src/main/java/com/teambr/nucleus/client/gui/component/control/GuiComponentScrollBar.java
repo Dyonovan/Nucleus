@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
@@ -109,7 +110,7 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         if(currentPosition > maxRange)
             currentPosition = maxRange;
 
@@ -117,14 +118,14 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
         GlStateManager.translated(xPos + 1, yPos + currentPosition + 1, 0);
         if(isMoving && !Minecraft.getInstance().mouseHelper.isLeftDown())
             isMoving = false;
-        blit(0, 0, isMoving ? nubU + 12 : nubU, nubV, 12, 15);
+        blit(matrixStack, 0, 0, isMoving ? nubU + 12 : nubU, nubV, 12, 15);
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 

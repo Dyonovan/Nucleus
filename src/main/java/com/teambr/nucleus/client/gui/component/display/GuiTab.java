@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
@@ -194,21 +195,21 @@ public class GuiTab extends BaseComponent {
      * @param mouseY Mouse Y
      */
     @Override
-    public void renderToolTip(int mouseX, int mouseY) {
+    public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
         if(areChildrenActive()) {
             children.forEach((component -> {
                 if(component.isMouseOver(mouseX - xPos - parent.getGuiLeft(), mouseY - yPos - parent.getGuiTop()))
-                    component.renderToolTip(mouseX, mouseY);
+                    component.renderToolTip(matrixStack, mouseX, mouseY);
             }));
         } else
-            super.renderToolTip(mouseX, mouseY);
+            super.renderToolTip(matrixStack, mouseX, mouseY);
     }
 
     /**
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
 
         // Set targets to stun
@@ -226,7 +227,7 @@ public class GuiTab extends BaseComponent {
         currentHeight = dHeight;
 
         // Render the tab
-        tabRenderer.render(this, 0, 0, currentWidth, currentHeight);
+        tabRenderer.render(matrixStack, this, 0, 0, currentWidth, currentHeight);
 
         // Render the stack, if available
         RenderUtils.restoreColor();
@@ -243,7 +244,7 @@ public class GuiTab extends BaseComponent {
         if(areChildrenActive()) {
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
-                component.render(0, 0, mouseX, mouseY);
+                component.render(matrixStack,0, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
                 RenderUtils.restoreRenderState();
             }));
@@ -256,12 +257,12 @@ public class GuiTab extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Render the children
         if(areChildrenActive()) {
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
-                component.renderOverlay(0, 0, mouseX, mouseY);
+                component.renderOverlay(matrixStack,0, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
                 RenderUtils.restoreRenderState();
             }));

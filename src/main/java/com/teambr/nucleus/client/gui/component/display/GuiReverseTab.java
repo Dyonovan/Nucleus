@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.NinePatchRenderer;
@@ -51,7 +52,7 @@ public class GuiReverseTab extends GuiTab {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
 
         // Set targets to stun
@@ -69,7 +70,7 @@ public class GuiReverseTab extends GuiTab {
         currentHeight = dHeight;
 
         // Render the tab
-        tabRenderer.render(this, -currentWidth, 0, currentWidth, currentHeight);
+        tabRenderer.render(matrixStack, this, -currentWidth, 0, currentWidth, currentHeight);
 
         // Render the stack, if available
         RenderUtils.restoreColor();
@@ -87,7 +88,7 @@ public class GuiReverseTab extends GuiTab {
             GlStateManager.translated(-expandedWidth, 0, 0);
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
-                component.render(-expandedWidth, 0, mouseX, mouseY);
+                component.render(matrixStack, -expandedWidth, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
                 RenderUtils.restoreRenderState();
             }));
@@ -100,13 +101,13 @@ public class GuiReverseTab extends GuiTab {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Render the children
         if(areChildrenActive()) {
             GlStateManager.translated(-expandedWidth, 0, 0);
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
-                component.renderOverlay(-expandedWidth, 0, mouseX, mouseY);
+                component.renderOverlay(matrixStack, -expandedWidth, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
                 RenderUtils.restoreRenderState();
             }));
@@ -123,7 +124,7 @@ public class GuiReverseTab extends GuiTab {
      * @return True if mouse if over the component
      */
     @Override
-    public boolean isMouseOver(int mouseX, int mouseY) {
+    public boolean isMouseOver(double mouseX, double mouseY) {
         return mouseX >= xPos - currentWidth && mouseX < xPos && mouseY >= yPos && mouseY < yPos + getHeight();
     }
 }

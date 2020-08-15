@@ -192,7 +192,7 @@ public class WorldUtils {
                 tag.putInt("x", pos.getX()); // Add back MC tags
                 tag.putInt("y", pos.getY());
                 tag.putInt("z", pos.getZ());
-                tile.read(tag);
+                tile.read(world.getBlockState(pos), tag);
             }
         }
     }

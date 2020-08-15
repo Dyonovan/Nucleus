@@ -1,7 +1,7 @@
 modLoader="javafml"
-loaderVersion="[28,)"
+loaderVersion="[33,)"
 issueTrackerURL="https://github.com/TeamBR-Modding/Nucleus/issues"
-
+license="http://creativecommons.org/licenses/by-nc-sa/4.0/"
 [[mods]]
   modId="nucleus_teambr"
   namespace="nucleus"

@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
@@ -46,7 +47,7 @@ public class GuiComponentFluidTank extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
@@ -54,7 +55,7 @@ public class GuiComponentFluidTank extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(xPos, yPos, 0);
         GuiHelper.renderFluid(tank, 0, height, height, width);

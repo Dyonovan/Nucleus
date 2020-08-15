@@ -1,11 +1,13 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
 import com.teambr.nucleus.util.ClientUtils;
 import com.teambr.nucleus.util.RenderUtils;
+import net.minecraft.util.text.LanguageMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +66,7 @@ public class GuiComponentLongText extends BaseComponent {
         } else {
             String string = text;
             while(fontRenderer.getStringWidth(string) > lineWidth) {
-                String trimmed = fontRenderer.trimStringToWidth(string, lineWidth);
+                String trimmed = fontRenderer.func_238412_a_(string, lineWidth);
 
                 int lastSpace = trimmed.lastIndexOf(" "); // Ensure full words
                 if(lastSpace != -1)
@@ -155,13 +157,13 @@ public class GuiComponentLongText extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
 
-        blit(width - 15, 0, u, v, 15, 8);
-        blit(width - 15, height - 7, u, v + 8, 15, 8);
+        blit(matrixStack, width - 15, 0, u, v, 15, 8);
+        blit(matrixStack, width - 15, height - 7, u, v + 8, 15, 8);
         GlStateManager.popMatrix();
     }
 
@@ -169,14 +171,14 @@ public class GuiComponentLongText extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
 
         GlStateManager.translated(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
 
         boolean uniCode = fontRenderer.getBidiFlag();
-        fontRenderer.setBidiFlag(false);
+        //fontRenderer.setBidiFlag(false);
 
         int yPos = -9;
         int actualY = 0;
@@ -187,12 +189,12 @@ public class GuiComponentLongText extends BaseComponent {
             RenderUtils.restoreColor();
             String label = lines.get(x);
 
-            fontRenderer.drawString(label, 0, yPos + 9, 0xFFFFFF);
+            fontRenderer.drawString(matrixStack, label, 0, yPos + 9, 0xFFFFFF);
             yPos += 9;
             actualY += (textScale * 9) / 100;
         }
 
-        fontRenderer.setBidiFlag(uniCode);
+        //fontRenderer.setBidiFlag(uniCode);
         GlStateManager.popMatrix();
     }
 

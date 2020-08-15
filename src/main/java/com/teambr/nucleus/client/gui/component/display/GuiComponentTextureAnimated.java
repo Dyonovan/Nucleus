@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.util.RenderUtils;
@@ -63,7 +64,7 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
@@ -71,19 +72,19 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
         switch (animationDirection) {
             case RIGHT:
                 int progressRight = Math.min(width, getCurrentProgress(width));
-                blit(0, 0, u, v, progressRight, height);
+                blit(matrixStack, 0, 0, u, v, progressRight, height);
                 break;
             case DOWN:
                 int progressDown = Math.min(height, getCurrentProgress(height));
-                blit(0, 0, u, v, width, progressDown);
+                blit(matrixStack, 0, 0, u, v, width, progressDown);
                 break;
             case LEFT:
                 int progressLeft = Math.min(width, getCurrentProgress(width));
-                blit(-width + progressLeft, 0, u, v, progressLeft, height);
+                blit(matrixStack, -width + progressLeft, 0, u, v, progressLeft, height);
                 break;
             case UP:
                 int progressUp = Math.min(height, getCurrentProgress(height));
-                blit(0, height - progressUp, u, v + height - progressUp, width, progressUp);
+                blit(matrixStack, 0, height - progressUp, u, v + height - progressUp, width, progressUp);
                 break;
         }
         GlStateManager.popMatrix();

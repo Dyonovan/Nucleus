@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import net.minecraft.inventory.IInventory;
@@ -60,9 +61,9 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         if(doRender) {
-            slotTexture.render(guiLeft, guiTop, mouseX, mouseY);
+            slotTexture.render(matrixStack, guiLeft, guiTop, mouseX, mouseY);
         }
     }
 
@@ -70,7 +71,7 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No op
     }
 

@@ -1,6 +1,7 @@
 package com.teambr.nucleus.common.tiles;
 
 import com.teambr.nucleus.energy.implementations.EnergyBank;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -97,8 +98,8 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     }
 
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
+    public void read(BlockState blockState, CompoundNBT compound) {
+        super.read(blockState, compound);
 
         energyStorage.readFromNBT(compound);
 
