@@ -33,6 +33,7 @@ jobs:
       run: ./gradlew clean build uploadArchives
       env:
         ftp_password: ${{ secrets.FTP_PASSWORD }}
+        build_number: ${{ github.run_number }}
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
