@@ -149,8 +149,8 @@ dependencies {
 }
 
 uploadArchives {
-    println System.getenv("ftp_test")
-    if (System.hasProperty("ftp_password")) {
+    if (System.getenv("ftp_password") != null) {
+        println System.getenv("ftp_test")
         repositories {
             mavenDeployer {
                 configuration = configurations.deployerJars
