@@ -175,9 +175,6 @@ public class GuiComponentLongText extends BaseComponent {
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
 
-        boolean uniCode = fontRenderer.getBidiFlag();
-        //fontRenderer.setBidiFlag(false); //todo
-
         int yPos = -9;
         int actualY = 0;
         matrixStack.scale(textScale / 100F, textScale / 100F, textScale / 100F);
@@ -192,7 +189,6 @@ public class GuiComponentLongText extends BaseComponent {
             actualY += (textScale * 9) / 100;
         }
 
-        //fontRenderer.setBidiFlag(uniCode); //todo
         matrixStack.pop();
     }
 
