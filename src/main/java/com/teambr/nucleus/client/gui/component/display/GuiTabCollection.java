@@ -1,7 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.component.listeners.IMouseEventListener;
@@ -171,14 +170,14 @@ public class GuiTabCollection extends BaseComponent {
     public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         realignTabsVertically();
         for(GuiTab tab : tabs) {
-            GlStateManager.pushMatrix();
+            matrixStack.push();
             RenderUtils.prepareRenderState();
-            GlStateManager.translated(tab.getXPos(), tab.getYPos(), 0);
+            matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
             tab.render(matrixStack, 0, 0, mouseX - tab.getXPos(), mouseY - tab.getYPos());
            // tab.moveSlots();
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
-            GlStateManager.popMatrix();
+            matrixStack.pop();
         }
     }
 

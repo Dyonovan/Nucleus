@@ -234,7 +234,7 @@ public class GuiTab extends BaseComponent {
         if(stack != null) {
             RenderHelper.enableStandardItemLighting();
             GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            itemRenderer.renderItemAndEffectIntoGUI(stack, 4, 3);
+            itemRenderer.renderItemAndEffectIntoGUI(stack, guiLeft + 4, guiTop + 3);
             RenderUtils.restoreColor();
             GL11.glDisable(GL12.GL_RESCALE_NORMAL);
             GL11.glDisable(GL11.GL_LIGHTING);
