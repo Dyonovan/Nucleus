@@ -173,7 +173,7 @@ public class GuiTabCollection extends BaseComponent {
             matrixStack.push();
             RenderUtils.prepareRenderState();
             matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
-            tab.render(matrixStack, 0, 0, mouseX - tab.getXPos(), mouseY - tab.getYPos());
+            tab.render(matrixStack, guiLeft, guiTop, mouseX - tab.getXPos(), mouseY - tab.getYPos());
            // tab.moveSlots();
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
