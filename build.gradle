@@ -38,6 +38,11 @@ repositories {
     maven {
         url 'https://www.dogforce-games.com/maven/'
     }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.k-4u.nl"
+    }
 }
 
 minecraft {
@@ -85,6 +90,10 @@ configurations {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.2-' + project.forge_version
     deployerJars 'org.apache.maven.wagon:wagon-ftp:2.8'
+    // compile against the JEI API but do not include it at runtime
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${JEI_version}:api")
+    // at runtime, use the full JEI jar
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${JEI_version}")
 }
 
 processResources {

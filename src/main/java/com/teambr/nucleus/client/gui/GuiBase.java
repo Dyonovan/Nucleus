@@ -1,6 +1,7 @@
 package com.teambr.nucleus.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.component.display.GuiComponentText;
 import com.teambr.nucleus.client.gui.component.display.GuiTabCollection;
@@ -202,6 +203,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
             RenderUtils.restoreColor();
         }));
         RenderUtils.restoreRenderState();
+        RenderSystem.enableAlphaTest();
         RenderHelper.enableStandardItemLighting();
         drawTopLayer(matrixStack, mouseX, mouseY);
         matrixStack.pop();
