@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.teambr.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
@@ -82,44 +81,44 @@ public class NinePatchRenderer {
 
     // Edges
     protected void renderTopEdge(MatrixStack matrixStack, Screen gui, int width) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(cellSize, 0, 0);
-        GL11.glScalef(width - (cellSize * 2), 1, 0);
+        matrixStack.push();
+        matrixStack.translate(cellSize, 0, 0);
+        matrixStack.scale(width - (cellSize * 2), 1, 0);
         gui.blit(matrixStack, 0, 0, u + cellSize, v, 1, cellSize);
-        GL11.glPopMatrix();
+        matrixStack.pop();
     }
 
     protected void renderBottomEdge(MatrixStack matrixStack, Screen gui, int width, int height) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(cellSize, height - cellSize, 0);
-        GL11.glScalef(width - (cellSize * 2), 1, 0);
+        matrixStack.push();
+        matrixStack.translate(cellSize, height - cellSize, 0);
+        matrixStack.scale(width - (cellSize * 2), 1, 0);
         gui.blit(matrixStack, 0, 0, u + cellSize, v + cellSize + cellSize, 1, cellSize);
-        GL11.glPopMatrix();
+        matrixStack.pop();
     }
 
     protected void renderLeftEdge(MatrixStack matrixStack, Screen gui, int height) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0, cellSize, 0);
-        GL11.glScalef(1, height - (cellSize * 2), 0);
+        matrixStack.push();
+        matrixStack.translate(0, cellSize, 0);
+        matrixStack.scale(1, height - (cellSize * 2), 0);
         gui.blit(matrixStack, 0, 0, u, v + cellSize, cellSize, 1);
-        GL11.glPopMatrix();
+        matrixStack.pop();
     }
 
     protected void renderRightEdge(MatrixStack matrixStack, Screen gui, int width, int height) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(width - cellSize, cellSize, 0);
-        GL11.glScalef(1, height - (cellSize * 2), 0);
+        matrixStack.push();
+        matrixStack.translate(width - cellSize, cellSize, 0);
+        matrixStack.scale(1, height - (cellSize * 2), 0);
         gui.blit(matrixStack, 0, 0, u + cellSize + cellSize, v + cellSize, cellSize, 1);
-        GL11.glPopMatrix();
+        matrixStack.pop();
     }
 
     // Background
     protected void renderBackground(MatrixStack matrixStack, Screen gui, int width, int height) {
-        GL11.glPushMatrix();
-        GL11.glTranslatef(cellSize - 1, cellSize - 1, 0);
-        GL11.glScalef(width - (cellSize * 2) + 2, height - (cellSize * 2) + 2, 0);
+        matrixStack.push();
+        matrixStack.translate(cellSize - 1, cellSize - 1, 0);
+        matrixStack.scale(width - (cellSize * 2) + 2, height - (cellSize * 2) + 2, 0);
         gui.blit(matrixStack, 0, 0, u + cellSize, v + cellSize, 1, 1);
-        GL11.glPopMatrix();
+        matrixStack.pop();
     }
 
     public void render(MatrixStack matrixStack, Screen gui, int x, int y, int width, int height) {
@@ -139,12 +138,12 @@ public class NinePatchRenderer {
      * @param color Color to render
      */
     public void render(MatrixStack matrixStack, Screen gui, int x, int y, int width, int height, Color color) {
-        GL11.glPushMatrix();
+        matrixStack.push();
         if (color != null)
             RenderUtils.setColor(color);
         if (patchLocation != null)
             RenderUtils.bindTexture(patchLocation);
-        GL11.glTranslatef(x, y, 0);
+        matrixStack.translate(x, y, 0);
         renderBackground(matrixStack, gui, width, height);
         renderTopEdge(matrixStack, gui, width);
         renderBottomEdge(matrixStack, gui, width, height);
@@ -154,6 +153,6 @@ public class NinePatchRenderer {
         renderTopRightCorner(matrixStack, gui, width);
         renderBottomLeftCorner(matrixStack, gui, height);
         renderBottomRightCorner(matrixStack, gui, width, height);
-        GL11.glPopMatrix();
+        matrixStack.pop();
     }
 }
