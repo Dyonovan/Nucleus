@@ -1,6 +1,8 @@
 package com.teambr.nucleus.client.gui.component.display;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.NinePatchRenderer;
 import com.teambr.nucleus.util.RenderUtils;
@@ -75,21 +77,19 @@ public class GuiReverseTab extends GuiTab {
         RenderUtils.restoreColor();
         if(stack != null) {
             RenderHelper.enableStandardItemLighting();
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            itemRenderer.renderItemAndEffectIntoGUI(stack, guiLeft - 21, guiTop + 3);
-            RenderUtils.restoreColor();
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            GL11.glDisable(GL11.GL_LIGHTING);
+            GlStateManager.pushMatrix();
+            GlStateManager.translatef(0F, yPos, 0F);
+            RenderUtils.restoreRenderState();
+            itemRenderer.renderItemAndEffectIntoGUI(stack, guiLeft - 16, guiTop + 4);
+            GlStateManager.popMatrix();
         }
 
         // Render the children
         if(areChildrenActive()) {
             matrixStack.translate(-expandedWidth, 0, 0);
             children.forEach((component -> {
-                RenderUtils.prepareRenderState();
                 component.render(matrixStack, -expandedWidth, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
-                RenderUtils.restoreRenderState();
             }));
         }
 
