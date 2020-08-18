@@ -178,6 +178,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
+        RenderUtils.prepareRenderState();
         this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
     }
 

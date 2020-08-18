@@ -171,11 +171,8 @@ public class GuiTabCollection extends BaseComponent {
         realignTabsVertically();
         for(GuiTab tab : tabs) {
             matrixStack.push();
-            RenderUtils.prepareRenderState();
             matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
             tab.render(matrixStack, guiLeft, guiTop, mouseX - tab.getXPos(), mouseY - tab.getYPos());
-           // tab.moveSlots();
-            RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
             matrixStack.pop();
         }

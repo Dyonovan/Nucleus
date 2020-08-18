@@ -88,16 +88,6 @@ public class GuiTab extends BaseComponent {
         return isActive && currentWidth == expandedWidth && currentHeight == expandedHeight;
     }
 
-//    /**
-//     * Moves the slots if need be
-//     */
-//    public void moveSlots() {
-//        children.forEach((component -> {
-//            if(component instanceof GuiComponentTabSlotHolder)
-//                ((GuiComponentTabSlotHolder)component).moveSlots(areChildrenActive());
-//        }));
-//    }
-
     /**
      * Called when the mouse is pressed
      *
@@ -233,20 +223,18 @@ public class GuiTab extends BaseComponent {
         RenderUtils.restoreColor();
         if(stack != null) {
             RenderHelper.enableStandardItemLighting();
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-            itemRenderer.renderItemAndEffectIntoGUI(stack, guiLeft + getParent().getXSize() + 5, guiTop + 5);
-            RenderUtils.restoreColor();
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-            GL11.glDisable(GL11.GL_LIGHTING);
+            GlStateManager.pushMatrix();
+            GlStateManager.translatef(0F, yPos, 0F);
+            RenderUtils.restoreRenderState();
+            itemRenderer.renderItemAndEffectIntoGUI(stack, guiLeft + getParent().getXSize(), guiTop + 4);
+            GlStateManager.popMatrix();
         }
 
         // Render the children
         if(areChildrenActive()) {
             children.forEach((component -> {
-                RenderUtils.prepareRenderState();
                 component.render(matrixStack,0, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
-                RenderUtils.restoreRenderState();
             }));
         }
 
