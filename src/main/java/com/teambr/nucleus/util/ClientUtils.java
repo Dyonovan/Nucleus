@@ -74,7 +74,7 @@ public class ClientUtils {
      * @param maxWidth Max length of string
      * @return Clipped list of strings
      */
-    public List<String> wrapStringToLength(String inputString, int maxWidth) {
+    public static List<String> wrapStringToLength(String inputString, int maxWidth) {
         ArrayList<String> formattedList = new ArrayList<>();
 
         int fullWidth = inputString.length();
