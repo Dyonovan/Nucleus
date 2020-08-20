@@ -5,6 +5,8 @@ import net.minecraft.client.resources.I18n;
 import org.lwjgl.glfw.GLFW;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -64,5 +66,25 @@ public class ClientUtils {
      */
     public static boolean isShiftPressed() {
         return isKeyPressed(GLFW.GLFW_KEY_LEFT_SHIFT) || isKeyPressed(GLFW.GLFW_KEY_RIGHT_SHIFT);
+    }
+
+    /**
+     * Convert a string into a list of strings with clip to max length
+     * @param inputString Long string to trim
+     * @param maxWidth Max length of string
+     * @return Clipped list of strings
+     */
+    public List<String> wrapStringToLength(String inputString, int maxWidth) {
+        ArrayList<String> formattedList = new ArrayList<>();
+
+        int fullWidth = inputString.length();
+        if(fullWidth > maxWidth) {
+            for(int position = 0; position < inputString.length(); position += maxWidth)
+                formattedList.add(inputString.substring(position, Math.min(inputString.length(), position + maxWidth)));
+        } else {
+            formattedList.add(inputString);
+        }
+
+        return formattedList;
     }
 }

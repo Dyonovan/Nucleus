@@ -56,9 +56,6 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
         rightTabs = new GuiTabCollection(this, xSize + 1);
         leftTabs = new GuiTabCollection(this, -1);
 
-        /*titleComponent = new GuiComponentText(this,
-                xSize / 2 - (Minecraft.getInstance().fontRenderer.getStringWidth(ClientUtils.translate(title.getFormattedText())) / 2),
-                3, title.getFormattedText(), null);*/
         titleComponent = new GuiComponentText(this,
                 xSize / 2 - (Minecraft.getInstance().fontRenderer.getStringWidth(ClientUtils.translate(title.getString())) / 2),
                 3, title.getString(), null);
