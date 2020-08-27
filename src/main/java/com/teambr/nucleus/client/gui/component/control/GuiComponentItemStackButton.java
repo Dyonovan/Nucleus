@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import net.minecraft.client.Minecraft;
@@ -33,8 +34,8 @@ public abstract class GuiComponentItemStackButton extends GuiComponentButton {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
-        super.renderOverlay(guiLeft, guiTop, mouseX, mouseY);
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        super.renderOverlay(matrixStack, guiLeft, guiTop, mouseX, mouseY);
         GlStateManager.pushMatrix();
         GlStateManager.pushLightingAttributes();
         GlStateManager.translated(xPos, yPos, 1);

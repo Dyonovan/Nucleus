@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.listeners.IKeyboardListener;
 import com.teambr.nucleus.client.gui.component.listeners.IMouseEventListener;
@@ -29,7 +30,7 @@ public abstract class BaseComponent extends Screen {
     protected int xPos, yPos;
     protected GuiBase<?> parent;
 
-    protected List<String> toolTip = new ArrayList<>();
+    protected List<ITextComponent> toolTip = new ArrayList<>();
 
     protected IMouseEventListener mouseEventListener;
     protected IKeyboardListener   keyboardEventListener;
@@ -60,12 +61,12 @@ public abstract class BaseComponent extends Screen {
     /**
      * Called to render the component
      */
-    public abstract void render(int guiLeft, int guiTop, int mouseX, int mouseY);
+    public abstract void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
-    public abstract void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY);
+    public abstract void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
 
     /**
      * Used to find how wide this is
@@ -92,7 +93,7 @@ public abstract class BaseComponent extends Screen {
      * @return A list of string to display
      */
     @Nullable
-    public List<String> getDynamicToolTip(int mouseX, int mouseY) {
+    public List<ITextComponent> getDynamicToolTip(int mouseX, int mouseY) {
         return null;
     }
 
@@ -102,11 +103,11 @@ public abstract class BaseComponent extends Screen {
      * @param mouseX Mouse X
      * @param mouseY Mouse Y
      */
-    public void renderToolTip(int mouseX, int mouseY) {
+    public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
         if(toolTip != null && !toolTip.isEmpty())
-            renderTooltip(toolTip, mouseX, mouseY, Minecraft.getInstance().fontRenderer);
+            func_243308_b(matrixStack, toolTip, mouseX, mouseY);
         else if(getDynamicToolTip(mouseX, mouseY) != null)
-            renderTooltip(getDynamicToolTip(mouseX, mouseY), mouseX, mouseY, Minecraft.getInstance().fontRenderer);
+            func_243308_b(matrixStack, getDynamicToolTip(mouseX, mouseY), mouseX, mouseY);
 
     }
 
@@ -172,7 +173,7 @@ public abstract class BaseComponent extends Screen {
      * @param mouseY Mouse Y Position
      * @return True if mouse if over the component
      */
-    public boolean isMouseOver(int mouseX, int mouseY) {
+    public boolean isMouseOver(double mouseX, double mouseY) {
         return  mouseX >= xPos && mouseX < xPos + getWidth() && mouseY >= yPos && mouseY < yPos + getHeight();
     }
 
@@ -215,11 +216,11 @@ public abstract class BaseComponent extends Screen {
         this.parent = parent;
     }
 
-    public List<String> getToolTip() {
+    public List<ITextComponent> getToolTip() {
         return toolTip;
     }
 
-    public void setToolTip(List<String> toolTip) {
+    public void setToolTip(List<ITextComponent> toolTip) {
         this.toolTip = toolTip;
     }
 

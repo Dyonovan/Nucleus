@@ -68,7 +68,7 @@ public class ClientOverridePacket implements INetworkMessage {
                     World world = ctx.get().getSender().world;
                     if(world.getTileEntity(message.blockPosition) != null) {
                         world.getTileEntity(message.blockPosition).setPos(message.blockPosition);
-                        world.getTileEntity(message.blockPosition).read(message.tag);
+                        world.getTileEntity(message.blockPosition).read(world.getBlockState(message.blockPosition), message.tag);
                         world.notifyBlockUpdate(message.blockPosition,
                                 world.getBlockState(message.blockPosition), world.getBlockState(message.blockPosition),
                                 3);

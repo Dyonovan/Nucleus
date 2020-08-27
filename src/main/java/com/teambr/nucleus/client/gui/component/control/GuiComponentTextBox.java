@@ -1,11 +1,13 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.util.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -34,13 +36,13 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * @param boxHeight The text box height, usually 16
      * @param defaultLabel The default label, will translate, can be null
      */
-    public GuiComponentTextBox(GuiBase<?> parent, int x, int y, int boxWidth, int boxHeight, @Nullable String defaultLabel) {
+    public GuiComponentTextBox(GuiBase<?> parent, int x, int y, int boxWidth, int boxHeight, @Nullable StringTextComponent defaultLabel) {
         super(parent, x, y);
         this.width = boxWidth;
         this.height = boxHeight;
 
         textField = new TextFieldWidget(fontRenderer, x, y, width, height, defaultLabel);
-        textField.setText(ClientUtils.translate(defaultLabel));
+        textField.setText(ClientUtils.translate(defaultLabel.getText()));
     }
 
     /*******************************************************************************************************************
@@ -92,9 +94,9 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
-        textField.render(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
+        textField.render(matrixStack, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
         GlStateManager.disableAlphaTest();
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         GlStateManager.popMatrix();
@@ -104,7 +106,7 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // NO OP
     }
 

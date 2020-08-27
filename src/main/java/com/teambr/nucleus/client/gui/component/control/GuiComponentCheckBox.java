@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
@@ -78,11 +79,11 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(xPos, yPos, 0);
         GlStateManager.disableLighting();
-        blit(0, 0, selected ? u + 10 : u, v, 10, 10);
+        blit(matrixStack, 0, 0, selected ? u + 10 : u, v, 10, 10);
         GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
@@ -91,11 +92,11 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(xPos + 10, yPos, 0);
         RenderUtils.setColor(Color.darkGray);//Minecraft doesn't play nice with GL, so we will just set our own color
-        fontRenderer.drawString(label, 0, 0, Color.darkGray.getRGB());
+        fontRenderer.drawString(matrixStack, label, 0, 0, Color.darkGray.getRGB());
         RenderUtils.restoreColor();
         GlStateManager.popMatrix();
     }

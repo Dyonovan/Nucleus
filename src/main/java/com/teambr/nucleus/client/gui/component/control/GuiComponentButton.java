@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
@@ -105,7 +106,7 @@ public abstract class GuiComponentButton extends BaseComponent {
      * Used to enable the hovered over texture
      */
     @Override
-    public boolean isMouseOver(int mouseX, int mouseY) {
+    public boolean isMouseOver(double mouseX, double mouseY) {
         if(mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height) {
             isOver = true;
             return true;
@@ -118,12 +119,12 @@ public abstract class GuiComponentButton extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         RenderUtils.prepareRenderState();
         RenderUtils.bindTexture(parent.textureLocation);
         GlStateManager.translated(xPos, yPos, 0);
-        blit(0, 0, u, isOver ? v + height : v, width, height);
+        blit(matrixStack, 0, 0, u, isOver ? v + height : v, width, height);
         RenderUtils.restoreRenderState();
         GlStateManager.popMatrix();
     }
@@ -132,14 +133,14 @@ public abstract class GuiComponentButton extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         if(label != null) {
             GlStateManager.pushMatrix();
             RenderUtils.prepareRenderState();
             RenderUtils.restoreColor();
             float size = fontRenderer.getStringWidth(label);
             GlStateManager.translated(xPos + (width / 2F - size / 2F), yPos + 6, 0);
-            fontRenderer.drawString(label, 0, 0, Color.darkGray.getRGB());
+            fontRenderer.drawString(matrixStack, label, 0, 0, Color.darkGray.getRGB());
             RenderUtils.restoreColor();
             RenderUtils.restoreRenderState();
             GlStateManager.popMatrix();

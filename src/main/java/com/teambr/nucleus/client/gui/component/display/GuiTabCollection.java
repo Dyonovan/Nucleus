@@ -1,6 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.component.listeners.IMouseEventListener;
@@ -130,7 +130,7 @@ public class GuiTabCollection extends BaseComponent {
      * @return True if mouse if over the component
      */
     @Override
-    public boolean isMouseOver(int mouseX, int mouseY) {
+    public boolean isMouseOver(double mouseX, double mouseY) {
         for(GuiTab tab : tabs) {
             if(tab.isMouseOver(mouseX, mouseY))
                 return true;
@@ -156,10 +156,10 @@ public class GuiTabCollection extends BaseComponent {
      * @param mouseY Mouse Y
      */
     @Override
-    public void renderToolTip(int mouseX, int mouseY) {
+    public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
         tabs.forEach((guiTab -> {
             if(guiTab.isMouseOver(mouseX - parent.getGuiLeft(), mouseY - parent.getGuiTop()))
-                guiTab.renderToolTip(mouseX, mouseY);
+                guiTab.renderToolTip(matrixStack, mouseX, mouseY);
         }));
     }
 
@@ -167,17 +167,14 @@ public class GuiTabCollection extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         realignTabsVertically();
         for(GuiTab tab : tabs) {
-            GlStateManager.pushMatrix();
-            RenderUtils.prepareRenderState();
-            GlStateManager.translated(tab.getXPos(), tab.getYPos(), 0);
-            tab.render(0, 0, mouseX - tab.getXPos(), mouseY - tab.getYPos());
-           // tab.moveSlots();
-            RenderUtils.restoreRenderState();
+            matrixStack.push();
+            matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
+            tab.render(matrixStack, guiLeft, guiTop, mouseX - tab.getXPos(), mouseY - tab.getYPos());
             RenderUtils.restoreColor();
-            GlStateManager.popMatrix();
+            matrixStack.pop();
         }
     }
 
@@ -185,15 +182,15 @@ public class GuiTabCollection extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         for(GuiTab tab : tabs) {
-            GlStateManager.pushMatrix();
+            matrixStack.push();
             RenderUtils.prepareRenderState();
-            GlStateManager.translated(tab.getXPos(), tab.getYPos(), 0);
-            tab.renderOverlay(0, 0, mouseX, mouseY);
+            matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
+            tab.renderOverlay(matrixStack,0, 0, mouseX, mouseY);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
-            GlStateManager.popMatrix();
+            matrixStack.pop();
         }
     }
 

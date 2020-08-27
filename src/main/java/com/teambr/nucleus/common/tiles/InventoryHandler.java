@@ -1,6 +1,7 @@
 package com.teambr.nucleus.common.tiles;
 
 import com.teambr.nucleus.common.container.IInventoryCallback;
+import net.minecraft.block.BlockState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -146,8 +147,8 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param compound The tag to read from
      */
     @Override
-    public void read(CompoundNBT compound) {
-        super.read(compound);
+    public void read(BlockState blockState, CompoundNBT compound) {
+        super.read(blockState, compound);
         ItemStackHelper.loadAllItems(compound, inventoryContents);
     }
 

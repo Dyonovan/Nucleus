@@ -1,6 +1,7 @@
 package com.teambr.nucleus.client.gui;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.client.gui.component.display.GuiComponentText;
 import com.teambr.nucleus.client.gui.component.display.GuiTabCollection;
@@ -56,8 +57,8 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
         leftTabs = new GuiTabCollection(this, -1);
 
         titleComponent = new GuiComponentText(this,
-                xSize / 2 - (Minecraft.getInstance().fontRenderer.getStringWidth(ClientUtils.translate(title.getFormattedText())) / 2),
-                3, title.getFormattedText(), null);
+                xSize / 2 - (Minecraft.getInstance().fontRenderer.getStringWidth(ClientUtils.translate(title.getString())) / 2),
+                3, title.getString(), null);
         components.add(titleComponent);
 
         addComponents();
@@ -172,10 +173,11 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        RenderUtils.prepareRenderState();
+        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
     }
 
     /**
@@ -187,20 +189,21 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param mouseY The mouse Y Position
      */
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
+        matrixStack.push();
         RenderUtils.prepareRenderState();
         RenderUtils.bindTexture(textureLocation);
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
-            baseComponent.renderOverlay(0, 0, mouseX - guiLeft, mouseY - guiTop);
+            baseComponent.renderOverlay(matrixStack, 0, 0, mouseX - guiLeft, mouseY - guiTop);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
         }));
         RenderUtils.restoreRenderState();
+        RenderSystem.enableAlphaTest();
         RenderHelper.enableStandardItemLighting();
-        drawTopLayer(mouseX, mouseY);
-        GlStateManager.popMatrix();
+        drawTopLayer(matrixStack, mouseX, mouseY);
+        matrixStack.pop();
     }
 
     /**
@@ -213,23 +216,23 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param mouseY The mouse Y
      */
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        matrixStack.push();
         RenderUtils.prepareRenderState();
-        GlStateManager.translated(guiLeft, guiTop, 0);
+        matrixStack.translate(guiLeft, guiTop, 0);
 
         RenderUtils.bindTexture(textureLocation);
-        blit(0, 0, 0, 0, xSize + 1, ySize + 1);
+        blit(matrixStack, 0, 0, 0, 0, xSize + 1, ySize + 1);
 
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
-            baseComponent.render(0, 0, mouseX - guiLeft, mouseY - guiTop);
+            baseComponent.render(matrixStack, guiLeft, guiTop, mouseX - guiLeft, mouseY - guiTop);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
         }));
         RenderUtils.restoreRenderState();
         RenderHelper.enableStandardItemLighting();
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**
@@ -240,10 +243,10 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param mouseX The Mouse X Position
      * @param mouseY The mouse Y Position
      */
-    public void drawTopLayer(int mouseX, int mouseY) {
+    public void drawTopLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
         components.forEach((baseComponent -> {
             if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop))
-                baseComponent.renderToolTip(mouseX, mouseY);
+                baseComponent.renderToolTip(matrixStack, mouseX, mouseY);
         }));
     }
 

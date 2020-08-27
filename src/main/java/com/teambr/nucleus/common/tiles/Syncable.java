@@ -65,7 +65,7 @@ public abstract class Syncable extends UpdatingTile {
         PacketManager.INSTANCE.send(PacketDistributor.NEAR.with( () ->
                 new PacketDistributor.TargetPoint(
                 getPos().getX(), getPos().getY(), getPos().getZ(),
-                25, getWorld().getDimension().getType())),
+                25, getWorld().getDimensionKey())),
                 new SyncableFieldPacket(false, id, value, getPos()));
     }
 }

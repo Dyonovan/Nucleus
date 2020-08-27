@@ -94,7 +94,7 @@ public class SyncableFieldPacket implements INetworkMessage {
                                              message.blockPosition.getY(),
                                              message.blockPosition.getZ(),
                                             25,
-                                            world.getDimension().getType())),
+                                            world.getDimensionKey())),
                             new SyncableFieldPacket(false, message.id,
                                     ((Syncable) world.getTileEntity(message.blockPosition)).getVariable(message.id), message.blockPosition));
                 else // On server update

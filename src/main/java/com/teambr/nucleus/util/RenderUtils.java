@@ -30,8 +30,8 @@ public class RenderUtils {
     // Resource Locations
     public static final ResourceLocation MC_BLOCKS_RESOURCE_LOCATION =
             AtlasTexture.LOCATION_BLOCKS_TEXTURE;
-    public static final ResourceLocation MC_ITEMS_RESOURCE_LOCATION =
-            new ResourceLocation("textures/atlas/items.png");
+    /*public static final ResourceLocation MC_ITEMS_RESOURCE_LOCATION =
+            new ResourceLocation("textures/atlas/items.png");*/
 
     /*******************************************************************************************************************
      * Render Helpers                                                                                                  *
@@ -47,9 +47,11 @@ public class RenderUtils {
 
     /**
      * Used to bind the MC item sheet
+     * No longer used as items are now part of Block Sheet
      */
+    @Deprecated
     public static void bindMinecraftItemSheet() {
-        bindTexture(MC_ITEMS_RESOURCE_LOCATION);
+        bindTexture(MC_BLOCKS_RESOURCE_LOCATION);
     }
 
     /**

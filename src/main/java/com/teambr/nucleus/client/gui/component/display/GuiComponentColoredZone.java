@@ -1,5 +1,6 @@
 package com.teambr.nucleus.client.gui.component.display;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
@@ -55,16 +56,16 @@ public class GuiComponentColoredZone extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         color = getDynamicColor();
-        GlStateManager.pushMatrix();
+        matrixStack.push();
         GlStateManager.disableLighting();
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableBlend();
         GlStateManager.enableAlphaTest();
         GlStateManager.disableDepthTest();
         GlStateManager.disableTexture();
-        GlStateManager.translated(xPos, yPos, 10);
+        matrixStack.translate(xPos, yPos, 10);
         RenderUtils.setColor(color);
         GL11.glBegin(GL11.GL_QUADS);
         GL11.glVertex3d(0, 0, 0);
@@ -75,14 +76,14 @@ public class GuiComponentColoredZone extends BaseComponent {
         GlStateManager.disableBlend();
         GlStateManager.enableDepthTest();
         GlStateManager.enableTexture();
-        GlStateManager.popMatrix();
+        matrixStack.pop();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Op OP, we want bars and stuff to render on top of this
     }
 

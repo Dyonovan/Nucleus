@@ -1,11 +1,13 @@
 package com.teambr.nucleus.client.gui.component.control;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.teambr.nucleus.client.gui.GuiBase;
 import com.teambr.nucleus.client.gui.component.BaseComponent;
 import com.teambr.nucleus.helper.GuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.util.text.StringTextComponent;
 
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
@@ -54,7 +56,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
         this.floor = lowestValue;
         this.ceiling = highestValue;
 
-        textField = new TextFieldWidget( fontRenderer, x, y, width - 10, height, "");
+        textField = new TextFieldWidget( fontRenderer, x, y, width - 10, height, StringTextComponent.EMPTY);
         textField.setText(String.valueOf(value));
     }
 
@@ -145,14 +147,14 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         GlStateManager.pushMatrix();
         GlStateManager.translated(xPos, yPos, 0);
-        blit(width - 1, -1, upSelected  ? u + 11 : u, v, 11, 8);
-        blit(width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
+        blit(matrixStack, width - 1, -1, upSelected  ? u + 11 : u, v, 11, 8);
+        blit(matrixStack, width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();
-        textField.render(mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
+        textField.render(matrixStack, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
         GlStateManager.popMatrix();
     }
 
@@ -160,7 +162,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
