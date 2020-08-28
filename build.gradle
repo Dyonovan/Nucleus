@@ -13,14 +13,9 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
-String APIToken = ''
-if (file('APIToken').exists()) {
-    APIToken = new File('APIToken').text
-}
-
 String build = ""
-if (System.getenv("build_number") != null) {
-    build = "B" + System.getenv("build_number")
+if (System.getenv("BUILD_NUMBER") != null) {
+    build = "B" + System.getenv("BUILD_NUMBER")
 }
 if (build == null || build == '') {
     version = "${project.minecraft_version}-${project.mod_version}"
@@ -29,7 +24,7 @@ if (build == null || build == '') {
 }
 
 
-group= "com.teambr.nucleus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group= "com.pauljoda.nucleus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Nucleus"
 
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
@@ -80,13 +75,13 @@ minecraft {
         }
 
         mappings channel: 'snapshot', version: project.MAPPINGS
-//    makeObfSourceJar = false
     }
 }
 
 configurations {
     deployerJars
 }
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.2-' + project.forge_version
     deployerJars 'org.apache.maven.wagon:wagon-ftp:2.8'
@@ -171,64 +166,6 @@ publishing {
     publications {
         gpr(MavenPublication) {
             from(components.java)
-        }
-    }
-}
-
-uploadArchives {
-    if (System.getenv("ftp_password") != null) {
-        repositories {
-            mavenDeployer {
-                configuration = configurations.deployerJars
-                repository(url: "scp://dyonovan.com/srv/http/maven2") {
-                    authentication(userName: "http", password: System.getenv("ftp_password"))
-                }
-
-                pom {
-                    groupId = project.group
-                    version = project.version
-                    artifactId = project.archivesBaseName
-
-                    pom.project {
-                        name project.archivesBaseName
-                        packaging 'jar'
-                        description 'Nucleus'
-                        url 'https://github.com/TeamBR-Modding/Nucleus'
-                        scm {
-                            url 'https://github.com/TeamBR-Modding/Nucleus'
-                            connection 'scm:git:git@github.com/TeamBR-Modding/Nucleus.git'
-                            developerConnection 'scm:git:git@github.com/TeamBR-Modding/Nucleus.git'
-                        }
-                        issueManagement {
-                            system 'github'
-                            url 'https://github.com/TeamBR-Modding/Nucleus/issues'
-                        }
-                        licenses {
-                            license {
-                                name 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License'
-                                url 'http://creativecommons.org/licenses/by-nc-sa/4.0/'
-                                distribution 'repo'
-                            }
-                        }
-                        developers {
-                            developer {
-                                id 'Dyonovan'
-                                name 'Dyonovan'
-                                roles {
-                                    role 'developer'
-                                }
-                            }
-                            developer {
-                                id 'pauljoda'
-                                name 'pauljoda'
-                                roles {
-                                    role 'developer'
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
