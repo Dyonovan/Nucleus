@@ -5,9 +5,9 @@ name: Build
 
 on:
   push:
-    branches: [ 1.16.2 ]
+    branches: [ master ]
   pull_request:
-    branches: [ 1.16.2 ]
+    branches: [ master ]
 
 jobs:
   build:
