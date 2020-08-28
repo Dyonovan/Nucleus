@@ -148,7 +148,7 @@ publishing {
         }
     }
     publications {
-        gpr(MavenPublication) {
+        mavenJava(MavenPublication) {
             from components.java
             artifact devJar
             artifact sourceJarJava
