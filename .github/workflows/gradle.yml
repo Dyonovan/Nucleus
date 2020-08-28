@@ -2,6 +2,8 @@
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
 name: Build
+env:
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
 on:
   push:
@@ -11,7 +13,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -20,20 +21,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Create Known Hosts
-      run: |
-        mkdir -p ~/.ssh
-        echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-      shell: bash
-      env:
-        SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
-      run: ./gradlew clean build uploadArchives
-      env:
-        ftp_password: ${{ secrets.FTP_PASSWORD }}
-        build_number: ${{ github.run_number }}
+      run: ./gradlew clean build publish
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
