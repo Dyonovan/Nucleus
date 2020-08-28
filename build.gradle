@@ -148,60 +148,15 @@ publishing {
         }
     }
     publications {
-        mavenJava(MavenPublication) {
+        gpr(MavenPublication) {
             from components.java
             artifact devJar
             artifact sourceJarJava
             artifact javadocJar
             artifact deobfJar
-            pom {
-                groupId = project.group
-                version = project.version
-                artifactId = project.archivesBaseName
-
-                pom.project {
-                    name project.archivesBaseName
-                    packaging 'jar'
-                    description 'Nucleus'
-                    url 'https://github.com/pauljoda/Nucleus'
-                    scm {
-                        url 'https://github.com/pauljoda/Nucleus'
-                        connection 'scm:git:git@github.com/pauljoda/Nucleus.git'
-                        developerConnection 'scm:git:git@github.com/pauljoda/Nucleus.git'
-                    }
-                    issueManagement {
-                        system 'github'
-                        url 'https://github.com/pauljoda/Nucleus/issues'
-                    }
-                    licenses {
-                        license {
-                            name 'Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License'
-                            url 'http://creativecommons.org/licenses/by-nc-sa/4.0/'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            id 'Dyonovan'
-                            name 'Dyonovan'
-                            roles {
-                                role 'developer'
-                            }
-                        }
-                        developer {
-                            id 'pauljoda'
-                            name 'pauljoda'
-                            roles {
-                                role 'developer'
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
-
 
 jar {
     manifest {
