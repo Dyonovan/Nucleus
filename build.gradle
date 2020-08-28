@@ -150,10 +150,10 @@ publishing {
     publications {
         gpr(MavenPublication) {
             from components.java
-            archives devJar
-            archives sourceJarJava
-            archives javadocJar
-            archives deobfJar
+            artifact devJar
+            artifact sourceJarJava
+            artifact javadocJar
+            artifact deobfJar
         }
     }
 }
