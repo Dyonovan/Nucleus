@@ -11,7 +11,6 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle'
 
 apply plugin: 'maven-publish'
-apply plugin: 'maven'
 
 String build = ""
 if (System.getenv("BUILD_NUMBER") != null) {
@@ -78,13 +77,8 @@ minecraft {
     }
 }
 
-configurations {
-    deployerJars
-}
-
 dependencies {
     minecraft 'net.minecraftforge:forge:1.16.2-' + project.forge_version
-    deployerJars 'org.apache.maven.wagon:wagon-ftp:2.8'
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${JEI_version}:api")
     // at runtime, use the full JEI jar
@@ -140,17 +134,7 @@ artifacts {
     archives deobfJar
 }
 
-configurations {
-    deployerJars
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
-}
+jar.finalizedBy('reobfJar')
 
 publishing {
     repositories {
