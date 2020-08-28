@@ -10,7 +10,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle'
 
-//apply plugin: 'maven-publish'
+apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
 String APIToken = ''
@@ -157,6 +157,24 @@ dependencies {
     deployerJars "org.apache.maven.wagon:wagon-ssh:2.2"
 }
 
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/pauljoda/Nucleus")
+            credentials {
+                username = "pauljoda"
+                password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
+}
+
 uploadArchives {
     if (System.getenv("ftp_password") != null) {
         repositories {
@@ -219,11 +237,11 @@ jar {
     manifest {
         attributes([
                 "Specification-Title": project.name,
-                "Specification-Vendor": "TeamBRModding",
+                "Specification-Vendor": "pauljoda",
                 "Specification-Version": "${version}",
                 "Implementation-Title": project.name,
                 "Implementation-Version": "${version}",
-                "Implementation-Vendor" :"TeamBRModding",
+                "Implementation-Vendor" :"pauljoda",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")],)
     }
 }
