@@ -1,14 +1,14 @@
 modLoader="javafml"
 loaderVersion="[33,)"
-issueTrackerURL="https://github.com/TeamBR-Modding/Nucleus/issues"
+issueTrackerURL="https://github.com/pauljoda/Nucleus/issues"
 license="http://creativecommons.org/licenses/by-nc-sa/4.0/"
 [[mods]]
-  modId="nucleus_teambr"
-  namespace="nucleus"
+  modId="nucleus_pauljoda"
+  namespace="pauljoda"
   version="${version}"
   displayName="Nucleus"
   displayURL="https://www.curseforge.com/minecraft/mc-mods/nucleus"
   authors="pauljoda, Dyonovan"
   description='''
-  Library to help with TeamBR mods
+  Library to help with pauljoda mods
   '''
