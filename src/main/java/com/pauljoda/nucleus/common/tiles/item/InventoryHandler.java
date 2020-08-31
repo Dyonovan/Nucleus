@@ -1,6 +1,7 @@
-package com.pauljoda.nucleus.common.tiles;
+package com.pauljoda.nucleus.common.tiles.item;
 
 import com.pauljoda.nucleus.common.container.IInventoryCallback;
+import com.pauljoda.nucleus.common.tiles.Syncable;
 import net.minecraft.block.BlockState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;

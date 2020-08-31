@@ -1,4 +1,4 @@
-package com.pauljoda.nucleus.common.tiles;
+package com.pauljoda.nucleus.common.tiles.item;
 
 import com.pauljoda.nucleus.common.container.SidedInventoryWrapper;
 import net.minecraft.item.ItemStack;

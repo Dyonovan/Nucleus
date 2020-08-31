@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.common.container;
 
-import com.pauljoda.nucleus.common.tiles.InventorySided;
+import com.pauljoda.nucleus.common.tiles.item.InventorySided;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandlerModifiable;
