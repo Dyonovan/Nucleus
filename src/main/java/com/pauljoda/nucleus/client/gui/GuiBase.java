@@ -244,10 +244,18 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param mouseY The mouse Y Position
      */
     public void drawTopLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
+        matrixStack.push();
+        matrixStack.translate(-guiLeft, -guiTop, 0);
         components.forEach((baseComponent -> {
+            RenderUtils.prepareRenderState();
             if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop))
                 baseComponent.renderToolTip(matrixStack, mouseX, mouseY);
         }));
+        RenderUtils.restoreColor();
+        RenderUtils.restoreRenderState();
+        RenderSystem.enableAlphaTest();
+        RenderHelper.enableStandardItemLighting();
+        matrixStack.pop();
     }
 
     /*******************************************************************************************************************

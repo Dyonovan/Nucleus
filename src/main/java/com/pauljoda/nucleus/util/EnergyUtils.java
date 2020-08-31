@@ -171,7 +171,7 @@ public class EnergyUtils {
                 EnergyUtils.getEnergyDisplay(energyStorage.getMaxEnergyStored()));
         if(!ClientUtils.isShiftPressed()) {
             toolTip.add("");
-            toolTip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + ClientUtils.translate("nucleus.text.shiftInfo"));
+            toolTip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + ClientUtils.translate("nucleus.text.shift_info"));
         } else {
             if(insert > -1) {
                 toolTip.add("");
