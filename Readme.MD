@@ -11,7 +11,7 @@ Other credits include:
 Adding to Project
 =================
 
-Add the following code to build.gradle. You will need to have two files in the root of the project named "USERNAME" and "ACCESS_TOKEN" that have your github username and an access token set with the "read:packages" permissions. Do not upload this publically, just used to access the package. You may also have to add information for the JEI maven if you haven't already
+Add the following code to build.gradle. You will need to have two files in the root of the project named "USERNAME" and "ACCESS_TOKEN" that have your github username and an access token set with the "read:packages" permissions. Do not upload this publically, just used to access the package. You may also have to add information for the JEI maven if you haven't already. You can alternatively setup local build variables for this information as well, follow GitHub documentaion for more info about adding GitHub package repositories: https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-gradle-for-use-with-github-packages#installing-a-package
 
 ```
 repositories {
@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    compile group: "com.pauljoda.nucleus", name: "Nucleus", version: "1.16.2-6.0-B+", classifier: "dev"
+    compile group: "com.pauljoda.nucleus", name: "Nucleus", version: "+", classifier: "dev"
 }
 ```
 
