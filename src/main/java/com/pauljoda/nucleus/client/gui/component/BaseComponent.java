@@ -105,9 +105,9 @@ public abstract class BaseComponent extends Screen {
      */
     public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
         if(toolTip != null && !toolTip.isEmpty())
-            func_243308_b(matrixStack, toolTip, mouseX, mouseY);
+            parent.func_243308_b(matrixStack, toolTip, mouseX, mouseY);
         else if(getDynamicToolTip(mouseX, mouseY) != null)
-            func_243308_b(matrixStack, getDynamicToolTip(mouseX, mouseY), mouseX, mouseY);
+            parent.func_243308_b(matrixStack, getDynamicToolTip(mouseX, mouseY), mouseX, mouseY);
 
     }
 
