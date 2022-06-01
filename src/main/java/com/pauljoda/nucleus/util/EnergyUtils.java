@@ -1,11 +1,11 @@
 package com.pauljoda.nucleus.util;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -87,13 +87,13 @@ public class EnergyUtils {
      * @param pos The position to search around.
      * @return A list of all capabilities that are being held by connected blocks.
      */
-    public static <T> List<T> getConnectedCapabilities (Capability<T> capability, World world, BlockPos pos) {
+    public static <T> List<T> getConnectedCapabilities (Capability<T> capability, Level world, BlockPos pos) {
 
         final List<T> capabilities = new ArrayList<>();
 
         for (final Direction side : Direction.values()) {
 
-            final TileEntity tile = world.getTileEntity(pos.offset(side));
+            final BlockEntity tile = world.getBlockEntity(pos.relative(side));
 
             if (tile != null && !tile.isRemoved() && tile.getCapability(capability, side.getOpposite()).isPresent())
                 capabilities.add(tile.getCapability(capability, side.getOpposite()).orElse(null));
@@ -111,11 +111,11 @@ public class EnergyUtils {
      * @param simulated     True to just simulate
      * @return How much energy consumed
      */
-    public static int distributePowerToFaces(IEnergyStorage source, World world, BlockPos pos, int amountPerFace, boolean simulated) {
+    public static int distributePowerToFaces(IEnergyStorage source, Level world, BlockPos pos, int amountPerFace, boolean simulated) {
         int consumedPower = 0;
 
         for(Direction dir : Direction.values()) {
-            TileEntity tile = world.getTileEntity(pos.offset(dir));
+            BlockEntity tile = world.getBlockEntity(pos.relative(dir));
             if (tile != null && tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).isPresent())
                 consumedPower += transferPower(source, tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).orElse(null), amountPerFace, simulated);
         }
@@ -132,11 +132,11 @@ public class EnergyUtils {
      * @param simulated     True to just simulate
      * @return How much energy consumed
      */
-    public static int consumePowerFromFaces(IEnergyStorage source, World world, BlockPos pos, int amountPerFace, boolean simulated) {
+    public static int consumePowerFromFaces(IEnergyStorage source, Level world, BlockPos pos, int amountPerFace, boolean simulated) {
         int receivedPower = 0;
 
         for(Direction dir : Direction.values()) {
-            TileEntity tile = world.getTileEntity(pos.offset(dir));
+            BlockEntity tile = world.getBlockEntity(pos.relative(dir));
             if (tile != null && tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).isPresent())
                 receivedPower += transferPower(tile.getCapability(CapabilityEnergy.ENERGY, dir.getOpposite()).orElse(null), source, amountPerFace, simulated);
         }
@@ -166,20 +166,20 @@ public class EnergyUtils {
      */
     @OnlyIn(Dist.CLIENT)
     public static void addToolTipInfo(IEnergyStorage energyStorage, List<String> toolTip, int insert, int extract) {
-        toolTip.add(TextFormatting.GOLD + ClientUtils.translate("nucleus.energy.energyStored"));
+        toolTip.add(ChatFormatting.GOLD + ClientUtils.translate("nucleus.energy.energyStored"));
         toolTip.add("  " + EnergyUtils.getEnergyDisplay(energyStorage.getEnergyStored()) + " / " +
                 EnergyUtils.getEnergyDisplay(energyStorage.getMaxEnergyStored()));
         if(!ClientUtils.isShiftPressed()) {
             toolTip.add("");
-            toolTip.add(TextFormatting.GRAY + "" + TextFormatting.ITALIC + ClientUtils.translate("nucleus.text.shift_info"));
+            toolTip.add(ChatFormatting.GRAY + "" + ChatFormatting.ITALIC + ClientUtils.translate("nucleus.text.shift_info"));
         } else {
             if(insert > -1) {
                 toolTip.add("");
-                toolTip.add(TextFormatting.GREEN + ClientUtils.translate("nucleus.energy.energyIn"));
+                toolTip.add(ChatFormatting.GREEN + ClientUtils.translate("nucleus.energy.energyIn"));
                 toolTip.add("  " + EnergyUtils.getEnergyDisplay(insert));
             }
             if(extract > -1) {
-                toolTip.add(TextFormatting.DARK_RED + ClientUtils.translate("nucleus.energy.energyOut"));
+                toolTip.add(ChatFormatting.DARK_RED + ClientUtils.translate("nucleus.energy.energyOut"));
                 toolTip.add("  " + EnergyUtils.getEnergyDisplay(extract));
             }
         }

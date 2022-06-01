@@ -3,12 +3,12 @@ package com.pauljoda.nucleus.network.packet;
 import com.pauljoda.nucleus.Nucleus;
 import com.pauljoda.nucleus.common.tiles.Syncable;
 import com.pauljoda.nucleus.network.PacketManager;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -54,19 +54,19 @@ public class SyncableFieldPacket implements INetworkMessage {
      *******************************************************************************************************************/
 
     @Override
-    public void decode(PacketBuffer buf) {
+    public void decode(FriendlyByteBuf buf) {
         returnValue = buf.readBoolean();
         id = buf.readInt();
         value = buf.readDouble();
-        blockPosition = BlockPos.fromLong(buf.readLong());
+        blockPosition = BlockPos.of(buf.readLong());
     }
 
     @Override
-    public void encode(PacketBuffer buf) {
+    public void encode(FriendlyByteBuf buf) {
         buf.writeBoolean(returnValue);
         buf.writeInt(id);
         buf.writeDouble(value);
-        buf.writeLong(blockPosition.toLong());
+        buf.writeLong(blockPosition.asLong());
     }
 
     /*******************************************************************************************************************
@@ -79,11 +79,11 @@ public class SyncableFieldPacket implements INetworkMessage {
         ctx.get().enqueueWork(() -> {
             // Run when sent to server
             if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-                World world = ctx.get().getSender().world;
+                Level world = ctx.get().getSender().level;
 
                 // Safety check for non syncable tiles
-                if (world.getTileEntity(message.blockPosition) == null ||
-                        !(world.getTileEntity(message.blockPosition) instanceof Syncable))
+                if (world.getBlockEntity(message.blockPosition) == null ||
+                        !(world.getBlockEntity(message.blockPosition) instanceof Syncable))
                     return;
 
                 // If true, other client wanted all around to see value change
@@ -94,27 +94,27 @@ public class SyncableFieldPacket implements INetworkMessage {
                                              message.blockPosition.getY(),
                                              message.blockPosition.getZ(),
                                             25,
-                                            world.getDimensionKey())),
+                                            world.dimension())),
                             new SyncableFieldPacket(false, message.id,
-                                    ((Syncable) world.getTileEntity(message.blockPosition)).getVariable(message.id), message.blockPosition));
+                                    ((Syncable) world.getBlockEntity(message.blockPosition)).getVariable(message.id), message.blockPosition));
                 else // On server update
-                    ((Syncable) world.getTileEntity(message.blockPosition)).setVariable(message.id, message.value);
+                    ((Syncable) world.getBlockEntity(message.blockPosition)).setVariable(message.id, message.value);
                 ctx.get().setPacketHandled(true);
             } else if (ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) { // Run when send to client
-                World world = Nucleus.proxy.getClientWorld();
+                Level world = Nucleus.proxy.getClientWorld();
 
                 // Safety check
                 if(world == null || message.blockPosition == null ||
-                        world.getTileEntity(message.blockPosition) == null ||
-                        !(world.getTileEntity(message.blockPosition) instanceof Syncable))
+                        world.getBlockEntity(message.blockPosition) == null ||
+                        !(world.getBlockEntity(message.blockPosition) instanceof Syncable))
                     return;
 
                 // If wanting to ping back server for whatever reason
                 if(message.returnValue)
                     PacketManager.INSTANCE.sendToServer(new SyncableFieldPacket(false, message.id,
-                            ((Syncable)world.getTileEntity(message.blockPosition)).getVariable(message.id), message.blockPosition));
+                            ((Syncable)world.getBlockEntity(message.blockPosition)).getVariable(message.id), message.blockPosition));
                 else
-                    ((Syncable)world.getTileEntity(message.blockPosition)).setVariable(message.id, message.value);
+                    ((Syncable)world.getBlockEntity(message.blockPosition)).setVariable(message.id, message.value);
                 ctx.get().setPacketHandled(true);
             }
         });

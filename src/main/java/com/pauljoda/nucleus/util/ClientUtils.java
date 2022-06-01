@@ -1,7 +1,7 @@
 package com.pauljoda.nucleus.util;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.client.resources.language.I18n;
 import org.lwjgl.glfw.GLFW;
 
 import java.text.NumberFormat;
@@ -28,7 +28,7 @@ public class ClientUtils {
      * @return The translated text
      */
     public static String translate(String text) {
-        return I18n.format(text);
+        return I18n.get(text);
     }
 
     /**
@@ -38,7 +38,7 @@ public class ClientUtils {
      * @return A formated number string, eg 1,000,000
      */
     public static String formatNumber(double number) {
-        return NumberFormat.getNumberInstance(Locale.forLanguageTag(Minecraft.getInstance().gameSettings.language)).format(number);
+        return NumberFormat.getNumberInstance(Locale.forLanguageTag(Minecraft.getInstance().options.languageCode)).format(number);
     }
 
     /**
@@ -47,7 +47,7 @@ public class ClientUtils {
      * @return True if pressed
      */
     public static boolean isKeyPressed(int key) {
-        return GLFW.glfwGetKey(Minecraft.getInstance().getMainWindow().getHandle(), key) == GLFW.GLFW_PRESS;
+        return GLFW.glfwGetKey(Minecraft.getInstance().getWindow().getWindow(), key) == GLFW.GLFW_PRESS;
     }
 
     /**

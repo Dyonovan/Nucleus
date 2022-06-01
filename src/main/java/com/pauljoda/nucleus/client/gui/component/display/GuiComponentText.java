@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
@@ -47,7 +47,7 @@ public class GuiComponentText extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
@@ -55,8 +55,8 @@ public class GuiComponentText extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
 
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
@@ -67,12 +67,12 @@ public class GuiComponentText extends BaseComponent {
         else
             RenderUtils.restoreColor();
 
-        fontRenderer.drawString(matrixStack, label, 0, 0, colorDefault);
+        fontRenderer.draw(matrixStack, label, 0, 0, colorDefault);
 
         RenderUtils.restoreColor();
         RenderUtils.restoreRenderState();
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**
@@ -81,7 +81,7 @@ public class GuiComponentText extends BaseComponent {
      */
     @Override
     public int getWidth() {
-        return fontRenderer.getStringWidth(label);
+        return fontRenderer.width(label);
     }
 
     /**

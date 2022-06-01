@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.common.container.slots;
 
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -32,9 +32,10 @@ public class PhantomSlot extends SlotItemHandler implements IPhantomSlot {
      *******************************************************************************************************************/
 
     @Override
-    public boolean canTakeStack(PlayerEntity playerIn) {
+    public boolean mayPickup(Player playerIn) {
         return false;
     }
+
 
     /*******************************************************************************************************************
      * IPhantomSlot                                                                                                    *

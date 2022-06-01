@@ -1,13 +1,13 @@
 package com.pauljoda.nucleus.client.gui.component.control;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
@@ -25,7 +25,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
     // Variables
     protected int width, u, v, value, floor, ceiling;
     protected int height = 16;
-    protected TextFieldWidget textField;
+    protected EditBox textField;
     protected boolean upSelected, downSelected = false;
 
     /**
@@ -56,8 +56,8 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
         this.floor = lowestValue;
         this.ceiling = highestValue;
 
-        textField = new TextFieldWidget( fontRenderer, x, y, width - 10, height, StringTextComponent.EMPTY);
-        textField.setText(String.valueOf(value));
+        textField = new EditBox( fontRenderer, x, y, width - 10, height, (Component) Component.EMPTY);
+        textField.setValue(String.valueOf(value));
     }
 
     /*******************************************************************************************************************
@@ -90,7 +90,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
 
             GuiHelper.playButtonSound();
             setValue(value);
-            textField.setText(String.valueOf(value));
+            textField.setValue(String.valueOf(value));
         } else if(GuiHelper.isInBounds(x, y, xPos + width - 8, yPos + 9, xPos + width + 2, yPos + 17)) {
             downSelected = true;
 
@@ -99,7 +99,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
 
             GuiHelper.playButtonSound();
             setValue(value);
-            textField.setText(String.valueOf(value));
+            textField.setValue(String.valueOf(value));
         }
         textField.mouseClicked(x, y, button);
         return super.mouseClicked(x, y, button);
@@ -128,18 +128,18 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
         if (Character.isLetter(letter) && (keyCode != 8 && keyCode != 109)) return;
         if (textField.isFocused())
             textField.charTyped(letter, keyCode);
-        if (textField.getText() == null || (textField.getText().equals("")) || !isNumeric(textField.getText())) {
+        if (textField.getValue() == null || (textField.getValue().equals("")) || !isNumeric(textField.getValue())) {
             textField.setTextColor(0xE62E00);
             return;
         }
         if (keyCode == 13)
-            textField.setFocused2(false);
+            textField.setFocus(false);
         textField.setTextColor(0xFFFFFF);
-        if (Integer.valueOf(textField.getText()) > ceiling)
-            textField.setText(String.valueOf(ceiling));
-        else if (Integer.valueOf(textField.getText()) < floor)
-            textField.setText(String.valueOf(floor));
-        value = Integer.valueOf(textField.getText());
+        if (Integer.parseInt(textField.getValue()) > ceiling)
+            textField.setValue(String.valueOf(ceiling));
+        else if (Integer.parseInt(textField.getValue()) < floor)
+            textField.setValue(String.valueOf(floor));
+        value = Integer.parseInt(textField.getValue());
         setValue(value);
     }
 
@@ -147,22 +147,22 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(xPos, yPos, 0);
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
+        matrixStack.translate(xPos, yPos, 0);
         blit(matrixStack, width - 1, -1, upSelected  ? u + 11 : u, v, 11, 8);
         blit(matrixStack, width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
-        GlStateManager.popMatrix();
-        GlStateManager.pushMatrix();
-        textField.render(matrixStack, mouseX, mouseY, Minecraft.getInstance().getRenderPartialTicks());
-        GlStateManager.popMatrix();
+        matrixStack.popPose();
+        matrixStack.pushPose();
+        textField.render(matrixStack, mouseX, mouseY, Minecraft.getInstance().getDeltaFrameTime());
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
@@ -230,11 +230,11 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
         this.ceiling = ceiling;
     }
 
-    public TextFieldWidget getTextField() {
+    public EditBox getTextField() {
         return textField;
     }
 
-    public void setTextField(TextFieldWidget textField) {
+    public void setTextField(EditBox textField) {
         this.textField = textField;
     }
 }

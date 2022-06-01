@@ -2,15 +2,15 @@ package com.pauljoda.nucleus.common.tiles.item;
 
 import com.pauljoda.nucleus.common.container.IInventoryCallback;
 import com.pauljoda.nucleus.common.tiles.Syncable;
-import net.minecraft.block.BlockState;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.*;
@@ -37,8 +37,8 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     // List of Inventory contents
     public NonNullList<ItemStack> inventoryContents = NonNullList.withSize(getInventorySize(), ItemStack.EMPTY);
 
-    public InventoryHandler(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public InventoryHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     /*******************************************************************************************************************
@@ -121,25 +121,24 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param compound The tag to save to
      */
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
-        ItemStackHelper.saveAllItems(compound, inventoryContents);
+    public void load(CompoundTag compound) {
+        super.load(compound);
 
-        ListNBT nbttaglist = new ListNBT();
+        ContainerHelper.saveAllItems(compound, inventoryContents);
+
+        ListTag nbttaglist = new ListTag();
 
         for (int i = 0; i < inventoryContents.size(); ++i) {
             ItemStack itemstack = inventoryContents.get(i);
-            CompoundNBT nbttagcompound = new CompoundNBT();
+            CompoundTag nbttagcompound = new CompoundTag();
             nbttagcompound.putByte("Slot", (byte) i);
-            itemstack.write(nbttagcompound);
+            itemstack.save(nbttagcompound);
             nbttaglist.add(nbttagcompound);
         }
 
         if (!nbttaglist.isEmpty()) {
             compound.put("Items", nbttaglist);
         }
-
-        return compound;
     }
 
     /**
@@ -148,9 +147,9 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param compound The tag to read from
      */
     @Override
-    public void read(BlockState blockState, CompoundNBT compound) {
-        super.read(blockState, compound);
-        ItemStackHelper.loadAllItems(compound, inventoryContents);
+    public void saveAdditional(CompoundTag compound) {
+        super.saveAdditional(compound);
+        ContainerHelper.loadAllItems(compound, inventoryContents);
     }
 
     private LazyOptional<?> lazyHandler = LazyOptional.of(() -> this);
@@ -191,7 +190,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     public void setStackInSlot(int slot, ItemStack stack) {
         if (!isValidSlot(slot))
             return;
-        if (ItemStack.areItemStacksEqual(this.inventoryContents.get(slot), stack))
+        if (ItemStack.isSameItemSameTags(this.inventoryContents.get(slot), stack))
             return;
         this.inventoryContents.set(slot, stack);
         onInventoryChanged(slot);
@@ -339,7 +338,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
 
     /**
      * <p>
-     * This function re-implements the vanilla function {@link IInventory#isItemValidForSlot(int, ItemStack)}.
+     * This function re-implements the vanilla function.
      * It should be used instead of simulated insertions in cases where the contents and state of the inventory are
      * irrelevant, mainly for the purpose of automation and logic (for instance, testing if a minecart can wait
      * to deposit its items into a full inventory, or if the items in the minecart can never be placed into the

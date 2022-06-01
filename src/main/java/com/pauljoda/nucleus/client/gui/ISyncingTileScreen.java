@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.client.gui;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * This file was created for Nucleus
@@ -20,5 +20,5 @@ public interface ISyncingTileScreen {
      * Accept the server values, this is typically the tile's nbt data
      * @param tag NBT data
      */
-    void acceptServerValues(CompoundNBT tag);
+    void acceptServerValues(CompoundTag tag);
 }

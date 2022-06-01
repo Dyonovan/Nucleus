@@ -2,11 +2,13 @@ package com.pauljoda.nucleus.network.packet;
 
 import com.pauljoda.nucleus.Nucleus;
 import com.pauljoda.nucleus.client.gui.ISyncingTileScreen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -23,7 +25,7 @@ import java.util.function.Supplier;
 public class SyncTileScreenPacket implements INetworkMessage {
 
     // Variables
-    public CompoundNBT tag;
+    public CompoundTag tag;
 
     /**
      * Stub
@@ -34,7 +36,7 @@ public class SyncTileScreenPacket implements INetworkMessage {
      * Creates a packet with the given info
      * @param nbt The tag to write
      */
-    public SyncTileScreenPacket(CompoundNBT nbt) {
+    public SyncTileScreenPacket(CompoundTag nbt) {
         super();
         tag = nbt;
     }
@@ -44,13 +46,13 @@ public class SyncTileScreenPacket implements INetworkMessage {
      *******************************************************************************************************************/
 
     @Override
-    public void decode(PacketBuffer buf) {
-        tag = new PacketBuffer(buf).readCompoundTag();
+    public void decode(FriendlyByteBuf buf) {
+        tag = new FriendlyByteBuf(buf).readNbt();
     }
 
     @Override
-    public void encode(PacketBuffer buf) {
-        buf.writeCompoundTag(tag);
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeNbt(tag);
     }
 
     /*******************************************************************************************************************
@@ -61,9 +63,7 @@ public class SyncTileScreenPacket implements INetworkMessage {
         if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
             ctx.get().enqueueWork(() -> {
                 if(message.tag != null && Nucleus.proxy.getPlayer() != null) {
-                    PlayerEntity player = Nucleus.proxy.getPlayer();
-                    if(player.openContainer instanceof ISyncingTileScreen) {
-                        ISyncingTileScreen syncingScreen = (ISyncingTileScreen) player.openContainer;
+                    if(Minecraft.getInstance().screen instanceof ISyncingTileScreen syncingScreen) {
                         syncingScreen.acceptServerValues(message.tag);
                     }
                 }

@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
@@ -44,19 +44,19 @@ public class GuiComponentTexture extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
         blit(matrixStack, 0, 0, u, v, width, height);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 

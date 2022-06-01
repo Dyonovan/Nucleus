@@ -1,19 +1,20 @@
 package com.pauljoda.nucleus.client.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.client.gui.component.display.GuiComponentText;
 import com.pauljoda.nucleus.client.gui.component.display.GuiTabCollection;
 import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
+public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
     // Variables
     protected GuiComponentText titleComponent;
 
@@ -47,17 +48,17 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param title The title of the gui
      * @param texture The location of the background texture
      */
-    public GuiBase(T inventory, PlayerInventory playerInventory, ITextComponent title, int width, int height, ResourceLocation texture) {
+    public GuiBase(T inventory, Inventory playerInventory, Component title, int width, int height, ResourceLocation texture) {
         super(inventory, playerInventory, title);
-        this.xSize = width;
-        this.ySize = height;
+        this.imageWidth = width;
+        this.imageHeight = height;
         this.textureLocation = texture;
 
-        rightTabs = new GuiTabCollection(this, xSize + 1);
+        rightTabs = new GuiTabCollection(this, imageWidth + 1);
         leftTabs = new GuiTabCollection(this, -1);
 
         titleComponent = new GuiComponentText(this,
-                xSize / 2 - (Minecraft.getInstance().fontRenderer.getStringWidth(ClientUtils.translate(title.getString())) / 2),
+                imageWidth / 2 - (Minecraft.getInstance().font.width(ClientUtils.translate(title.getString())) / 2),
                 3, title.getString(), null);
         components.add(titleComponent);
 
@@ -109,8 +110,8 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         components.forEach((baseComponent -> {
-            if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop)) {
-                baseComponent.mouseDown(mouseX - guiLeft, mouseY - guiTop, mouseButton);
+            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
+                baseComponent.mouseDown(mouseX - leftPos, mouseY - topPos, mouseButton);
             }
         }));
         return super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -126,8 +127,8 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         components.forEach((baseComponent -> {
-            if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop)) {
-                baseComponent.mouseUp(mouseX - guiLeft, mouseY - guiTop, state);
+            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
+                baseComponent.mouseUp(mouseX - leftPos, mouseY - topPos, state);
             }
         }));
         return super.mouseReleased(mouseX, mouseY, state);
@@ -143,8 +144,8 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double xDragAmount, double yDragAmount) {
         components.forEach((baseComponent -> {
-            if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop)) {
-                baseComponent.mouseDrag(mouseX - guiLeft, mouseY - guiTop, clickedMouseButton, xDragAmount, yDragAmount);
+            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
+                baseComponent.mouseDrag(mouseX - leftPos, mouseY - topPos, clickedMouseButton, xDragAmount, yDragAmount);
             }
         }));
         return super.mouseDragged(mouseX, mouseY, clickedMouseButton, xDragAmount, yDragAmount);
@@ -173,37 +174,11 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        RenderUtils.prepareRenderState();
-        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
-    }
-
-    /**
-     * Used to draw above the background. This will be called after the background has been drawn
-     *
-     * Used mostly for adding text
-     *
-     * @param mouseX The mouse X Position
-     * @param mouseY The mouse Y Position
-     */
-    @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        matrixStack.push();
-        RenderUtils.prepareRenderState();
-        RenderUtils.bindTexture(textureLocation);
-        components.forEach((baseComponent -> {
-            RenderUtils.prepareRenderState();
-            baseComponent.renderOverlay(matrixStack, 0, 0, mouseX - guiLeft, mouseY - guiTop);
-            RenderUtils.restoreRenderState();
-            RenderUtils.restoreColor();
-        }));
-        RenderUtils.restoreRenderState();
-        RenderSystem.enableAlphaTest();
-        RenderHelper.enableStandardItemLighting();
         drawTopLayer(matrixStack, mouseX, mouseY);
-        matrixStack.pop();
+        this.renderTooltip(matrixStack, mouseX, mouseY);
     }
 
     /**
@@ -216,23 +191,22 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param mouseY The mouse Y
      */
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
-        matrixStack.push();
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+        matrixStack.pushPose();
         RenderUtils.prepareRenderState();
-        matrixStack.translate(guiLeft, guiTop, 0);
+        matrixStack.translate(leftPos, topPos, 0);
 
         RenderUtils.bindTexture(textureLocation);
-        blit(matrixStack, 0, 0, 0, 0, xSize + 1, ySize + 1);
+        blit(matrixStack, 0, 0, 0, 0, imageWidth + 1, imageHeight + 1);
 
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
-            baseComponent.render(matrixStack, guiLeft, guiTop, mouseX - guiLeft, mouseY - guiTop);
+            baseComponent.render(matrixStack, leftPos, topPos, mouseX - leftPos, mouseY - topPos);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
         }));
         RenderUtils.restoreRenderState();
-        RenderHelper.enableStandardItemLighting();
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**
@@ -243,19 +217,17 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @param mouseX The Mouse X Position
      * @param mouseY The mouse Y Position
      */
-    public void drawTopLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        matrixStack.push();
-        matrixStack.translate(-guiLeft, -guiTop, 0);
+    public void drawTopLayer(PoseStack matrixStack, int mouseX, int mouseY) {
+        matrixStack.pushPose();
+        matrixStack.translate(-leftPos, -topPos, 0);
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
-            if(baseComponent.isMouseOver(mouseX - guiLeft, mouseY - guiTop))
+            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos))
                 baseComponent.renderToolTip(matrixStack, mouseX, mouseY);
         }));
         RenderUtils.restoreColor();
         RenderUtils.restoreRenderState();
-        RenderSystem.enableAlphaTest();
-        RenderHelper.enableStandardItemLighting();
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /*******************************************************************************************************************
@@ -263,21 +235,21 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      *******************************************************************************************************************/
 
     /**
-     * Used to get the guiLeft
+     * Used to get the leftPos
      *
      * @return Where the gui starts
      */
     public int getGuiLeft() {
-        return guiLeft;
+        return leftPos;
     }
 
     /**
-     * Used to get guiTop
+     * Used to get topPos
      *
      * @return Where the gui starts
      */
     public int getGuiTop() {
-        return guiTop;
+        return topPos;
     }
 
     /**
@@ -286,7 +258,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @return The size of the gui
      */
     public int getXSize() {
-        return xSize;
+        return imageWidth;
     }
 
     /**
@@ -295,7 +267,7 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      * @return The size of the gui
      */
     public int getYSize() {
-        return ySize;
+        return imageHeight;
     }
 
     /*******************************************************************************************************************
@@ -309,13 +281,12 @@ public abstract class GuiBase<T extends Container> extends ContainerScreen<T> {
      */
     public List<Rectangle> getCoveredAreas() {
         List<Rectangle> areas = new ArrayList<>();
-        areas.add(new Rectangle(guiLeft, guiTop, xSize, ySize));
+        areas.add(new Rectangle(leftPos, topPos, imageWidth, imageHeight));
         components.forEach((baseComponent -> {
-            if(baseComponent instanceof GuiTabCollection) {
-                GuiTabCollection tabCollection = (GuiTabCollection) baseComponent;
-                areas.addAll(tabCollection.getAreasCovered(guiLeft, guiTop));
+            if(baseComponent instanceof GuiTabCollection tabCollection) {
+                areas.addAll(tabCollection.getAreasCovered(leftPos, topPos));
             } else
-                areas.add(new Rectangle(baseComponent.getArea(guiLeft, guiTop)));
+                areas.add(new Rectangle(baseComponent.getArea(leftPos, topPos)));
         }));
         return areas;
     }

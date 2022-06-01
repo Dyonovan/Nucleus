@@ -2,23 +2,20 @@ package com.pauljoda.nucleus.helper;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.vertex.VertexFormat;
-import net.minecraft.client.renderer.vertex.VertexFormatElement;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import org.lwjgl.opengl.GL11;
 
-import static net.minecraft.client.renderer.vertex.VertexFormatElement.Type.FLOAT;
-import static net.minecraft.client.renderer.vertex.VertexFormatElement.Usage.NORMAL;
+import java.awt.*;
 
 /**
  * This file was created for Nucleus - Java
@@ -40,8 +37,8 @@ public class GuiHelper {
      * Used to play the button sound in a GUI
      */
     public static void playButtonSound() {
-        Minecraft.getInstance().getSoundHandler()
-                .play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        Minecraft.getInstance().getSoundManager()
+                .play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
     /*******************************************************************************************************************
@@ -56,7 +53,7 @@ public class GuiHelper {
         float red   = (color >> 16 & 255) / 255F;
         float green = (color >> 8 & 255) / 255F;
         float blue  = (color & 255) / 255F;
-        GlStateManager.color4f(red, green, blue, 1.0F);
+        RenderUtils.setColor(new Color(red, green, blue, 1.0F));
     }
 
     /**
@@ -70,24 +67,14 @@ public class GuiHelper {
      * @param cut 0 is full icon, 16 is full cut
      */
     public static void drawIconWithCut(TextureAtlasSprite icon, int x, int y, int width, int height, int cut) {
-        Tessellator tess = Tessellator.getInstance();
-        BufferBuilder renderer = tess.getBuffer();
-
-        VertexFormat POSITION_TEXT_NORMAL_F = new VertexFormat(
-                ImmutableList.<VertexFormatElement>builder()
-                        .add(new VertexFormatElement(0, FLOAT, NORMAL, 3))
-                        .add(DefaultVertexFormats.POSITION_3F)
-                        .add(DefaultVertexFormats.TEX_2F)
-                        .build()
-        );
-
-
-        renderer.begin(GL11.GL_QUADS, POSITION_TEXT_NORMAL_F);
-        renderer.pos(x, y + height, 0).tex(icon.getMinU(), icon.getInterpolatedV(height)).normal(0, -1, 0).endVertex();
-        renderer.pos(x + width, y + height, 0).tex(icon.getInterpolatedU(width), icon.getInterpolatedV(height)).normal(0, -1, 0).endVertex();
-        renderer.pos(x + width, y + cut, 0).tex(icon.getInterpolatedU(width), icon.getInterpolatedV(cut)).normal(0, -1, 0).endVertex();
-        renderer.pos(x, y + cut, 0).tex(icon.getMinU(), icon.getInterpolatedV(cut)).normal(0, -1, 0).endVertex();
-        tess.draw();
+        Tesselator tess = Tesselator.getInstance();
+        BufferBuilder renderer = tess.getBuilder();
+        renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        renderer.vertex(x, y + height, 0).uv(icon.getU0(), icon.getV(height)).normal(0, -1, 0).endVertex();
+        renderer.vertex(x + width, y + height, 0).uv(icon.getU(width), icon.getV(height)).normal(0, -1, 0).endVertex();
+        renderer.vertex(x + width, y + cut, 0).uv(icon.getU(width), icon.getV(cut)).normal(0, -1, 0).endVertex();
+        renderer.vertex(x, y + cut, 0).uv(icon.getU0(), icon.getV(cut)).normal(0, -1, 0).endVertex();
+        tess.end();
     }
 
     /**
@@ -103,7 +90,7 @@ public class GuiHelper {
         if(!fluid.isEmpty()) {
             GL11.glPushMatrix();
             int level = (fluid.getAmount() * maxHeight) / tank.getCapacity();
-            TextureAtlasSprite icon = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+            TextureAtlasSprite icon = Minecraft.getInstance().getTextureAtlas(RenderUtils.MC_BLOCKS_RESOURCE_LOCATION)
                     .apply(fluid.getFluid().getAttributes().getStillTexture());
             RenderUtils.bindMinecraftBlockSheet();
             setGLColorFromInt(fluid.getFluid().getAttributes().getColor(fluid));

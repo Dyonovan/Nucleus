@@ -1,9 +1,9 @@
 package com.pauljoda.nucleus.client.gui.component;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.util.RenderUtils;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 
@@ -63,65 +63,65 @@ public class NinePatchRenderer {
      */
 
     // Corners
-    protected void renderTopLeftCorner(MatrixStack matrixStack, Screen gui) {
+    protected void renderTopLeftCorner(PoseStack matrixStack, Screen gui) {
         gui.blit(matrixStack, 0, 0, u, v, cellSize, cellSize);
     }
 
-    protected void renderTopRightCorner(MatrixStack matrixStack, Screen gui, int width) {
+    protected void renderTopRightCorner(PoseStack matrixStack, Screen gui, int width) {
         gui.blit(matrixStack, width - cellSize, 0, u + cellSize + cellSize, v, cellSize, cellSize);
     }
 
-    protected void renderBottomLeftCorner(MatrixStack matrixStack, Screen gui, int height) {
+    protected void renderBottomLeftCorner(PoseStack matrixStack, Screen gui, int height) {
         gui.blit(matrixStack, 0, height - cellSize, u, v + cellSize + cellSize, cellSize, cellSize);
     }
 
-    protected void renderBottomRightCorner(MatrixStack matrixStack, Screen gui, int width, int height) {
+    protected void renderBottomRightCorner(PoseStack matrixStack, Screen gui, int width, int height) {
         gui.blit(matrixStack, width - cellSize, height - cellSize, u + cellSize + cellSize, v + cellSize + cellSize, cellSize, cellSize);
     }
 
     // Edges
-    protected void renderTopEdge(MatrixStack matrixStack, Screen gui, int width) {
-        matrixStack.push();
+    protected void renderTopEdge(PoseStack matrixStack, Screen gui, int width) {
+        matrixStack.pushPose();
         matrixStack.translate(cellSize, 0, 0);
         matrixStack.scale(width - (cellSize * 2), 1, 0);
         gui.blit(matrixStack, 0, 0, u + cellSize, v, 1, cellSize);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
-    protected void renderBottomEdge(MatrixStack matrixStack, Screen gui, int width, int height) {
-        matrixStack.push();
+    protected void renderBottomEdge(PoseStack matrixStack, Screen gui, int width, int height) {
+        matrixStack.pushPose();
         matrixStack.translate(cellSize, height - cellSize, 0);
         matrixStack.scale(width - (cellSize * 2), 1, 0);
         gui.blit(matrixStack, 0, 0, u + cellSize, v + cellSize + cellSize, 1, cellSize);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
-    protected void renderLeftEdge(MatrixStack matrixStack, Screen gui, int height) {
-        matrixStack.push();
+    protected void renderLeftEdge(PoseStack matrixStack, Screen gui, int height) {
+        matrixStack.pushPose();
         matrixStack.translate(0, cellSize, 0);
         matrixStack.scale(1, height - (cellSize * 2), 0);
         gui.blit(matrixStack, 0, 0, u, v + cellSize, cellSize, 1);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
-    protected void renderRightEdge(MatrixStack matrixStack, Screen gui, int width, int height) {
-        matrixStack.push();
+    protected void renderRightEdge(PoseStack matrixStack, Screen gui, int width, int height) {
+        matrixStack.pushPose();
         matrixStack.translate(width - cellSize, cellSize, 0);
         matrixStack.scale(1, height - (cellSize * 2), 0);
         gui.blit(matrixStack, 0, 0, u + cellSize + cellSize, v + cellSize, cellSize, 1);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     // Background
-    protected void renderBackground(MatrixStack matrixStack, Screen gui, int width, int height) {
-        matrixStack.push();
+    protected void renderBackground(PoseStack matrixStack, Screen gui, int width, int height) {
+        matrixStack.pushPose();
         matrixStack.translate(cellSize - 1, cellSize - 1, 0);
         matrixStack.scale(width - (cellSize * 2) + 2, height - (cellSize * 2) + 2, 0);
         gui.blit(matrixStack, 0, 0, u + cellSize, v + cellSize, 1, 1);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
-    public void render(MatrixStack matrixStack, Screen gui, int x, int y, int width, int height) {
+    public void render(PoseStack matrixStack, Screen gui, int x, int y, int width, int height) {
         render(matrixStack, gui, x, y, width, height, null);
     }
 
@@ -137,8 +137,8 @@ public class NinePatchRenderer {
      * @param height Height
      * @param color Color to render
      */
-    public void render(MatrixStack matrixStack, Screen gui, int x, int y, int width, int height, Color color) {
-        matrixStack.push();
+    public void render(PoseStack matrixStack, Screen gui, int x, int y, int width, int height, Color color) {
+        matrixStack.pushPose();
         if (color != null)
             RenderUtils.setColor(color);
         if (patchLocation != null)
@@ -153,6 +153,6 @@ public class NinePatchRenderer {
         renderTopRightCorner(matrixStack, gui, width);
         renderBottomLeftCorner(matrixStack, gui, height);
         renderBottomRightCorner(matrixStack, gui, width, height);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

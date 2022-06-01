@@ -13,7 +13,7 @@ import net.minecraftforge.fml.config.ModConfig;
 
 /**
  * This file was created for com.teambr.nucleus.Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/

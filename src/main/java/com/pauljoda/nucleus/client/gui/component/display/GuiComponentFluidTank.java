@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
@@ -46,7 +46,7 @@ public class GuiComponentFluidTank extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
@@ -54,12 +54,12 @@ public class GuiComponentFluidTank extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         GuiHelper.renderFluid(tank, 0, height, height, width);
         RenderUtils.bindTexture(parent.textureLocation);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**

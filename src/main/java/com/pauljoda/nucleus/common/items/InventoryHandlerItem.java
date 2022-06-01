@@ -1,11 +1,11 @@
 package com.pauljoda.nucleus.common.items;
 
 import com.pauljoda.nucleus.common.container.IInventoryCallback;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.Direction;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -43,7 +43,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      *
      * @param stack Stack to attach to
      */
-    public InventoryHandlerItem(ItemStack stack, CompoundNBT compound) {
+    public InventoryHandlerItem(ItemStack stack, CompoundTag compound) {
         heldStack = stack;
         readFromNBT(compound);
         checkStackTag();
@@ -126,7 +126,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
     protected void checkStackTag() {
         // Give the stack a tag
         if (!heldStack.hasTag()) {
-            heldStack.setTag(new CompoundNBT());
+            heldStack.setTag(new CompoundTag());
             writeToNBT(heldStack.getTag());
         } else
             readFromNBT(heldStack.getTag());
@@ -137,8 +137,8 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      *
      * @param compound The tag to save to
      */
-    public CompoundNBT writeToNBT(CompoundNBT compound) {
-        ItemStackHelper.saveAllItems(compound, inventoryContents);
+    public CompoundTag writeToNBT(CompoundTag compound) {
+        ContainerHelper.saveAllItems(compound, inventoryContents);
         return compound;
     }
 
@@ -147,9 +147,9 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      *
      * @param compound The tag to read from
      */
-    public void readFromNBT(CompoundNBT compound) {
+    public void readFromNBT(CompoundTag compound) {
         if (compound != null)
-            ItemStackHelper.loadAllItems(compound, inventoryContents);
+            ContainerHelper.loadAllItems(compound, inventoryContents);
     }
 
     /*******************************************************************************************************************
@@ -171,7 +171,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
     public void setStackInSlot(int slot, ItemStack stack) {
         if (!isValidSlot(slot))
             return;
-        if (ItemStack.areItemStacksEqual(this.inventoryContents.get(slot), stack))
+        if (ItemStack.isSameItemSameTags(this.inventoryContents.get(slot), stack))
             return;
         this.inventoryContents.set(slot, stack);
         onInventoryChanged(slot);

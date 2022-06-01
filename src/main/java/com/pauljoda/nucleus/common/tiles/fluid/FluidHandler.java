@@ -1,14 +1,14 @@
 package com.pauljoda.nucleus.common.tiles.fluid;
 
 import com.pauljoda.nucleus.common.tiles.Syncable;
-import com.pauljoda.nucleus.common.tiles.UpdatingTile;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
@@ -42,8 +42,8 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
     /**
      * Default constructor, calls the setupTanks method to setup the tanks
      */
-    public FluidHandler(TileEntityType<?> type) {
-        super(type);
+    public FluidHandler(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
         setupTanks();
     }
 
@@ -131,14 +131,14 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
      */
     @Nonnull
     @Override
-    public CompoundNBT write(@Nonnull CompoundNBT compound) {
-        super.write(compound);
+    public void load(@Nonnull CompoundTag compound) {
+        super.load(compound);
         int id = 0;
         compound.putInt(SIZE_NBT_TAG, tanks.length);
-        ListNBT tagList = new ListNBT();
+        ListTag tagList = new ListTag();
         for(FluidTank tank : tanks) {
             if(tank != null) {
-                CompoundNBT tankCompound = new CompoundNBT();
+                CompoundTag tankCompound = new CompoundTag();
                 tankCompound.putByte(TANK_ID_NBT_TAG, (byte) id);
                 id += 1;
                 tank.writeToNBT(tankCompound);
@@ -146,7 +146,6 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
             }
         }
         compound.put(TANKS_NBT_TAG, tagList);
-        return compound;
     }
 
     /**
@@ -155,13 +154,13 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
      * @param compound The tag to read from
      */
     @Override
-    public void read(BlockState blockState, @Nonnull CompoundNBT compound) {
-        super.read(blockState, compound);
-        ListNBT tagList = compound.getList(TANKS_NBT_TAG, 10);
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
+        ListTag tagList = compound.getList(TANKS_NBT_TAG, 10);
         int size = compound.getInt(SIZE_NBT_TAG);
         if(size != tanks.length && compound.contains(SIZE_NBT_TAG)) tanks = new FluidTank[size];
         for(int x = 0; x < tagList.size(); x++) {
-            CompoundNBT tankCompound = tagList.getCompound(x);
+            CompoundTag tankCompound = tagList.getCompound(x);
             byte position = tankCompound.getByte(TANK_ID_NBT_TAG);
             if(position < tanks.length)
                 tanks[position].readFromNBT(tankCompound);

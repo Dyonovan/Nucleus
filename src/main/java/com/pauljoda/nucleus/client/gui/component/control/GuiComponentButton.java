@@ -1,7 +1,7 @@
 package com.pauljoda.nucleus.client.gui.component.control;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
@@ -119,31 +119,31 @@ public abstract class GuiComponentButton extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
         RenderUtils.prepareRenderState();
         RenderUtils.bindTexture(parent.textureLocation);
-        GlStateManager.translated(xPos, yPos, 0);
+        matrixStack.translate(xPos, yPos, 0);
         blit(matrixStack, 0, 0, u, isOver ? v + height : v, width, height);
         RenderUtils.restoreRenderState();
-        GlStateManager.popMatrix();
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         if(label != null) {
-            GlStateManager.pushMatrix();
+            matrixStack.pushPose();
             RenderUtils.prepareRenderState();
             RenderUtils.restoreColor();
-            float size = fontRenderer.getStringWidth(label);
-            GlStateManager.translated(xPos + (width / 2F - size / 2F), yPos + 6, 0);
-            fontRenderer.drawString(matrixStack, label, 0, 0, Color.darkGray.getRGB());
+            float size = fontRenderer.width(label);
+            matrixStack.translate(xPos + (width / 2F - size / 2F), yPos + 6, 0);
+            fontRenderer.draw(matrixStack, label, 0, 0, Color.darkGray.getRGB());
             RenderUtils.restoreColor();
             RenderUtils.restoreRenderState();
-            GlStateManager.popMatrix();
+            matrixStack.popPose();
         }
     }
 

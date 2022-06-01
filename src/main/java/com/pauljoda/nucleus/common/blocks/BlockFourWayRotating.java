@@ -1,11 +1,11 @@
 package com.pauljoda.nucleus.common.blocks;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 
 import java.util.Arrays;
 
@@ -31,7 +31,7 @@ public class BlockFourWayRotating extends Block {
      */
     public BlockFourWayRotating(Properties props) {
         super(props);
-        setDefaultState(getStateContainer().getBaseState().with(FOUR_WAY, Direction.NORTH));
+        registerDefaultState(getStateDefinition().any().setValue(FOUR_WAY, Direction.NORTH));
     }
 
     /*******************************************************************************************************************
@@ -43,8 +43,8 @@ public class BlockFourWayRotating extends Block {
      * @param context Item use
      * @return State for placement
      */
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
-        return this.getDefaultState().with(FOUR_WAY, context.getPlacementHorizontalFacing().getOpposite());
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        return this.defaultBlockState().setValue(FOUR_WAY, context.getHorizontalDirection().getOpposite());
     }
 
 
@@ -57,7 +57,7 @@ public class BlockFourWayRotating extends Block {
      * @param builder Property holder
      */
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FOUR_WAY); // Add rotation
     }
 }

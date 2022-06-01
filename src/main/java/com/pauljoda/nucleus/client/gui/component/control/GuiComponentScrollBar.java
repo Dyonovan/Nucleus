@@ -1,7 +1,7 @@
 package com.pauljoda.nucleus.client.gui.component.control;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import net.minecraft.client.Minecraft;
@@ -110,13 +110,13 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         if(currentPosition > maxRange)
             currentPosition = maxRange;
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(xPos + 1, yPos + currentPosition + 1, 0);
-        if(isMoving && !Minecraft.getInstance().mouseHelper.isLeftDown())
+        matrixStack.pushPose();
+        matrixStack.translate(xPos + 1, yPos + currentPosition + 1, 0);
+        if(isMoving && !Minecraft.getInstance().mouseHandler.isLeftPressed())
             isMoving = false;
         blit(matrixStack, 0, 0, isMoving ? nubU + 12 : nubU, nubV, 12, 15);
     }
@@ -125,7 +125,7 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 

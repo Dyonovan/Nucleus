@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.common.blocks;
 
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
 
@@ -20,5 +20,5 @@ public interface IRegistersTileEntity {
      * @return The class for the tile entity, null for nothing (useful with base classes where one child doesn't register)
      */
     @Nullable
-    Class<? extends TileEntity> getTileEntityClass();
+    Class<? extends BlockEntity> getTileEntityClass();
 }

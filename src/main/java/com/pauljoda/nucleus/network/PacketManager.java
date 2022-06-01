@@ -5,14 +5,14 @@ import com.pauljoda.nucleus.network.packet.ClientOverridePacket;
 import com.pauljoda.nucleus.network.packet.INetworkMessage;
 import com.pauljoda.nucleus.network.packet.SyncTileScreenPacket;
 import com.pauljoda.nucleus.network.packet.SyncableFieldPacket;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -80,9 +80,9 @@ public class PacketManager {
      * @param player The player to update on client end
      * @param entity The entity to write the data
      */
-    public static void updateClientContainerInfo(ServerPlayerEntity player, TileEntity entity) {
-        CompoundNBT tag = new CompoundNBT();
-        entity.write(tag);
+    public static void updateClientContainerInfo(ServerPlayer player, BlockEntity entity) {
+        CompoundTag tag = new CompoundTag();
+        entity.handleUpdateTag(tag);
         SyncTileScreenPacket packet = new SyncTileScreenPacket(tag);
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
@@ -91,10 +91,10 @@ public class PacketManager {
      * Reverse of normal syncing, will send client side data to server to replace
      * @param tile The tile you wish to update to server
      */
-    public static void updateTileWithClientInfo(TileEntity tile) {
-        CompoundNBT tag = new CompoundNBT();
-        tile.write(tag);
-        ClientOverridePacket updateMessage = new ClientOverridePacket(tile.getPos(), tag);
+    public static void updateTileWithClientInfo(BlockEntity tile) {
+        CompoundTag tag = new CompoundTag();
+        tile.load(tag);
+        ClientOverridePacket updateMessage = new ClientOverridePacket(tile.getBlockPos(), tag);
         INSTANCE.sendToServer(updateMessage);
     }
 }

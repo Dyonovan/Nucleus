@@ -1,8 +1,8 @@
 package com.pauljoda.nucleus.util;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +20,14 @@ import java.util.List;
 public class BlockUtils {
 
     /**
-     * Returns a collection of {@link net.minecraft.util.math.BlockPos} that are not Air
+     * Returns a collection of {@link BlockPos} that are not Air
      *
      * @param size              the amount of blocks from the center block
-     * @param facing            the block the player is looking at {@link net.minecraft.util.math.RayTraceResult}
-     * @param world             {@link net.minecraft.world.World}
-     * @return                  An {@link ArrayList} of {@link net.minecraft.util.math.BlockPos}
+     * @param facing            the block the player is looking at {@link Direction}
+     * @param world             {@link Level}
+     * @return                  An {@link ArrayList} of {@link BlockPos}
      */
-    public static List<BlockPos> getBlockList(int size, Direction facing, BlockPos pos, World world) {
+    public static List<BlockPos> getBlockList(int size, Direction facing, BlockPos pos, Level world) {
 
         BlockPos pos1;
         BlockPos pos2;
@@ -35,24 +35,24 @@ public class BlockUtils {
 
         if (facing.getAxis().isHorizontal()) {
             if (facing == Direction.NORTH || facing == Direction.SOUTH) {
-                pos1 = pos.offset(Direction.UP, size).offset(Direction.EAST, size);
-                pos2 = pos.offset(Direction.DOWN, size).offset(Direction.WEST, size);
+                pos1 = pos.relative(Direction.UP, size).relative(Direction.EAST, size);
+                pos2 = pos.relative(Direction.DOWN, size).relative(Direction.WEST, size);
             } else {
-                pos1 = pos.offset(Direction.UP, size).offset(Direction.SOUTH, size);
-                pos2 = pos.offset(Direction.DOWN, size).offset(Direction.NORTH, size);
+                pos1 = pos.relative(Direction.UP, size).relative(Direction.SOUTH, size);
+                pos2 = pos.relative(Direction.DOWN, size).relative(Direction.NORTH, size);
             }
 
             while(pos2.getY() < pos.getY() - 1) {
-                pos1 = pos1.offset(Direction.UP);
-                pos2 = pos2.offset(Direction.UP);
+                pos1 = pos1.relative(Direction.UP);
+                pos2 = pos2.relative(Direction.UP);
             }
         } else {
-            pos1 = pos.offset(Direction.NORTH, size).offset(Direction.WEST, size);
-            pos2 = pos.offset(Direction.SOUTH, size).offset(Direction.EAST, size);
+            pos1 = pos.relative(Direction.NORTH, size).relative(Direction.WEST, size);
+            pos2 = pos.relative(Direction.SOUTH, size).relative(Direction.EAST, size);
         }
 
-        BlockPos.getAllInBox(pos1, pos2).forEach((blockPos) -> {
-            if (!world.isAirBlock(blockPos))
+        BlockPos.betweenClosed(pos1, pos2).forEach((blockPos) -> {
+            if (!world.isEmptyBlock(blockPos))
                 actualList.add(blockPos);
         });
 

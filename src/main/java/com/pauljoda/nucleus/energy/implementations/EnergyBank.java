@@ -3,7 +3,7 @@ package com.pauljoda.nucleus.energy.implementations;
 import com.pauljoda.nucleus.energy.IEnergyHolder;
 import com.pauljoda.nucleus.energy.IEnergyProvider;
 import com.pauljoda.nucleus.energy.IEnergyReceiver;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * This file was created for Lux et Umbra
@@ -199,7 +199,7 @@ public class EnergyBank implements IEnergyHolder, IEnergyProvider, IEnergyReceiv
      * @param tag The incoming tag
      * @return The written tag
      */
-    public CompoundNBT writeToNBT(CompoundNBT tag) {
+    public CompoundTag writeToNBT(CompoundTag tag) {
         // Write storage values
         tag.putInt(ENERGY_NBT_TAG, currentStored);
         tag.putInt(ENERGY_CAPACITY_NBT_TAG,     maxStored);
@@ -214,7 +214,7 @@ public class EnergyBank implements IEnergyHolder, IEnergyProvider, IEnergyReceiv
      * Read from the tag
      * @param tag The written tag
      */
-    public void readFromNBT(CompoundNBT tag) {
+    public void readFromNBT(CompoundTag tag) {
         // Read Storage Values
         currentStored = tag.getInt(ENERGY_NBT_TAG);
         maxStored     = tag.getInt(ENERGY_CAPACITY_NBT_TAG);
