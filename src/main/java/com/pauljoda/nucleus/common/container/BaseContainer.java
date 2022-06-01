@@ -225,7 +225,6 @@ public abstract class BaseContainer extends AbstractContainerMenu {
      * @param dragType The mouse button
      * @param clickTypeIn The modifier
      * @param player The player
-     * @return The stack
      */
     @Override
     public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
