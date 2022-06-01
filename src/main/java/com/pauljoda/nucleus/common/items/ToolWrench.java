@@ -1,10 +1,9 @@
 package com.pauljoda.nucleus.common.items;
 
 import com.pauljoda.nucleus.common.blocks.IToolable;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
 
 /**
  * This file was created for Nucleus - Java
@@ -20,8 +19,7 @@ public class ToolWrench extends Item {
 
     public ToolWrench() {
         super(new Properties()
-        .maxStackSize(1)
-        .addToolType(ToolType.get("wrench"), 1));
+                .stacksTo(1));
     }
 
     /**
@@ -30,12 +28,11 @@ public class ToolWrench extends Item {
      * @return Result of action
      */
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        if(context.getWorld().getBlockState(context.getPos()).getBlock() instanceof IToolable)
-            return ((IToolable) context.getWorld().getBlockState(context.getPos()).getBlock())
+    public InteractionResult useOn(UseOnContext context) {
+        if(context.getLevel().getBlockState(context.getClickedPos()).getBlock() instanceof IToolable)
+            return ((IToolable) context.getLevel().getBlockState(context.getClickedPos()).getBlock())
                     .onWrench(context);
         else
-            return ActionResultType.FAIL;
-
+            return InteractionResult.FAIL;
     }
 }

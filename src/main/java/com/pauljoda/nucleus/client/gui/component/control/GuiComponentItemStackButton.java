@@ -1,11 +1,10 @@
 package com.pauljoda.nucleus.client.gui.component.control;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This file was created for Nucleus
@@ -34,20 +33,14 @@ public abstract class GuiComponentItemStackButton extends GuiComponentButton {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         super.renderOverlay(matrixStack, guiLeft, guiTop, mouseX, mouseY);
-        GlStateManager.pushMatrix();
-        GlStateManager.pushLightingAttributes();
-        GlStateManager.translated(xPos, yPos, 1);
+        matrixStack.pushPose();
+        matrixStack.translate(xPos, yPos, 1);
 
-        RenderHelper.enableStandardItemLighting();
+        Minecraft.getInstance().getItemRenderer().renderGuiItem(displayStack, (width / 2) - 8, (height / 2) - 8);
 
-        Minecraft.getInstance().getItemRenderer().renderItemAndEffectIntoGUI(displayStack, (width / 2) - 8, (height / 2) - 8);
-
-        RenderHelper.disableStandardItemLighting();
-
-        GlStateManager.popAttributes();
-        GlStateManager.popMatrix();
+        matrixStack.popPose();
     }
 
     /*******************************************************************************************************************

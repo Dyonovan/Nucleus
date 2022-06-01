@@ -2,8 +2,10 @@ package com.pauljoda.nucleus.common.tiles;
 
 import com.pauljoda.nucleus.network.packet.SyncableFieldPacket;
 import com.pauljoda.nucleus.network.PacketManager;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.PacketDistributor;
 
 /**
  * This file was created for Nucleus - Java
@@ -17,8 +19,8 @@ import net.minecraftforge.fml.network.PacketDistributor;
  */
 public abstract class Syncable extends UpdatingTile {
 
-    public Syncable(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public Syncable(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     /*******************************************************************************************************************
@@ -47,7 +49,7 @@ public abstract class Syncable extends UpdatingTile {
      * Sends the value to the server, you should probably only call this from the client
      */
     public void sendValueToServer(int id, double value) {
-        PacketManager.INSTANCE.sendToServer(new SyncableFieldPacket(false, id, value, getPos()));
+        PacketManager.INSTANCE.sendToServer(new SyncableFieldPacket(false, id, value, getBlockPos()));
     }
 
     /**
@@ -55,7 +57,7 @@ public abstract class Syncable extends UpdatingTile {
      * Only use if you lose data and want to update from server. Few cases for this
      */
     public void updateClientValueFromServer(int id) {
-        PacketManager.INSTANCE.sendToServer(new SyncableFieldPacket(true, id, 0, getPos()));
+        PacketManager.INSTANCE.sendToServer(new SyncableFieldPacket(true, id, 0, getBlockPos()));
     }
 
     /**
@@ -64,8 +66,8 @@ public abstract class Syncable extends UpdatingTile {
     public void sendValueToClient(int id, double value) {
         PacketManager.INSTANCE.send(PacketDistributor.NEAR.with( () ->
                 new PacketDistributor.TargetPoint(
-                getPos().getX(), getPos().getY(), getPos().getZ(),
-                25, getWorld().getDimensionKey())),
-                new SyncableFieldPacket(false, id, value, getPos()));
+                getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
+                25, getLevel().dimension())),
+                new SyncableFieldPacket(false, id, value, getBlockPos()));
     }
 }

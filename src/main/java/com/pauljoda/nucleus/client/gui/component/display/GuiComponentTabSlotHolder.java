@@ -1,9 +1,9 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.world.inventory.Slot;
 
 /**
  * This file was created for Nucleus
@@ -60,7 +60,7 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         if(doRender) {
             slotTexture.render(matrixStack, guiLeft, guiTop, mouseX, mouseY);
         }
@@ -70,7 +70,7 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No op
     }
 

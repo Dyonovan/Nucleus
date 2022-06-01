@@ -1,11 +1,11 @@
 package com.pauljoda.nucleus.common.blocks;
 
 import com.pauljoda.nucleus.util.WorldUtils;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 
@@ -28,7 +28,7 @@ public interface IToolable {
      * @return The stack to drop in the world
      */
     @Nonnull
-    ItemStack getStackDroppedByWrench(World world, BlockPos pos);
+    ItemStack getStackDroppedByWrench(Level world, BlockPos pos);
 
     /**
      * Called when a wrench clicks on this block
@@ -36,11 +36,11 @@ public interface IToolable {
      * @return The result, pass to send to next, success to end
      */
     @SuppressWarnings("ConstantConditions")
-    default ActionResultType onWrench(ItemUseContext context) {
-        if(context.getPlayer().isSneaking() && WorldUtils.breakBlockSavingNBT(context.getWorld(),
-                context.getPos(), (IToolable) context.getWorld().getBlockState(context.getPos()).getBlock()))
-            return ActionResultType.SUCCESS;
+    default InteractionResult onWrench(UseOnContext context) {
+        if(context.getPlayer().isShiftKeyDown() && WorldUtils.breakBlockSavingNBT(context.getLevel(),
+                context.getClickedPos(), (IToolable) context.getLevel().getBlockState(context.getClickedPos()).getBlock()))
+            return InteractionResult.SUCCESS;
         else
-            return ActionResultType.FAIL;
+            return InteractionResult.FAIL;
     }
 }

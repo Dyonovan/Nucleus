@@ -1,13 +1,13 @@
 package com.pauljoda.nucleus.util;
 
 import com.pauljoda.nucleus.common.blocks.IToolable;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -82,9 +82,9 @@ public class WorldUtils {
      * @param origin The origin to compare against
      * @return True if any block in the list has air
      */
-    public static boolean doesContainAirBlock(World world, List<BlockPos> blocks, BlockPos origin) {
+    public static boolean doesContainAirBlock(Level world, List<BlockPos> blocks, BlockPos origin) {
         for(BlockPos pos : blocks)
-            if(world.isAirBlock(new BlockPos(
+            if(world.isEmptyBlock(new BlockPos(
                     origin.getX() + pos.getX(),
                     origin.getY() + pos.getY(),
                     origin.getZ() + pos.getZ())))
@@ -103,7 +103,7 @@ public class WorldUtils {
      * @param stacks ItemStack Array to drop into the world
      * @param pos BlockPos to drop them from
      */
-    public static void dropStacks(World world, List<ItemStack> stacks, BlockPos pos) {
+    public static void dropStacks(Level world, List<ItemStack> stacks, BlockPos pos) {
         stacks.forEach((ItemStack stack) -> dropStack(world, stack, pos));
     }
 
@@ -114,11 +114,11 @@ public class WorldUtils {
      * @param stack temStack Array to drop into the world
      * @param pos BlockPos to drop them from
      */
-    public static void dropStack(World world, ItemStack stack, BlockPos pos) {
+    public static void dropStack(Level world, ItemStack stack, BlockPos pos) {
         if(stack != null && stack.getCount() > 0) {
-            float rx = world.rand.nextFloat() * 0.8F;
-            float ry = world.rand.nextFloat() * 0.8F;
-            float rz = world.rand.nextFloat() * 0.8F;
+            float rx = world.random.nextFloat() * 0.8F;
+            float ry = world.random.nextFloat() * 0.8F;
+            float rz = world.random.nextFloat() * 0.8F;
 
             ItemEntity itemEntity = new ItemEntity(world,
                     pos.getX() + rx, pos.getY() + ry, pos.getZ() + rz,
@@ -126,13 +126,13 @@ public class WorldUtils {
 
             float factor = 0.05F;
 
-            itemEntity.setMotion(
-                    world.rand.nextGaussian() * factor,
-                    world.rand.nextGaussian() * factor + 0.2F,
-                    world.rand.nextGaussian() * factor
+            itemEntity.setDeltaMovement(
+                    world.random.nextGaussian() * factor,
+                    world.random.nextGaussian() * factor + 0.2F,
+                    world.random.nextGaussian() * factor
             );
 
-            world.addEntity(itemEntity);
+            world.addFreshEntity(itemEntity);
 
             stack.setCount(0);
         }
@@ -144,7 +144,7 @@ public class WorldUtils {
      * @param world The world
      * @param pos The block pos
      */
-    public static void dropStacksInInventory(IItemHandler itemHandler, World world, BlockPos pos) {
+    public static void dropStacksInInventory(IItemHandler itemHandler, Level world, BlockPos pos) {
         for(int slot = 0; slot < itemHandler.getSlots(); slot++) {
             ItemStack stack = itemHandler.getStackInSlot(slot);
             if(stack != null)
@@ -163,15 +163,15 @@ public class WorldUtils {
      * @param block The block object
      * @return True if successful
      */
-    public static boolean breakBlockSavingNBT(World world, BlockPos pos, @Nonnull IToolable block) {
-        if(world.isRemote) return false;
-        if(world.getTileEntity(pos) != null) {
-            TileEntity savableTile = world.getTileEntity(pos);
-            CompoundNBT tag = savableTile.write(new CompoundNBT());
+    public static boolean breakBlockSavingNBT(Level world, BlockPos pos, @Nonnull IToolable block) {
+        if(world.isClientSide) return false;
+        if(world.getBlockEntity(pos) != null) {
+            BlockEntity savableTile = world.getBlockEntity(pos);
+            CompoundTag tag = savableTile.saveWithFullMetadata();
             ItemStack stack = block.getStackDroppedByWrench(world, pos);
             stack.setTag(tag);
             dropStack(world, stack, pos);
-            world.removeTileEntity(pos); // Cancel drop logic
+            world.removeBlockEntity(pos); // Cancel drop logic
             world.removeBlock(pos, false);
             return true;
         }
@@ -184,15 +184,15 @@ public class WorldUtils {
      * @param pos The block position
      * @param stack The stack that had the tag
      */
-    public static void writeStackNBTToBlock(World world, BlockPos pos, ItemStack stack) {
+    public static void writeStackNBTToBlock(Level world, BlockPos pos, ItemStack stack) {
         if(stack.hasTag()) {
-            if(world.getTileEntity(pos) != null) {
-                TileEntity tile = world.getTileEntity(pos);
-                CompoundNBT tag = stack.getTag();
+            if(world.getBlockEntity(pos) != null) {
+                BlockEntity tile = world.getBlockEntity(pos);
+                CompoundTag tag = stack.getTag();
                 tag.putInt("x", pos.getX()); // Add back MC tags
                 tag.putInt("y", pos.getY());
                 tag.putInt("z", pos.getZ());
-                tile.read(world.getBlockState(pos), tag);
+                tile.load(tag);
             }
         }
     }

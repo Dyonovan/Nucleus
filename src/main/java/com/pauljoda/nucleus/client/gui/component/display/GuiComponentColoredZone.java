@@ -1,7 +1,8 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
@@ -56,15 +57,14 @@ public class GuiComponentColoredZone extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         color = getDynamicColor();
-        matrixStack.push();
-        GlStateManager.disableLighting();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.enableBlend();
-        GlStateManager.enableAlphaTest();
-        GlStateManager.disableDepthTest();
-        GlStateManager.disableTexture();
+        matrixStack.pushPose();
+        GlStateManager._blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableBlend();
+        //RenderSystem.enableAlphaTest();
+        RenderSystem.disableDepthTest();
+        RenderSystem.disableTexture();
         matrixStack.translate(xPos, yPos, 10);
         RenderUtils.setColor(color);
         GL11.glBegin(GL11.GL_QUADS);
@@ -73,17 +73,17 @@ public class GuiComponentColoredZone extends BaseComponent {
         GL11.glVertex3d(width, height, 0);
         GL11.glVertex3d(width, 0, 0);
         GL11.glEnd();
-        GlStateManager.disableBlend();
-        GlStateManager.enableDepthTest();
-        GlStateManager.enableTexture();
-        matrixStack.pop();
+        RenderSystem.disableBlend();
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableTexture();
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Op OP, we want bars and stuff to render on top of this
     }
 

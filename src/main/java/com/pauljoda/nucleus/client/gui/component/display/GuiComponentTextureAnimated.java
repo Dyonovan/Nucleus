@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.util.RenderUtils;
 
@@ -63,8 +63,8 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
 
@@ -86,7 +86,7 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
                 blit(matrixStack, 0, height - progressUp, u, v + height - progressUp, width, progressUp);
                 break;
         }
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /*******************************************************************************************************************

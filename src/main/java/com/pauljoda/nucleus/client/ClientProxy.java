@@ -3,8 +3,8 @@ package com.pauljoda.nucleus.client;
 import com.pauljoda.nucleus.common.CommonProxy;
 import com.pauljoda.nucleus.events.ToolTipEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -27,12 +27,12 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public World getClientWorld() {
-        return Minecraft.getInstance().world;
+    public Level getClientWorld() {
+        return Minecraft.getInstance().level;
     }
 
     @Override
-    public PlayerEntity getPlayer() {
+    public LocalPlayer getPlayer() {
         return Minecraft.getInstance().player;
     }
 }

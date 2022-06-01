@@ -1,12 +1,12 @@
 package com.pauljoda.nucleus.common.tiles;
 
-
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,11 +21,10 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public class UpdatingTile extends TileEntity implements ITickableTileEntity {
+public class UpdatingTile extends BlockEntity {
 
-
-    public UpdatingTile(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public UpdatingTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     /*******************************************************************************************************************
@@ -48,21 +47,8 @@ public class UpdatingTile extends TileEntity implements ITickableTileEntity {
      */
     @SuppressWarnings("ConstantConditions")
     public void markForUpdate(int flags) {
-        getWorld().notifyBlockUpdate(getPos(), getWorld().getBlockState(getPos()), getWorld().getBlockState(getPos()), flags);
-        markDirty();
-    }
-
-    /*******************************************************************************************************************
-     * ITickable                                                                                                       *
-     *******************************************************************************************************************/
-
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public void tick() {
-        if(hasWorld() && getWorld().isRemote)
-            onClientTick();
-        else
-            onServerTick();
+        getLevel().sendBlockUpdated(getBlockPos(), getLevel().getBlockState(getBlockPos()), getLevel().getBlockState(getBlockPos()), flags);
+        setChanged();
     }
 
     /*******************************************************************************************************************
@@ -75,16 +61,20 @@ public class UpdatingTile extends TileEntity implements ITickableTileEntity {
      */
     @Nonnull
     @Override
-    public CompoundNBT getUpdateTag() {
-        return write(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
+        return tag;
     }
 
     /**
      * Cause tile to read new info
      */
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        read(getBlockState(), pkt.getNbtCompound());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
+        CompoundTag tagCompound = packet.getTag();
+        super.onDataPacket(net, packet);
+        deserializeNBT(tagCompound);
     }
 
     /**
@@ -92,9 +82,9 @@ public class UpdatingTile extends TileEntity implements ITickableTileEntity {
      */
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT tag = new CompoundNBT();
-        write(tag);
-        return new SUpdateTileEntityPacket(getPos(), 1, tag);
+    public ClientboundBlockEntityDataPacket  getUpdatePacket() {
+        CompoundTag nbtTag = new CompoundTag();
+        saveAdditional(nbtTag);
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 }

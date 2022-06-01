@@ -1,11 +1,11 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.component.listeners.IMouseEventListener;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -156,7 +156,7 @@ public class GuiTabCollection extends BaseComponent {
      * @param mouseY Mouse Y
      */
     @Override
-    public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
         tabs.forEach((guiTab -> {
             if(guiTab.isMouseOver(mouseX - parent.getGuiLeft(), mouseY - parent.getGuiTop()))
                 guiTab.renderToolTip(matrixStack, mouseX, mouseY);
@@ -167,14 +167,14 @@ public class GuiTabCollection extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         realignTabsVertically();
         for(GuiTab tab : tabs) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
             tab.render(matrixStack, guiLeft, guiTop, mouseX - tab.getXPos(), mouseY - tab.getYPos());
             RenderUtils.restoreColor();
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 
@@ -182,15 +182,15 @@ public class GuiTabCollection extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         for(GuiTab tab : tabs) {
-            matrixStack.push();
+            matrixStack.pushPose();
             RenderUtils.prepareRenderState();
             matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
             tab.renderOverlay(matrixStack,0, 0, mouseX, mouseY);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 

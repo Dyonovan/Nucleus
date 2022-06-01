@@ -1,12 +1,13 @@
 package com.pauljoda.nucleus.network.packet;
 
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -23,7 +24,7 @@ public class ClientOverridePacket implements INetworkMessage {
 
     // Variables
     public BlockPos blockPosition;
-    public CompoundNBT tag;
+    public CompoundTag tag;
 
     /**
      * Stub
@@ -35,7 +36,7 @@ public class ClientOverridePacket implements INetworkMessage {
      * @param pos The position to write the tag
      * @param nbt The tag to write
      */
-    public ClientOverridePacket(BlockPos pos, CompoundNBT nbt) {
+    public ClientOverridePacket(BlockPos pos, CompoundTag nbt) {
         super();
         blockPosition = pos;
         tag = nbt;
@@ -46,15 +47,15 @@ public class ClientOverridePacket implements INetworkMessage {
      *******************************************************************************************************************/
 
     @Override
-    public void decode(PacketBuffer buf) {
-        blockPosition = BlockPos.fromLong(buf.readLong());
-        tag = new PacketBuffer(buf).readCompoundTag();
+    public void decode(FriendlyByteBuf buf) {
+        blockPosition = BlockPos.of(buf.readLong());
+        tag = new FriendlyByteBuf(buf).readNbt();
     }
 
     @Override
-    public void encode(PacketBuffer buf) {
-        buf.writeLong(blockPosition.toLong());
-        buf.writeCompoundTag(tag);
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeLong(blockPosition.asLong());
+        buf.writeNbt(tag);
     }
 
     /*******************************************************************************************************************
@@ -65,11 +66,10 @@ public class ClientOverridePacket implements INetworkMessage {
         if(ctx.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             ctx.get().enqueueWork(() -> {
                 if(message.tag != null) {
-                    World world = ctx.get().getSender().world;
-                    if(world.getTileEntity(message.blockPosition) != null) {
-                        world.getTileEntity(message.blockPosition).setPos(message.blockPosition);
-                        world.getTileEntity(message.blockPosition).read(world.getBlockState(message.blockPosition), message.tag);
-                        world.notifyBlockUpdate(message.blockPosition,
+                    Level world = Objects.requireNonNull(ctx.get().getSender()).level;
+                    if(world.getBlockEntity(message.blockPosition) != null) {
+                        Objects.requireNonNull(world.getBlockEntity(message.blockPosition)).load(message.tag);
+                        world.sendBlockUpdated(message.blockPosition,
                                 world.getBlockState(message.blockPosition), world.getBlockState(message.blockPosition),
                                 3);
                     }

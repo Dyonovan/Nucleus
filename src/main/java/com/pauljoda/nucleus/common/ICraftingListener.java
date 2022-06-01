@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.common;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This file was created for NeoTech

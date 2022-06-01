@@ -1,7 +1,7 @@
 package com.pauljoda.nucleus.common;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 
 /**
  * This file was created for Nucleus - Java
@@ -23,13 +23,14 @@ public class CommonProxy {
 
     /**
      * Used to get client world but not crash server
+     *
      * @return Null on server, Minecraft client world on client
      */
-    public World getClientWorld() {
+    public Level getClientWorld() {
         return null;
     }
 
-    public PlayerEntity getPlayer() {
+    public Player getPlayer() {
         return null;
     }
 }

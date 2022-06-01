@@ -1,15 +1,14 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.client.gui.component.NinePatchRenderer;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -55,7 +54,8 @@ public class GuiTab extends BaseComponent {
      * @param exHeight The expanded height
      * @param displayStack The stack to display
      */
-    public GuiTab(GuiBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable ItemStack displayStack) {
+    public GuiTab(GuiBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable
+    ItemStack displayStack) {
         super(parent, x, y);
         this.u = u;
         this.v = v;
@@ -183,7 +183,7 @@ public class GuiTab extends BaseComponent {
      * @param mouseY Mouse Y
      */
     @Override
-    public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
         if(areChildrenActive()) {
             children.forEach((component -> {
                 if(component.isMouseOver(mouseX - xPos - parent.getGuiLeft(), mouseY - yPos - parent.getGuiTop()))
@@ -197,8 +197,8 @@ public class GuiTab extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
 
         // Set targets to stun
         double targetWidth  = isActive ? expandedWidth  : FOLDED_SIZE;
@@ -220,12 +220,12 @@ public class GuiTab extends BaseComponent {
         // Render the stack, if available
         RenderUtils.restoreColor();
         if(stack != null) {
-            RenderHelper.enableStandardItemLighting();
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(0F, yPos, 0F);
+            //RenderHelper.enableStandardItemLighting();
+            matrixStack.pushPose();
+            matrixStack.translate(0F, yPos, 0F);
             RenderUtils.restoreRenderState();
-            itemRenderer.renderItemAndEffectIntoGUI(stack, guiLeft + getParent().getXSize(), guiTop + 4);
-            GlStateManager.popMatrix();
+            itemRenderer.renderGuiItem(stack, guiLeft + getParent().getXSize(), guiTop + 4);
+            matrixStack.popPose();
         }
 
         // Render the children
@@ -236,14 +236,14 @@ public class GuiTab extends BaseComponent {
             }));
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Render the children
         if(areChildrenActive()) {
             children.forEach((component -> {

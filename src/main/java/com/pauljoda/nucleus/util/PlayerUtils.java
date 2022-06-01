@@ -1,9 +1,9 @@
 package com.pauljoda.nucleus.util;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * This file was created for Nucleus
@@ -23,10 +23,10 @@ public class PlayerUtils {
      * @param item The item to check
      * @return True if either hand contains the item
      */
-    public static boolean isPlayerHoldingEither(PlayerEntity player, Item item) {
+    public static boolean isPlayerHoldingEither(Player player, Item item) {
         return !(player == null || item == null) &&
-                ((!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().getItem() == item) ||
-                        (!player.getHeldItemOffhand().isEmpty() && player.getHeldItemOffhand().getItem() == item));
+                ((!player.getUseItem().isEmpty() && player.getOffhandItem().getItem() == item) ||
+                        (!player.getUseItem().isEmpty() && player.getOffhandItem().getItem() == item));
     }
 
     /**
@@ -34,13 +34,13 @@ public class PlayerUtils {
      * @param stack The object
      * @return What hand its in
      */
-    public static Hand getHandStackIsIn(PlayerEntity player, ItemStack stack) {
+    public static InteractionHand getHandStackIsIn(Player player, ItemStack stack) {
         if(player == null || stack.isEmpty())
-            return Hand.MAIN_HAND;
+            return InteractionHand.MAIN_HAND;
 
-        if(!player.getHeldItemMainhand().isEmpty() && player.getHeldItemMainhand().equals(stack))
-            return Hand.MAIN_HAND;
+        if(!player.getUseItem().isEmpty() && player.getOffhandItem().equals(stack))
+            return InteractionHand.MAIN_HAND;
         else
-            return Hand.OFF_HAND;
+            return InteractionHand.OFF_HAND;
     }
 }

@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
@@ -59,12 +59,12 @@ public class GuiComponentLongText extends BaseComponent {
 
         // Setup Lines
         text = ClientUtils.translate(text);
-        if(fontRenderer.getStringWidth(text) < lineWidth) {
+        if(fontRenderer.width(text) < lineWidth) {
             lines.add(text);
         } else {
             String string = text;
-            while(fontRenderer.getStringWidth(string) > lineWidth) {
-                String trimmed = fontRenderer.func_238412_a_(string, lineWidth);
+            while(fontRenderer.width(string) > lineWidth) {
+                String trimmed = fontRenderer.plainSubstrByWidth(string, lineWidth);
 
                 int lastSpace = trimmed.lastIndexOf(" "); // Ensure full words
                 if(lastSpace != -1)
@@ -155,22 +155,22 @@ public class GuiComponentLongText extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
 
         blit(matrixStack, width - 15, 0, u, v, 15, 8);
         blit(matrixStack, width - 15, height - 7, u, v + 8, 15, 8);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
 
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
@@ -184,12 +184,12 @@ public class GuiComponentLongText extends BaseComponent {
             RenderUtils.restoreColor();
             String label = lines.get(x);
 
-            fontRenderer.drawString(matrixStack, label, 0, yPos + 9, 0xFFFFFF);
+            fontRenderer.draw(matrixStack, label, 0, yPos + 9, 0xFFFFFF);
             yPos += 9;
             actualY += (textScale * 9) / 100;
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**

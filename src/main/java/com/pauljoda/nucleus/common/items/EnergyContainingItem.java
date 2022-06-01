@@ -1,9 +1,9 @@
 package com.pauljoda.nucleus.common.items;
 
 import com.pauljoda.nucleus.energy.implementations.EnergyBank;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  */
 public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider {
     // Variables
-    private ItemStack  heldStack;
+    private ItemStack heldStack;
     private EnergyBank localEnergy;
 
     /**
@@ -46,7 +46,7 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     protected void checkStackTag() {
         // Give the stack a tag
         if(!heldStack.hasTag()) {
-            heldStack.setTag(new CompoundNBT());
+            heldStack.setTag(new CompoundTag());
             localEnergy.writeToNBT(heldStack.getTag());
         }
     }

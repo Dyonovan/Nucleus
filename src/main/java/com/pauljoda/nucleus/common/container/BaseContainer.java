@@ -2,13 +2,13 @@ package com.pauljoda.nucleus.common.container;
 
 import com.pauljoda.nucleus.common.container.slots.IPhantomSlot;
 import com.pauljoda.nucleus.util.InventoryUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.ClickType;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -24,9 +24,9 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public abstract class BaseContainer extends ContainerGeneric {
+public abstract class BaseContainer extends AbstractContainerMenu {
     // Variables
-    protected IInventory playerInventory;
+    protected Inventory playerInventory;
     protected IItemHandler inventory;
 
     protected int inventorySize;
@@ -36,8 +36,8 @@ public abstract class BaseContainer extends ContainerGeneric {
      * @param playerInventory The players inventory
      * @param inventory The tile/object inventory
      */
-    public BaseContainer(@Nullable ContainerType<?> type, int id,
-                         IInventory playerInventory, IItemHandler inventory) {
+    public BaseContainer(@Nullable MenuType<?> type, int id,
+                         Inventory playerInventory, IItemHandler inventory) {
         super(type, id);
         this.playerInventory = playerInventory;
         this.inventory = inventory;
@@ -137,36 +137,34 @@ public abstract class BaseContainer extends ContainerGeneric {
      * @param player The player
      * @return The stack
      */
-    private ItemStack slotClickPhantom(Slot slot, int mouseButton, ClickType modifier, PlayerEntity player) {
+    private void slotClickPhantom(Slot slot, int mouseButton, ClickType modifier, Player player) {
         ItemStack stack = ItemStack.EMPTY;
 
         if(mouseButton == 2) {
             if(((IPhantomSlot)slot).canAdjust())
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
         } else if(mouseButton == 0 || mouseButton == 1) {
-            PlayerInventory playerInv = player.inventory;
-            slot.onSlotChanged();
-            ItemStack stackSlot = slot.getStack();
-            ItemStack stackHeld = playerInv.getItemStack();
+            Inventory playerInv = player.getInventory();
+            slot.setChanged();
+            ItemStack stackSlot = slot.getItem();
+            ItemStack stackHeld = playerInv.getSelected();
 
             if(!stackSlot.isEmpty())
                 stack = stackSlot.copy();
 
             if(stackSlot.isEmpty()) {
-                if(!stackHeld.isEmpty() && slot.isItemValid(stackHeld))
+                if(!stackHeld.isEmpty() && slot.mayPlace(stackHeld))
                     fillPhantomSlot(slot, stackHeld, mouseButton, modifier);
             } else if(stackHeld.isEmpty()) {
                 adjustPhantomSlot(slot, mouseButton, modifier);
-                slot.onTake(player, playerInv.getItemStack());
-            } else if(slot.isItemValid(stackHeld)) {
+                slot.onTake(player, playerInv.getSelected());
+            } else if(slot.mayPlace(stackHeld)) {
                 if(InventoryUtils.canStacksMerge(stackSlot, stackHeld))
                     adjustPhantomSlot(slot, mouseButton, modifier);
                 else
                     fillPhantomSlot(slot, stackHeld, mouseButton, modifier);
             }
         }
-
-        return stack;
     }
 
     /**
@@ -179,20 +177,20 @@ public abstract class BaseContainer extends ContainerGeneric {
         if(!((IPhantomSlot)slot).canAdjust())
             return;
 
-        ItemStack stackSlot = slot.getStack();
+        ItemStack stackSlot = slot.getItem();
         int stackSize = 0;
         if(modifier == ClickType.QUICK_MOVE)
             stackSize = (mouseButton == 0) ? (stackSlot.getCount() + 1) / 2 : stackSlot.getCount() * 2;
         else
             stackSize =  (mouseButton == 0) ? stackSlot.getCount() - 1 : stackSlot.getCount() + 1;
 
-        if(stackSize > slot.getSlotStackLimit())
-            stackSize = slot.getSlotStackLimit();
+        if(stackSize > slot.getMaxStackSize())
+            stackSize = slot.getMaxStackSize();
 
         stackSlot.setCount(stackSize);
 
         if(stackSlot.getCount() <= 0)
-            slot.putStack(ItemStack.EMPTY);
+            slot.set(ItemStack.EMPTY);
     }
 
     /**
@@ -208,13 +206,13 @@ public abstract class BaseContainer extends ContainerGeneric {
 
         int stackSize = (mouseButton == 0) ? stackHeld.getCount() : 1;
 
-        if(stackSize > slot.getSlotStackLimit())
-            stackSize = slot.getSlotStackLimit();
+        if(stackSize > slot.getMaxStackSize())
+            stackSize = slot.getMaxStackSize();
 
         ItemStack phantomStack = stackHeld.copy();
         phantomStack.setCount(stackSize);
 
-        slot.putStack(phantomStack);
+        slot.set(phantomStack);
     }
 
     /*******************************************************************************************************************
@@ -230,37 +228,39 @@ public abstract class BaseContainer extends ContainerGeneric {
      * @return The stack
      */
     @Override
-    public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
-        Slot slot = (slotId < 0) ? null : inventorySlots.get(slotId);
+    public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
+        Slot slot = (slotId < 0) ? null : slots.get(slotId);
         if(slot != null) {
-            if(slot instanceof IPhantomSlot)
-                return slotClickPhantom(slot, dragType, clickTypeIn, player);
+            if(slot instanceof IPhantomSlot) {
+                slotClickPhantom(slot, dragType, clickTypeIn, player);
+                return;
+            }
         }
-        return super.slotClick(slotId, dragType, clickTypeIn, player);
+        super.clicked(slotId, dragType, clickTypeIn, player);
     }
 
     /**
      * Take a stack from the specified inventory slot.
      */
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-        if(index < 0 || index > inventorySlots.size())
-            return super.transferStackInSlot(playerIn, index);
-        Slot slot = inventorySlots.get(index);
-        if(slot != null && slot.getHasStack()) {
-            ItemStack itemToTransfer = slot.getStack();
+    public ItemStack quickMoveStack(Player playerIn, int index) {
+        if(index < 0 || index > slots.size())
+            return super.quickMoveStack(playerIn, index);
+        Slot slot = slots.get(index);
+        if(slot.hasItem()) {
+            ItemStack itemToTransfer = slot.getItem();
             ItemStack copy = itemToTransfer.copy();
 
             if(index < getInventorySizeNotPlayer()) {
-                if (!mergeItemStack(itemToTransfer, getInventorySizeNotPlayer(), inventorySlots.size(), true))
+                if (!moveItemStackTo(itemToTransfer, getInventorySizeNotPlayer(), slots.size(), true))
                     return ItemStack.EMPTY;
-            } else if(!mergeItemStack(itemToTransfer, 0, getInventorySizeNotPlayer(), false))
+            } else if(!moveItemStackTo(itemToTransfer, 0, getInventorySizeNotPlayer(), false))
                 return ItemStack.EMPTY;
 
-            /*if(itemToTransfer.getCount() == 0)
-                slot.putStack(ItemStack.EMPTY);*/
+            if(itemToTransfer.isEmpty())
+                slot.set(ItemStack.EMPTY);
             else
-                slot.onSlotChanged();
+                slot.setChanged();
 
             if(itemToTransfer.getCount() != copy.getCount())
                 return copy;

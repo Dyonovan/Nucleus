@@ -1,12 +1,11 @@
 package com.pauljoda.nucleus.client.gui.component.display;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.NinePatchRenderer;
 import com.pauljoda.nucleus.util.RenderUtils;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
@@ -37,7 +36,8 @@ public class GuiReverseTab extends GuiTab {
      * @param exHeight     The expanded height
      * @param displayStack The stack to display
      */
-    public GuiReverseTab(GuiBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable ItemStack displayStack) {
+    public GuiReverseTab(GuiBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable
+    ItemStack displayStack) {
         super(parent, x, y, u, v, exWidth, exHeight, displayStack);
         tabRenderer = new NinePatchRenderer(u, v, 8, parent.textureLocation);
     }
@@ -50,8 +50,8 @@ public class GuiReverseTab extends GuiTab {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        matrixStack.push();
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
 
         // Set targets to stun
         double targetWidth  = isActive ? expandedWidth  : FOLDED_SIZE;
@@ -73,12 +73,12 @@ public class GuiReverseTab extends GuiTab {
         // Render the stack, if available
         RenderUtils.restoreColor();
         if(stack != null) {
-            RenderHelper.enableStandardItemLighting();
-            GlStateManager.pushMatrix();
-            GlStateManager.translatef(0F, yPos, 0F);
+            //RenderHelper.enableStandardItemLighting();
+            matrixStack.pushPose();
+            matrixStack.translate(0F, yPos, 0F);
             RenderUtils.restoreRenderState();
-            itemRenderer.renderItemAndEffectIntoGUI(stack, guiLeft - 16, guiTop + 4);
-            GlStateManager.popMatrix();
+            itemRenderer.renderGuiItem(stack, guiLeft - 16, guiTop + 4);
+            matrixStack.popPose();
         }
 
         // Render the children
@@ -90,14 +90,14 @@ public class GuiReverseTab extends GuiTab {
             }));
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Render the children
         if(areChildrenActive()) {
             matrixStack.translate(-expandedWidth, 0, 0);

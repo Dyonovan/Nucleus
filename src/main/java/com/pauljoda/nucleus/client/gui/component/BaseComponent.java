@@ -1,14 +1,14 @@
 package com.pauljoda.nucleus.client.gui.component;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.component.listeners.IKeyboardListener;
 import com.pauljoda.nucleus.client.gui.component.listeners.IMouseEventListener;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -30,15 +30,15 @@ public abstract class BaseComponent extends Screen {
     protected int xPos, yPos;
     protected GuiBase<?> parent;
 
-    protected List<ITextComponent> toolTip = new ArrayList<>();
+    protected List<Component> toolTip = new ArrayList<>();
 
     protected IMouseEventListener mouseEventListener;
     protected IKeyboardListener keyboardEventListener;
 
-    protected FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+    protected Font fontRenderer = Minecraft.getInstance().font;
 
     public BaseComponent(GuiBase<?> parentGui,int x, int y) {
-        this(parentGui, new StringTextComponent("neotech:component"), x, y);
+        this(parentGui, new TextComponent("neotech:component"), x, y);
     }
 
     /**
@@ -47,7 +47,7 @@ public abstract class BaseComponent extends Screen {
      * @param x The x position
      * @param y The y position
      */
-    public BaseComponent(GuiBase<?> parentGui, ITextComponent titleIn, int x, int y) {
+    public BaseComponent(GuiBase<?> parentGui, Component titleIn, int x, int y) {
         super(titleIn);
         parent = parentGui;
         xPos = x;
@@ -61,12 +61,12 @@ public abstract class BaseComponent extends Screen {
     /**
      * Called to render the component
      */
-    public abstract void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
+    public abstract void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
-    public abstract void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
+    public abstract void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
 
     /**
      * Used to find how wide this is
@@ -93,7 +93,7 @@ public abstract class BaseComponent extends Screen {
      * @return A list of string to display
      */
     @Nullable
-    public List<ITextComponent> getDynamicToolTip(int mouseX, int mouseY) {
+    public List<Component> getDynamicToolTip(int mouseX, int mouseY) {
         return null;
     }
 
@@ -103,11 +103,11 @@ public abstract class BaseComponent extends Screen {
      * @param mouseX Mouse X
      * @param mouseY Mouse Y
      */
-    public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
         if(toolTip != null && !toolTip.isEmpty())
-            parent.func_243308_b(matrixStack, toolTip, mouseX, mouseY);
+            parent.renderComponentTooltip(matrixStack, toolTip, mouseX, mouseY);
         else if(getDynamicToolTip(mouseX, mouseY) != null)
-            parent.func_243308_b(matrixStack, getDynamicToolTip(mouseX, mouseY), mouseX, mouseY);
+            parent.renderComponentTooltip(matrixStack, getDynamicToolTip(mouseX, mouseY), mouseX, mouseY);
 
     }
 
@@ -216,11 +216,11 @@ public abstract class BaseComponent extends Screen {
         this.parent = parent;
     }
 
-    public List<ITextComponent> getToolTip() {
+    public List<Component> getToolTip() {
         return toolTip;
     }
 
-    public void setToolTip(List<ITextComponent> toolTip) {
+    public void setToolTip(List<Component> toolTip) {
         this.toolTip = toolTip;
     }
 

@@ -1,11 +1,15 @@
 package com.pauljoda.nucleus.client.gui.component.control;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.renderer.GameRenderer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLUtil;
 
 import java.awt.*;
 
@@ -79,26 +83,26 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(xPos, yPos, 0);
-        GlStateManager.disableLighting();
+    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
+        matrixStack.translate(xPos, yPos, 0);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         blit(matrixStack, 0, 0, selected ? u + 10 : u, v, 10, 10);
-        GlStateManager.enableLighting();
-        GlStateManager.popMatrix();
+        matrixStack.popPose();
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(MatrixStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        GlStateManager.pushMatrix();
-        GlStateManager.translated(xPos + 10, yPos, 0);
+    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        matrixStack.pushPose();
+        matrixStack.translate(xPos + 10, yPos, 0);
         RenderUtils.setColor(Color.darkGray);//Minecraft doesn't play nice with GL, so we will just set our own color
-        fontRenderer.drawString(matrixStack, label, 0, 0, Color.darkGray.getRGB());
+        fontRenderer.draw(matrixStack, label, 0, 0, Color.darkGray.getRGB());
         RenderUtils.restoreColor();
-        GlStateManager.popMatrix();
+        matrixStack.popPose();
     }
 
     /**
@@ -108,7 +112,7 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      */
     @Override
     public int getWidth() {
-        return 10 + fontRenderer.getStringWidth(label);
+        return 10 + fontRenderer.width(label);
     }
 
     /**

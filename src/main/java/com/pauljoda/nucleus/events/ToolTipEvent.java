@@ -1,8 +1,8 @@
 package com.pauljoda.nucleus.events;
 
 import com.pauljoda.nucleus.common.IToolTipProvider;
-import net.minecraft.block.Block;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -23,9 +23,7 @@ public class ToolTipEvent {
     public void onToolTip(ItemTooltipEvent event) {
         IToolTipProvider itemWithTip = null;
 
-        if(Block.getBlockFromItem(event.getItemStack().getItem()) instanceof IToolTipProvider)
-            itemWithTip = (IToolTipProvider) Block.getBlockFromItem(event.getItemStack().getItem());
-        else if(event.getItemStack().getItem() instanceof IToolTipProvider)
+        if(event.getItemStack().getItem() instanceof IToolTipProvider)
             itemWithTip = (IToolTipProvider) event.getItemStack().getItem();
 
 
@@ -33,7 +31,7 @@ public class ToolTipEvent {
             List<String> tipList = itemWithTip.getToolTip(event.getItemStack());
             if(tipList != null)
                 for (String tip : tipList)
-                    event.getToolTip().add(new StringTextComponent(tip));
+                    event.getToolTip().add(new TextComponent(tip));
         }
     }
 }

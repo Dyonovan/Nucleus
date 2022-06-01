@@ -1,9 +1,11 @@
 package com.pauljoda.nucleus.common.tiles.item;
 
 import com.pauljoda.nucleus.common.container.SidedInventoryWrapper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -31,8 +33,8 @@ public abstract class InventorySided extends InventoryHandler {
     private LazyOptional<?> handlerWest   = LazyOptional.of(() -> new SidedInventoryWrapper(this, Direction.WEST));
     private LazyOptional<?> handlerNull   = LazyOptional.of(() -> this);
 
-    public InventorySided(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public InventorySided(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     /*******************************************************************************************************************

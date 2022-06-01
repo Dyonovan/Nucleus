@@ -2,10 +2,11 @@ package com.pauljoda.nucleus.common.tiles;
 
 import com.pauljoda.nucleus.common.tiles.fluid.FluidAndItemHandler;
 import com.pauljoda.nucleus.energy.implementations.EnergyBank;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -43,8 +44,8 @@ public abstract class PanHandler extends FluidAndItemHandler implements IEnergyS
     /**
      * Main Constructor
      */
-    public PanHandler(TileEntityType<?> type) {
-        super(type);
+    public PanHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
         energyStorage = new EnergyBank(getDefaultEnergyStorageSize());
     }
 
@@ -65,7 +66,7 @@ public abstract class PanHandler extends FluidAndItemHandler implements IEnergyS
     protected abstract boolean isProvider();
 
     /**
-     * Is this tile an energy reciever
+     * Is this tile an energy receiver
      * @return True to accept energy
      */
     protected abstract boolean isReceiver();
@@ -91,15 +92,14 @@ public abstract class PanHandler extends FluidAndItemHandler implements IEnergyS
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
-        super.write(compound);
+    public void load(@Nonnull CompoundTag compound) {
+        super.load(compound);
         energyStorage.writeToNBT(compound);
-        return compound;
     }
 
     @Override
-    public void read(BlockState blockState, CompoundNBT compound) {
-        super.read(blockState, compound);
+    public void saveAdditional(@Nonnull CompoundTag compound) {
+        super.saveAdditional(compound);
 
         energyStorage.readFromNBT(compound);
 
