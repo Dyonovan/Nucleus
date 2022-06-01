@@ -24,7 +24,7 @@ if (build == null || build == '') {
 
 
 group = "com.pauljoda.nucleus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Nucleus"
+archivesBaseName = "nucleus"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
