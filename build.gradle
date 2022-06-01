@@ -14,7 +14,7 @@ apply plugin: 'maven-publish'
 
 String build = ""
 if (System.getenv("BUILD_NUMBER") != null) {
-    build = "B" + System.getenv("BUILD_NUMBER")
+    build = "b" + System.getenv("BUILD_NUMBER")
 }
 if (build == null || build == '') {
     version = "${project.minecraft_version}-${project.mod_version}"
