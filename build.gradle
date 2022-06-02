@@ -142,8 +142,8 @@ publishing {
             artifactId = archivesBaseName
             version = version
             artifact devJar
-            artifact sourceJarJava
-            artifact javadocJar
+            //artifact sourceJarJava
+            //artifact javadocJar
             artifact deobfJar
         }
     }
