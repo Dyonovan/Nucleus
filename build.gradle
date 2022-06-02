@@ -87,22 +87,7 @@ dependencies {
     // at runtime, use the full JEI jar
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${JEI_version}")
 }
-/***
-processResources {
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
 
-        // replace version and mcversion
-        expand 'version': project.version
-    }
-
-    // copy everything else, thats not the mods.toml
-    from(sourceSets.main.resources.srcDirs) {
-//        exclude 'META-INF/mods.toml', '**//*psd/**'
-    }
-}
-*/
 configurations.all {
     resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
 }
