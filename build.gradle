@@ -23,13 +23,11 @@ if (build == null || build == '') {
 }
 
 
-group = "com.pauljoda.nucleus" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "nucleus"
-jar.archiveName = archivesBaseName + build;
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-//sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+group = "com.pauljoda" 
+java {
+    archivesBaseName = "nucleus"
+    java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+}
 
 repositories {
     maven {
