@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    compile group: "com.pauljoda.nucleus", name: "Nucleus", version: "+", classifier: "dev"
+    compile group: "com.pauljoda", name: "nucleus", version: "+", classifier: "dev"
 }
 ```
 
