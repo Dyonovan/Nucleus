@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -196,8 +197,9 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
         RenderUtils.prepareRenderState();
         matrixStack.translate(leftPos, topPos, 0);
 
-        RenderUtils.bindTexture(textureLocation);
-        blit(matrixStack, 0, 0, 0, 0, imageWidth + 1, imageHeight + 1);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, this.textureLocation);        blit(matrixStack, 0, 0, 0, 0, imageWidth + 1, imageHeight + 1);
 
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
