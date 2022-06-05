@@ -3,6 +3,9 @@ package com.pauljoda.nucleus.util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -150,7 +153,7 @@ public class EnergyUtils {
      * @param toolTip The tip list
      */
     @OnlyIn(Dist.CLIENT)
-    public static void addToolTipInfo(ItemStack stack, List<String> toolTip) {
+    public static void addToolTipInfo(ItemStack stack, List<Component> toolTip) {
         if(stack.getCapability(CapabilityEnergy.ENERGY, null).isPresent()) {
             IEnergyStorage energyStorage = stack.getCapability(CapabilityEnergy.ENERGY, null).orElse(null);
             addToolTipInfo(energyStorage, toolTip, -1, -1);
@@ -165,22 +168,22 @@ public class EnergyUtils {
      * @param extract        The max extract, -1 to skip
      */
     @OnlyIn(Dist.CLIENT)
-    public static void addToolTipInfo(IEnergyStorage energyStorage, List<String> toolTip, int insert, int extract) {
-        toolTip.add(ChatFormatting.GOLD + ClientUtils.translate("nucleus.energy.energyStored"));
-        toolTip.add("  " + EnergyUtils.getEnergyDisplay(energyStorage.getEnergyStored()) + " / " +
-                EnergyUtils.getEnergyDisplay(energyStorage.getMaxEnergyStored()));
+    public static void addToolTipInfo(IEnergyStorage energyStorage, List<Component> toolTip, int insert, int extract) {
+        toolTip.add(new TextComponent(ChatFormatting.GOLD + ClientUtils.translate("nucleus.energy.energyStored")));
+        toolTip.add(new TextComponent("  " + EnergyUtils.getEnergyDisplay(energyStorage.getEnergyStored()) + " / " +
+                EnergyUtils.getEnergyDisplay(energyStorage.getMaxEnergyStored())));
         if(!ClientUtils.isShiftPressed()) {
-            toolTip.add("");
-            toolTip.add(ChatFormatting.GRAY + "" + ChatFormatting.ITALIC + ClientUtils.translate("nucleus.text.shift_info"));
+            toolTip.add(new TextComponent(""));
+            toolTip.add(new TextComponent(ChatFormatting.GRAY + "" + ChatFormatting.ITALIC + ClientUtils.translate("nucleus.text.shift_info")));
         } else {
             if(insert > -1) {
-                toolTip.add("");
-                toolTip.add(ChatFormatting.GREEN + ClientUtils.translate("nucleus.energy.energyIn"));
-                toolTip.add("  " + EnergyUtils.getEnergyDisplay(insert));
+                toolTip.add(new TextComponent(""));
+                toolTip.add(new TextComponent(ChatFormatting.GREEN + ClientUtils.translate("nucleus.energy.energyIn")));
+                toolTip.add(new TextComponent("  " + EnergyUtils.getEnergyDisplay(insert)));
             }
             if(extract > -1) {
-                toolTip.add(ChatFormatting.DARK_RED + ClientUtils.translate("nucleus.energy.energyOut"));
-                toolTip.add("  " + EnergyUtils.getEnergyDisplay(extract));
+                toolTip.add(new TextComponent(ChatFormatting.DARK_RED + ClientUtils.translate("nucleus.energy.energyOut")));
+                toolTip.add(new TextComponent("  " + EnergyUtils.getEnergyDisplay(extract)));
             }
         }
     }
