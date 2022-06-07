@@ -84,7 +84,8 @@ public class UpdatingBlockEntity extends BlockEntity {
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         CompoundTag tagCompound = packet.getTag();
         super.onDataPacket(net, packet);
-        deserializeNBT(tagCompound);
+        if(tagCompound != null)
+            deserializeNBT(tagCompound);
     }
 
     /**
