@@ -76,7 +76,7 @@ public abstract class PanHandler extends FluidAndItemHandler implements IEnergyS
      *******************************************************************************************************************/
 
     @Override
-    protected void onServerTick() {
+    public void onServerTick() {
         super.onServerTick();
 
         // Handle Energy Difference

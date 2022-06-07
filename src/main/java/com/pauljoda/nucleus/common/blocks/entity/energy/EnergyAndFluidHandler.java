@@ -74,7 +74,7 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
      *******************************************************************************************************************/
 
     @Override
-    protected void onServerTick() {
+    public void onServerTick() {
         super.onServerTick();
 
         // Handle Energy Difference

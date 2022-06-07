@@ -74,7 +74,7 @@ public abstract class EnergyAndItemHandler extends InventoryHandler implements I
      *******************************************************************************************************************/
 
     @Override
-    protected void onServerTick() {
+    public void onServerTick() {
         super.onServerTick();
 
         // Handle Energy Difference

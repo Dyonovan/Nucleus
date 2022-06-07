@@ -77,7 +77,7 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
      *******************************************************************************************************************/
 
     @Override
-    protected void onServerTick() {
+    public void onServerTick() {
         super.onServerTick();
 
         // Handle Energy Difference
