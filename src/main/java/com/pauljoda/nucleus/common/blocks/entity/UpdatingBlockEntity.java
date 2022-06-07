@@ -1,4 +1,4 @@
-package com.pauljoda.nucleus.common.tiles;
+package com.pauljoda.nucleus.common.blocks.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -21,9 +21,9 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public class UpdatingTile extends BlockEntity {
+public class UpdatingBlockEntity extends BlockEntity {
 
-    public UpdatingTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+    public UpdatingBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
     }
 
@@ -34,12 +34,12 @@ public class UpdatingTile extends BlockEntity {
     /**
      * Called only on the client side tick. Override for client side operations
      */
-    protected void onClientTick() {}
+    public void onClientTick() {}
 
     /**
      * Called only on the server side tick. Override for server side operations
      */
-    protected void onServerTick() {}
+    public void onServerTick() {}
 
     /**
      * Call to mark this block for update in the world

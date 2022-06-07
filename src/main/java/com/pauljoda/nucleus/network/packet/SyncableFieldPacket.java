@@ -1,7 +1,7 @@
 package com.pauljoda.nucleus.network.packet;
 
 import com.pauljoda.nucleus.Nucleus;
-import com.pauljoda.nucleus.common.tiles.Syncable;
+import com.pauljoda.nucleus.common.blocks.entity.Syncable;
 import com.pauljoda.nucleus.network.PacketManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;

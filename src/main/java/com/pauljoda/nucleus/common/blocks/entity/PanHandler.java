@@ -1,6 +1,6 @@
-package com.pauljoda.nucleus.common.tiles.energy;
+package com.pauljoda.nucleus.common.blocks.entity;
 
-import com.pauljoda.nucleus.common.tiles.Syncable;
+import com.pauljoda.nucleus.common.blocks.entity.fluid.FluidAndItemHandler;
 import com.pauljoda.nucleus.energy.implementations.EnergyBank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,19 +15,18 @@ import net.minecraftforge.energy.IEnergyStorage;
 import javax.annotation.Nonnull;
 
 /**
- * This file was created for Nucleus - Java
- *
- * Nucleus - Java is licensed under the
+ * This file was created for Nucleus
+ * <p>
+ * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
- * Massive energy handler class to manage interfacing with all energy systems. This handler will manage the conversion
- * between systems by using our own internal implementation
+ * From the latin "pan" for all, combines energy, item, and fluid handlers to one class
  *
  * @author Paul Davis - pauljoda
- * @since 2/9/2017
+ * @since 8/30/20
  */
-public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
+public abstract class PanHandler extends FluidAndItemHandler implements IEnergyStorage {
 
     // Sync Values
     public static final int UPDATE_ENERGY_ID     = 1000;
@@ -45,7 +44,7 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     /**
      * Main Constructor
      */
-    public EnergyHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+    public PanHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
         energyStorage = new EnergyBank(getDefaultEnergyStorageSize());
     }
@@ -67,7 +66,7 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     protected abstract boolean isProvider();
 
     /**
-     * Is this tile an energy reciever
+     * Is this tile an energy receiver
      * @return True to accept energy
      */
     protected abstract boolean isReceiver();
@@ -93,13 +92,13 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     }
 
     @Override
-    public void load(CompoundTag compound) {
+    public void load(@Nonnull CompoundTag compound) {
         super.load(compound);
         energyStorage.writeToNBT(compound);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
 
         energyStorage.readFromNBT(compound);

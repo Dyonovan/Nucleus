@@ -1,7 +1,7 @@
-package com.pauljoda.nucleus.common.tiles.item;
+package com.pauljoda.nucleus.common.blocks.entity.item;
 
+import com.pauljoda.nucleus.common.blocks.entity.Syncable;
 import com.pauljoda.nucleus.common.container.IInventoryCallback;
-import com.pauljoda.nucleus.common.tiles.Syncable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;

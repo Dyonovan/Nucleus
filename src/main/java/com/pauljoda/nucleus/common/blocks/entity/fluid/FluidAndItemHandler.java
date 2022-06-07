@@ -1,6 +1,6 @@
-package com.pauljoda.nucleus.common.tiles.fluid;
+package com.pauljoda.nucleus.common.blocks.entity.fluid;
 
-import com.pauljoda.nucleus.common.tiles.Syncable;
+import com.pauljoda.nucleus.common.blocks.entity.item.InventoryHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -20,16 +20,16 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 import javax.annotation.Nonnull;
 
 /**
- * This file was created for Nucleus - Java
- *
- * Nucleus - Java is licensed under the
+ * This file was created for Nucleus
+ * <p>
+ * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
  * @author Paul Davis - pauljoda
- * @since 2/10/2017
+ * @since 8/30/20
  */
-public abstract class FluidHandler extends Syncable implements IFluidHandler {
+public abstract class FluidAndItemHandler extends InventoryHandler implements IFluidHandler {
 
     // NBT Tags
     protected static final String SIZE_NBT_TAG    = "Size";
@@ -42,8 +42,8 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
     /**
      * Default constructor, calls the setupTanks method to setup the tanks
      */
-    public FluidHandler(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
+    public FluidAndItemHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
         setupTanks();
     }
 

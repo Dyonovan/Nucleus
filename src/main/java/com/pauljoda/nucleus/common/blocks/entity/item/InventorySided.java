@@ -1,4 +1,4 @@
-package com.pauljoda.nucleus.common.tiles.item;
+package com.pauljoda.nucleus.common.blocks.entity.item;
 
 import com.pauljoda.nucleus.common.container.SidedInventoryWrapper;
 import net.minecraft.core.BlockPos;

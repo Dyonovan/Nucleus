@@ -1,6 +1,6 @@
-package com.pauljoda.nucleus.common.tiles.energy;
+package com.pauljoda.nucleus.common.blocks.entity.energy;
 
-import com.pauljoda.nucleus.common.tiles.fluid.FluidHandler;
+import com.pauljoda.nucleus.common.blocks.entity.fluid.FluidHandler;
 import com.pauljoda.nucleus.energy.implementations.EnergyBank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
