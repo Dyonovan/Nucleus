@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,8 +53,17 @@ public class UpdatingBlockEntity extends BlockEntity {
     }
 
     /*******************************************************************************************************************
-     * TileEntity                                                                                                      *
+     * BlockEntity                                                                                                     *
      *******************************************************************************************************************/
+
+    public static void tick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        if(level.getBlockEntity(pos) instanceof UpdatingBlockEntity updatingEntity) {
+            if (level.isClientSide)
+                updatingEntity.onClientTick();
+            else
+                updatingEntity.onServerTick();
+        }
+    }
 
     /**
      * We want the update tag to take in outside info
