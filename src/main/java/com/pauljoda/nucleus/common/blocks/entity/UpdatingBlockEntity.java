@@ -1,9 +1,10 @@
-package com.pauljoda.nucleus.common.tiles;
+package com.pauljoda.nucleus.common.blocks.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,9 +22,9 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public class UpdatingTile extends BlockEntity {
+public class UpdatingBlockEntity extends BlockEntity {
 
-    public UpdatingTile(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+    public UpdatingBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
     }
 
@@ -34,12 +35,12 @@ public class UpdatingTile extends BlockEntity {
     /**
      * Called only on the client side tick. Override for client side operations
      */
-    protected void onClientTick() {}
+    public void onClientTick() {}
 
     /**
      * Called only on the server side tick. Override for server side operations
      */
-    protected void onServerTick() {}
+    public void onServerTick() {}
 
     /**
      * Call to mark this block for update in the world
@@ -52,8 +53,17 @@ public class UpdatingTile extends BlockEntity {
     }
 
     /*******************************************************************************************************************
-     * TileEntity                                                                                                      *
+     * BlockEntity                                                                                                     *
      *******************************************************************************************************************/
+
+    public static void tick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
+        if(level.getBlockEntity(pos) instanceof UpdatingBlockEntity updatingEntity) {
+            if (level.isClientSide)
+                updatingEntity.onClientTick();
+            else
+                updatingEntity.onServerTick();
+        }
+    }
 
     /**
      * We want the update tag to take in outside info
@@ -74,7 +84,8 @@ public class UpdatingTile extends BlockEntity {
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         CompoundTag tagCompound = packet.getTag();
         super.onDataPacket(net, packet);
-        deserializeNBT(tagCompound);
+        if(tagCompound != null)
+            deserializeNBT(tagCompound);
     }
 
     /**

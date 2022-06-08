@@ -2,6 +2,7 @@ package com.pauljoda.nucleus.events;
 
 import com.pauljoda.nucleus.common.IToolTipProvider;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,6 +26,10 @@ public class ToolTipEvent {
 
         if(event.getItemStack().getItem() instanceof IToolTipProvider)
             itemWithTip = (IToolTipProvider) event.getItemStack().getItem();
+
+        else if(event.getItemStack().getItem() instanceof BlockItem blockItem &&
+            blockItem.getBlock() instanceof IToolTipProvider)
+            itemWithTip = (IToolTipProvider) blockItem.getBlock();
 
 
         if(itemWithTip != null) {

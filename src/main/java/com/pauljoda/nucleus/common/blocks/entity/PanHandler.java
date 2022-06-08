@@ -1,6 +1,6 @@
-package com.pauljoda.nucleus.common.tiles.energy;
+package com.pauljoda.nucleus.common.blocks.entity;
 
-import com.pauljoda.nucleus.common.tiles.fluid.FluidHandler;
+import com.pauljoda.nucleus.common.blocks.entity.fluid.FluidAndItemHandler;
 import com.pauljoda.nucleus.energy.implementations.EnergyBank;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -21,10 +21,12 @@ import javax.annotation.Nonnull;
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
  *
+ * From the latin "pan" for all, combines energy, item, and fluid handlers to one class
+ *
  * @author Paul Davis - pauljoda
  * @since 8/30/20
  */
-public abstract class EnergyAndFluidHandler extends FluidHandler implements IEnergyStorage {
+public abstract class PanHandler extends FluidAndItemHandler implements IEnergyStorage {
 
     // Sync Values
     public static final int UPDATE_ENERGY_ID     = 1000;
@@ -42,8 +44,8 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
     /**
      * Main Constructor
      */
-    public EnergyAndFluidHandler(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
+    public PanHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
         energyStorage = new EnergyBank(getDefaultEnergyStorageSize());
     }
 
@@ -64,7 +66,7 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
     protected abstract boolean isProvider();
 
     /**
-     * Is this tile an energy reciever
+     * Is this tile an energy receiver
      * @return True to accept energy
      */
     protected abstract boolean isReceiver();
@@ -74,7 +76,7 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
      *******************************************************************************************************************/
 
     @Override
-    protected void onServerTick() {
+    public void onServerTick() {
         super.onServerTick();
 
         // Handle Energy Difference
@@ -90,13 +92,13 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
     }
 
     @Override
-    public void load(CompoundTag compound) {
+    public void load(@Nonnull CompoundTag compound) {
         super.load(compound);
         energyStorage.writeToNBT(compound);
     }
 
     @Override
-    public void saveAdditional(CompoundTag compound) {
+    public void saveAdditional(@Nonnull CompoundTag compound) {
         super.saveAdditional(compound);
 
         energyStorage.readFromNBT(compound);

@@ -1,4 +1,4 @@
-package com.pauljoda.nucleus.common.tiles;
+package com.pauljoda.nucleus.common.blocks.entity;
 
 import com.pauljoda.nucleus.network.packet.SyncableFieldPacket;
 import com.pauljoda.nucleus.network.PacketManager;
@@ -17,7 +17,7 @@ import net.minecraftforge.network.PacketDistributor;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public abstract class Syncable extends UpdatingTile {
+public abstract class Syncable extends UpdatingBlockEntity {
 
     public Syncable(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
