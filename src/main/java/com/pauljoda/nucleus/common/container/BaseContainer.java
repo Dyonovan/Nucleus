@@ -147,7 +147,7 @@ public abstract class BaseContainer extends AbstractContainerMenu {
             Inventory playerInv = player.getInventory();
             slot.setChanged();
             ItemStack stackSlot = slot.getItem();
-            ItemStack stackHeld = playerInv.getSelected();
+            ItemStack stackHeld = getCarried();
 
             if(!stackSlot.isEmpty())
                 stack = stackSlot.copy();
