@@ -183,6 +183,14 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
     }
 
     /**
+     * Override to prevent vanilla label writing
+     */
+    @Override
+    protected void renderLabels(PoseStack p_97808_, int p_97809_, int p_97810_) {
+
+    }
+
+    /**
      * Called to draw the background
      *
      * Usually used to create the base on which to render things
@@ -223,9 +231,10 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      */
     public void drawTopLayer(PoseStack matrixStack, int mouseX, int mouseY) {
         matrixStack.pushPose();
-        matrixStack.translate(-leftPos, -topPos, 0);
+        matrixStack.translate(leftPos, topPos, 0);
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
+            baseComponent.renderOverlay(matrixStack, leftPos, topPos, mouseX, mouseY);
             if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos))
                 baseComponent.renderToolTip(matrixStack, mouseX, mouseY);
         }));
