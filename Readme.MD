@@ -1,7 +1,7 @@
 Nucleus ![Build](https://github.com/TeamBR-Modding/Nucleus/workflows/Build/badge.svg)<a href='https://minecraft.curseforge.com/projects/nucleus'><img src='http://cf.way2muchnoise.eu/full_nucleus_downloads.svg'><img src='http://cf.way2muchnoise.eu/versions/nucleus_latest.svg'></a>
 ======
 
-Library used by pauljoda mods. Contains base class helpers for energy/inventories/fluid and a simple GUI system.  
+Library used by pauljoda mods. Contains base class helpers for energy/inventories/fluid and a simple GUI system. 
 
 Other credits include:
 - Dyonovan
