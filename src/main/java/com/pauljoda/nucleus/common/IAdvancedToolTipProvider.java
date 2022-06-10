@@ -1,6 +1,7 @@
 package com.pauljoda.nucleus.common;
 
 import com.pauljoda.nucleus.util.ClientUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -57,7 +58,7 @@ public interface IAdvancedToolTipProvider extends IToolTipProvider {
         return ClientUtils.isShiftPressed() ?
                 getAdvancedToolTip(stack) :
                 displayShiftForInfo(stack) ?
-                        Collections.singletonList(ClientUtils.translate("nucleus.text.shift_info")) :
+                        Collections.singletonList(ChatFormatting.GREEN + ClientUtils.translate("nucleus.text.shift_info")) :
                         null;
     }
 }
