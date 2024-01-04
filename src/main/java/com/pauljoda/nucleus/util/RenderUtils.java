@@ -4,17 +4,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.InventoryMenu;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import java.awt.*;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
- * http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">License</a>
  *
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
@@ -32,6 +30,7 @@ public class RenderUtils {
 
     /**
      * Used to bind a texture to the render manager
+     *
      * @param resource The resource to bind
      */
     public static void bindTexture(ResourceLocation resource) {
@@ -53,7 +52,7 @@ public class RenderUtils {
     public static void bindMinecraftBlockSheet() {
         bindTexture(MC_BLOCKS_RESOURCE_LOCATION);
     }
-    
+
     /**
      * Set the GL color. You should probably reset it after this
      *

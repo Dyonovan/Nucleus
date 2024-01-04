@@ -9,16 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * This file was created for Nucleus
- *
- * Nucleus is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
- * http://creativecommons.org/licenses/by-nc-sa/4.0/
- *
- * @author Paul Davis - pauljoda
- * @since 2/12/2017
- */
 public class ClientUtils {
 
     /**
@@ -43,6 +33,7 @@ public class ClientUtils {
 
     /**
      * Get if key is currently pressed
+     *
      * @param key {@link GLFW} key that is pressed
      * @return True if pressed
      */
@@ -70,16 +61,17 @@ public class ClientUtils {
 
     /**
      * Convert a string into a list of strings with clip to max length
+     *
      * @param inputString Long string to trim
-     * @param maxWidth Max length of string
+     * @param maxWidth    Max length of string
      * @return Clipped list of strings
      */
     public static List<String> wrapStringToLength(String inputString, int maxWidth) {
         ArrayList<String> formattedList = new ArrayList<>();
 
         int fullWidth = inputString.length();
-        if(fullWidth > maxWidth) {
-            for(int position = 0; position < inputString.length(); position += maxWidth)
+        if (fullWidth > maxWidth) {
+            for (int position = 0; position < inputString.length(); position += maxWidth)
                 formattedList.add(inputString.substring(position, Math.min(inputString.length(), position + maxWidth)));
         } else {
             formattedList.add(inputString);

@@ -7,6 +7,7 @@ import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.client.gui.component.NinePatchRenderer;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
 
@@ -16,7 +17,7 @@ import java.util.List;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -26,7 +27,7 @@ import java.util.List;
  */
 public class GuiTab extends BaseComponent {
     // Class Variables
-    protected static final int FOLDED_SIZE  = 24;
+    protected static final int FOLDED_SIZE = 24;
 
     // Variables
     protected int expandedWidth, expandedHeight, u, v;
@@ -37,21 +38,20 @@ public class GuiTab extends BaseComponent {
     protected List<BaseComponent> children;
 
     protected NinePatchRenderer tabRenderer;
-    protected ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
 
     /**
      * Creates a Gui Tab
-     *
+     * <p>
      * IMPORTANT: Texture should be a full nine patch renderer minus the left column of cells
      * See NinePatchRenderer construction for more info
      *
-     * @param parent The parent GUI
-     * @param x The x pos
-     * @param y The y pos
-     * @param u The texture u, this is the middle top cell for the nine patch renderer
-     * @param v The texture v, this is the middle top cell for the nine patch renderer
-     * @param exWidth The expanded width
-     * @param exHeight The expanded height
+     * @param parent       The parent GUI
+     * @param x            The x pos
+     * @param y            The y pos
+     * @param u            The texture u, this is the middle top cell for the nine patch renderer
+     * @param v            The texture v, this is the middle top cell for the nine patch renderer
+     * @param exWidth      The expanded width
+     * @param exHeight     The expanded height
      * @param displayStack The stack to display
      */
     public GuiTab(GuiBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable
@@ -69,6 +69,7 @@ public class GuiTab extends BaseComponent {
 
     /**
      * Add a child to this tab
+     *
      * @param component The component to add
      * @return The tab, to enable chaining
      */
@@ -88,19 +89,19 @@ public class GuiTab extends BaseComponent {
 
     /**
      * Called when the mouse is pressed
-     *
+     * <p>
      * We are broken this out as GuiTabCollection will pass down
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     public boolean mouseDownActivated(double x, double y, int button) {
-        if(this.mouseEventListener != null)
+        if (this.mouseEventListener != null)
             this.mouseEventListener.onMouseDown(this, x, y, button);
-        if(areChildrenActive()) {
-            for(BaseComponent component : children){
-                if(component.isMouseOver(x, y)) {
+        if (areChildrenActive()) {
+            for (BaseComponent component : children) {
+                if (component.isMouseOver(x, y)) {
                     component.mouseDown(x, y, button);
                     return true;
                 }
@@ -111,17 +112,17 @@ public class GuiTab extends BaseComponent {
 
     /**
      * Called when the mouse button is over the component and released
-     *
+     * <p>
      * We are broken this out as GuiTabCollection will pass down
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     public boolean mouseUpActivated(double x, double y, int button) {
-        if(areChildrenActive()) {
-            for(BaseComponent component : children){
-                if(component.isMouseOver(x, y)) {
+        if (areChildrenActive()) {
+            for (BaseComponent component : children) {
+                if (component.isMouseOver(x, y)) {
                     component.mouseUp(x, y, button);
                     return true;
                 }
@@ -132,17 +133,17 @@ public class GuiTab extends BaseComponent {
 
     /**
      * Called when the user drags the component
-     *
+     * <p>
      * We are broken this out as GuiTabCollection will pass down
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     public boolean mouseDragActivated(double x, double y, int button, double xAmount, double yAmount) {
-        if(areChildrenActive()) {
-            for(BaseComponent component : children){
-                if(component.isMouseOver(x, y)) {
+        if (areChildrenActive()) {
+            for (BaseComponent component : children) {
+                if (component.isMouseOver(x, y)) {
                     component.mouseDrag(x, y, button, xAmount, yAmount);
                     return true;
                 }
@@ -153,10 +154,11 @@ public class GuiTab extends BaseComponent {
 
     /**
      * Called by the GuiTabCollection when the mouse scrolls
+     *
      * @param dir The scroll dir
      */
     public void mouseScrolledTab(int dir) {
-        if(areChildrenActive()) {
+        if (areChildrenActive()) {
             children.forEach((component -> component.mouseScrolled(dir)));
         }
     }
@@ -168,7 +170,7 @@ public class GuiTab extends BaseComponent {
     /**
      * Used when a key is pressed
      *
-     * @param letter The letter
+     * @param letter  The letter
      * @param keyCode The code
      */
     @Override
@@ -183,55 +185,56 @@ public class GuiTab extends BaseComponent {
      * @param mouseY Mouse Y
      */
     @Override
-    public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
-        if(areChildrenActive()) {
+    public void renderToolTip(GuiGraphics graphics, int mouseX, int mouseY) {
+        if (areChildrenActive()) {
             children.forEach((component -> {
-                if(component.isMouseOver(mouseX - xPos - parent.getGuiLeft(), mouseY - yPos - parent.getGuiTop()))
-                    component.renderToolTip(matrixStack, mouseX, mouseY);
+                if (component.isMouseOver(mouseX - xPos - parent.getGuiLeft(), mouseY - yPos - parent.getGuiTop()))
+                    component.renderToolTip(graphics, mouseX, mouseY);
             }));
         } else
-            super.renderToolTip(matrixStack, mouseX, mouseY);
+            super.renderToolTip(graphics, mouseX, mouseY);
     }
 
     /**
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
 
         // Set targets to stun
-        double targetWidth  = isActive ? expandedWidth  : FOLDED_SIZE;
+        double targetWidth = isActive ? expandedWidth : FOLDED_SIZE;
         double targetHeight = isActive ? expandedHeight : FOLDED_SIZE;
 
         // Move size
-        if(currentWidth != targetWidth)
+        if (currentWidth != targetWidth)
             dWidth += (targetWidth - dWidth);
-        if(currentHeight != targetHeight)
+        if (currentHeight != targetHeight)
             dHeight += (targetHeight - dHeight);
 
         // Set size
-        currentWidth  = dWidth;
+        currentWidth = dWidth;
         currentHeight = dHeight;
 
         // Render the tab
-        tabRenderer.render(matrixStack, this, 0, 0, currentWidth, currentHeight);
+        tabRenderer.render(graphics, 0, 0, currentWidth, currentHeight);
 
         // Render the stack, if available
         RenderUtils.restoreColor();
-        if(stack != null) {
+        if (stack != null) {
             //RenderHelper.enableStandardItemLighting();
             matrixStack.pushPose();
             matrixStack.translate(0F, yPos, 0F);
             RenderUtils.restoreRenderState();
-            itemRenderer.renderGuiItem(stack, guiLeft + getParent().getXSize(), guiTop + 4);
+            graphics.renderItem(stack, guiLeft + getParent().getXSize(), guiTop + 4);
             matrixStack.popPose();
         }
 
         // Render the children
-        if(areChildrenActive()) {
+        if (areChildrenActive()) {
             children.forEach((component -> {
-                component.render(matrixStack,0, 0, mouseX, mouseY);
+                component.render(graphics, 0, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
             }));
         }
@@ -243,12 +246,12 @@ public class GuiTab extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Render the children
-        if(areChildrenActive()) {
+        if (areChildrenActive()) {
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
-                component.renderOverlay(matrixStack,0, 0, mouseX, mouseY);
+                component.renderOverlay(graphics, 0, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
                 RenderUtils.restoreRenderState();
             }));

@@ -9,19 +9,16 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidAttributes;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -32,9 +29,9 @@ import javax.annotation.Nonnull;
 public abstract class FluidHandler extends Syncable implements IFluidHandler {
 
     // NBT Tags
-    protected static final String SIZE_NBT_TAG    = "Size";
+    protected static final String SIZE_NBT_TAG = "Size";
     protected static final String TANK_ID_NBT_TAG = "TankID";
-    protected static final String TANKS_NBT_TAG   = "Tanks";
+    protected static final String TANKS_NBT_TAG = "Tanks";
 
     // Tanks
     public FluidTank[] tanks;
@@ -88,18 +85,18 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
      * @return The amount of buckets in MB
      */
     public int bucketsToMB(int buckets) {
-        return FluidAttributes.BUCKET_VOLUME * buckets;
+        return FluidType.BUCKET_VOLUME * buckets;
     }
 
     /**
      * Returns true if the given fluid can be inserted
-     *
+     * <p>
      * More formally, this should return true if fluid is able to enter
      */
     protected boolean canFill(Fluid fluid) {
-        for(Integer x : getInputTanks()) {
-            if(x < tanks.length)
-                if((tanks[x].getFluid().isEmpty()|| tanks[x].getFluid().getFluid() == null) ||
+        for (Integer x : getInputTanks()) {
+            if (x < tanks.length)
+                if ((tanks[x].getFluid().isEmpty() || tanks[x].getFluid().getFluid() == null) ||
                         (tanks[x].getFluid().isEmpty() && tanks[x].getFluid().getFluid() == fluid))
                     return true;
         }
@@ -108,13 +105,13 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
 
     /**
      * Returns true if the given fluid can be extracted
-     *
+     * <p>
      * More formally, this should return true if fluid is able to leave
      */
     protected boolean canDrain(Fluid fluid) {
-        for(Integer x : getOutputTanks()) {
-            if(x < tanks.length)
-                if(!tanks[x].getFluid().isEmpty() && tanks[x].getFluid().getFluid() != Fluids.EMPTY)
+        for (Integer x : getOutputTanks()) {
+            if (x < tanks.length)
+                if (!tanks[x].getFluid().isEmpty() && tanks[x].getFluid().getFluid() != Fluids.EMPTY)
                     return true;
         }
         return false;
@@ -129,15 +126,14 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
      *
      * @param compound The tag to save to
      */
-    @Nonnull
     @Override
-    public void load(@Nonnull CompoundTag compound) {
+    public void load(CompoundTag compound) {
         super.load(compound);
         int id = 0;
         compound.putInt(SIZE_NBT_TAG, tanks.length);
         ListTag tagList = new ListTag();
-        for(FluidTank tank : tanks) {
-            if(tank != null) {
+        for (FluidTank tank : tanks) {
+            if (tank != null) {
                 CompoundTag tankCompound = new CompoundTag();
                 tankCompound.putByte(TANK_ID_NBT_TAG, (byte) id);
                 id += 1;
@@ -158,24 +154,13 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
         super.saveAdditional(compound);
         ListTag tagList = compound.getList(TANKS_NBT_TAG, 10);
         int size = compound.getInt(SIZE_NBT_TAG);
-        if(size != tanks.length && compound.contains(SIZE_NBT_TAG)) tanks = new FluidTank[size];
-        for(int x = 0; x < tagList.size(); x++) {
+        if (size != tanks.length && compound.contains(SIZE_NBT_TAG)) tanks = new FluidTank[size];
+        for (int x = 0; x < tagList.size(); x++) {
             CompoundTag tankCompound = tagList.getCompound(x);
             byte position = tankCompound.getByte(TANK_ID_NBT_TAG);
-            if(position < tanks.length)
+            if (position < tanks.length)
                 tanks[position].readFromNBT(tankCompound);
         }
-    }
-
-    private LazyOptional<?> lazyOptional = LazyOptional.of(() -> this);
-
-    @Nonnull
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-            return (LazyOptional<T>) lazyOptional;
-        return super.getCapability(capability, facing);
     }
 
     /*******************************************************************************************************************
@@ -212,7 +197,7 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
     @Override
     public FluidStack getFluidInTank(int tank) {
         FluidStack fluidStack = FluidStack.EMPTY.copy();
-        if(tank < tanks.length && tank >= 0)
+        if (tank < tanks.length && tank >= 0)
             return tanks[tank].getFluid().copy(); // Others should never modify, copy to prevent happening
         return fluidStack;
     }
@@ -253,12 +238,12 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
      */
     @Override
     public int fill(FluidStack resource, FluidAction action) {
-        if(!resource.isEmpty() && resource.getFluid() != Fluids.EMPTY && canFill(resource.getFluid())) {
-            for(Integer x : getInputTanks()) {
-                if(x < tanks.length) {
-                    if(tanks[x].fill(resource, action) > 0) {
+        if (!resource.isEmpty() && resource.getFluid() != Fluids.EMPTY && canFill(resource.getFluid())) {
+            for (Integer x : getInputTanks()) {
+                if (x < tanks.length) {
+                    if (tanks[x].fill(resource, action) > 0) {
                         int actual = tanks[x].fill(resource, action);
-                        if(action.execute()) onTankChanged(tanks[x]);
+                        if (action.execute()) onTankChanged(tanks[x]);
                         return actual;
                     }
                 }
@@ -269,7 +254,7 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
 
     /**
      * Drains fluid out of internal tanks, distribution is left entirely to the IFluidHandler.
-     *
+     * <p>
      * This method is not Fluid-sensitive.
      *
      * @param maxDrain Maximum amount of fluid to drain.
@@ -281,12 +266,12 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
     @Override
     public FluidStack drain(int maxDrain, FluidAction doDrain) {
         FluidStack fluidStack = FluidStack.EMPTY.copy();
-        for(Integer x : getOutputTanks()) {
-            if(x < tanks.length) {
+        for (Integer x : getOutputTanks()) {
+            if (x < tanks.length) {
                 fluidStack = tanks[x].drain(maxDrain, doDrain);
-                if(!fluidStack.isEmpty()) {
+                if (!fluidStack.isEmpty()) {
                     tanks[x].drain(maxDrain, doDrain);
-                    if(doDrain.execute()) onTankChanged(tanks[x]);
+                    if (doDrain.execute()) onTankChanged(tanks[x]);
                     return fluidStack;
                 }
             }

@@ -1,15 +1,15 @@
 package com.pauljoda.nucleus.common.blocks.entity;
 
-import com.pauljoda.nucleus.network.packet.SyncableFieldPacket;
 import com.pauljoda.nucleus.network.PacketManager;
+import com.pauljoda.nucleus.network.packets.bidirectional.SyncableFieldPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * This file was created for Nucleus - Java
- * 
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -29,13 +29,15 @@ public abstract class Syncable extends UpdatingBlockEntity {
 
     /**
      * Used to set the value of a field
-     * @param id The field id
+     *
+     * @param id    The field id
      * @param value The value of the field
      */
     public abstract void setVariable(int id, double value);
 
     /**
      * Used to get the field on the server, this will fetch the server value and overwrite the current
+     *
      * @param id The field id
      * @return The value on the server, now set to ourselves
      */
@@ -64,10 +66,10 @@ public abstract class Syncable extends UpdatingBlockEntity {
      * Sends the value to the clients nearby
      */
     public void sendValueToClient(int id, double value) {
-        PacketManager.INSTANCE.send(PacketDistributor.NEAR.with( () ->
+        PacketManager.INSTANCE.sendToAllAround(
+                new SyncableFieldPacket(false, id, value, getBlockPos()),
                 new PacketDistributor.TargetPoint(
-                getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
-                25, getLevel().dimension())),
-                new SyncableFieldPacket(false, id, value, getBlockPos()));
+                        getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
+                        25, getLevel().dimension()));
     }
 }

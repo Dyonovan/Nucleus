@@ -1,17 +1,14 @@
 package com.pauljoda.nucleus.common.items;
 
-import com.pauljoda.nucleus.energy.implementations.EnergyBank;
+import com.pauljoda.nucleus.common.blocks.entity.energy.EnergyBank;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
+import net.neoforged.neoforge.energy.IEnergyStorage;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * This file was created for Nucleus
@@ -23,7 +20,7 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 3/1/2017
  */
-public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider {
+public class EnergyContainingItem implements IEnergyStorage {
     // Variables
     private ItemStack heldStack;
     private EnergyBank localEnergy;
@@ -45,7 +42,7 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
      */
     protected void checkStackTag() {
         // Give the stack a tag
-        if(!heldStack.hasTag()) {
+        if (!heldStack.hasTag()) {
             heldStack.setTag(new CompoundTag());
             localEnergy.writeToNBT(heldStack.getTag());
         }
@@ -66,7 +63,7 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     public int receiveEnergy(int maxReceive, boolean simulate) {
         checkStackTag();
         localEnergy.readFromNBT(heldStack.getTag());
-        int energyReceived = localEnergy.receivePower(maxReceive, !simulate);
+        int energyReceived = localEnergy.receiveEnergy(maxReceive, !simulate);
         localEnergy.writeToNBT(heldStack.getTag());
         return energyReceived;
     }
@@ -82,7 +79,7 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     public int extractEnergy(int maxExtract, boolean simulate) {
         checkStackTag();
         localEnergy.readFromNBT(heldStack.getTag());
-        int extractedEnergy = localEnergy.providePower(maxExtract, !simulate);
+        int extractedEnergy = localEnergy.extractEnergy(maxExtract, !simulate);
         localEnergy.writeToNBT(heldStack.getTag());
         return extractedEnergy;
     }
@@ -123,30 +120,5 @@ public class EnergyContainingItem implements IEnergyStorage, ICapabilityProvider
     @Override
     public boolean canReceive() {
         return true;
-    }
-
-    /*******************************************************************************************************************
-     * ICapabilityProvider                                                                                             *
-     *******************************************************************************************************************/
-
-    private LazyOptional<?> capabilityEnergy = LazyOptional.of(() -> this);
-
-    /**
-     * Retrieves the handler for the capability requested on the specific side.
-     * The return value CAN be null if the object does not support the capability.
-     * The return value CAN be the same for multiple faces.
-     *
-     * @param capability The capability to check
-     * @param facing     The Side to check from:
-     *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
-     * @return True if this object supports the capability.
-     */
-    @Nonnull
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
-        if(capability == CapabilityEnergy.ENERGY)
-            return (LazyOptional<T>) capabilityEnergy;
-        return LazyOptional.empty();
     }
 }

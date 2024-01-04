@@ -1,145 +1,60 @@
 package com.pauljoda.nucleus.data;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import net.minecraft.advancements.critereon.EnchantmentPredicate;
-import net.minecraft.advancements.critereon.ItemPredicate;
-import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
-import net.minecraft.data.HashCache;
-import net.minecraft.data.loot.LootTableProvider;
+
+import net.minecraft.data.loot.packs.VanillaBlockLoot;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTables;
-import net.minecraft.world.level.storage.loot.entries.AlternativesEntry;
 import net.minecraft.world.level.storage.loot.entries.DynamicLoot;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
-import net.minecraft.world.level.storage.loot.functions.*;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.predicates.MatchTool;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.functions.CopyNameFunction;
+import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
+import net.minecraft.world.level.storage.loot.functions.SetContainerContents;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- * This file was created for Nucleus
+ * This class is responsible for generating loot tables for different types of blocks
+ * in the game.
  * <p>
- * Nucleus is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
- * http://creativecommons.org/licenses/by-nc-sa/4.0/
- * <p>
- * reference: https://github.com/McJty/TutorialV3/blob/270ff33667f209ba73d0d83d7cd4efcbb17b2c99/src/main/java/com/example/tutorialv3/datagen/BaseLootTableProvider.java#L37
+ * The class extends the functionality provided by VanillaBlockLoot to define custom
+ * loot tables for certain blocks.
  *
  * @author Paul Davis - pauljoda
  * @since 6/7/2022
  */
-public abstract class BaseLootTableGenerator extends LootTableProvider {
+public abstract class BaseLootTableGenerator extends VanillaBlockLoot {
 
-    private static final Logger LOGGER = LogManager.getLogger();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    /**
+     * This method creates a standard loot table for a given block with a specific block entity type.
+     *
+     * @param block The block for which the loot table is to be created.
+     * @param type  The type of the block entity.
+     * @param tags  An array of tags that is copy data from the block entity NBT data.
+     */
+    private void createStandardTable(Block block, BlockEntityType<?> type, String... tags) {
+        LootPoolSingletonContainer.Builder<?> lti = LootItem.lootTableItem(block);
 
-    // Loot Table Name
-    protected String name;
+        // Copy the name of the block entity over to the loot item.
+        lti.apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY));
 
-    protected final Map<Block, LootTable.Builder> lootTables = new HashMap<>();
-    private final DataGenerator generator;
-
-    public BaseLootTableGenerator(DataGenerator dataGenerator, String name) {
-        super(dataGenerator);
-        this.generator = dataGenerator;
-        this.name = name;
-    }
-
-    protected abstract void addTables();
-
-    /*******************************************************************************************************************
-     * LootTableProvider                                                                                               *
-     *******************************************************************************************************************/
-
-    @Override
-    public void run(HashCache cache) {
-        addTables();
-
-        Map<ResourceLocation, LootTable> tables = new HashMap<>();
-        for (Map.Entry<Block, LootTable.Builder> entry : lootTables.entrySet()) {
-            tables.put(entry.getKey().getLootTable(), entry.getValue().setParamSet(LootContextParamSets.BLOCK).build());
+        // Copy over NBT data from the block entity to the loot item.
+        for (String tag : tags) {
+            lti.apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy(tag, "BlockEntityTag." + tag, CopyNbtFunction.MergeStrategy.REPLACE));
         }
-        writeTables(cache, tables);
-    }
 
-    @Override
-    public String getName() {
-        return name;
-    }
+        // Add contents to the loot item from the block entity.
+        lti.apply(SetContainerContents.setContents(type).withEntry(DynamicLoot.dynamicEntry(new ResourceLocation("minecraft", "contents"))));
 
-    /*******************************************************************************************************************
-     * Helper Functions                                                                                                *
-     *******************************************************************************************************************/
-
-    protected LootTable.Builder createSimpleTable(String name, Block block) {
+        // Create a loot pool that rolls once and add the loot item to it.
         LootPool.Builder builder = LootPool.lootPool()
-                .name(name)
                 .setRolls(ConstantValue.exactly(1))
-                .add(LootItem.lootTableItem(block));
-        return LootTable.lootTable().withPool(builder);
-    }
+                .add(lti);
 
-    protected LootTable.Builder createStandardTable(String name, Block block, BlockEntityType<?> type) {
-        LootPool.Builder builder = LootPool.lootPool()
-                .name(name)
-                .setRolls(ConstantValue.exactly(1))
-                .add(LootItem.lootTableItem(block)
-                        .apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY))
-                        .apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY)
-                                .copy("Info", "BlockEntityTag.Info", CopyNbtFunction.MergeStrategy.REPLACE)
-                                .copy("Inventory", "BlockEntityTag.Inventory", CopyNbtFunction.MergeStrategy.REPLACE)
-                                .copy("Energy", "BlockEntityTag.Energy", CopyNbtFunction.MergeStrategy.REPLACE))
-                        .apply(SetContainerContents.setContents(type)
-                                .withEntry(DynamicLoot.dynamicEntry(new ResourceLocation("minecraft", "contents"))))
-                );
-        return LootTable.lootTable().withPool(builder);
-    }
-
-    protected LootTable.Builder createSilkTouchTable(String name, Block block, Item lootItem, float min, float max) {
-        LootPool.Builder builder = LootPool.lootPool()
-                .name(name)
-                .setRolls(ConstantValue.exactly(1))
-                .add(AlternativesEntry.alternatives(
-                                LootItem.lootTableItem(block)
-                                        .when(MatchTool.toolMatches(ItemPredicate.Builder.item()
-                                                .hasEnchantment(new EnchantmentPredicate(Enchantments.SILK_TOUCH,
-                                                        MinMaxBounds.Ints.atLeast(1))))),
-                                LootItem.lootTableItem(lootItem)
-                                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(min, max)))
-                                        .apply(ApplyBonusCount.addUniformBonusCount(Enchantments.BLOCK_FORTUNE, 1))
-                                        .apply(ApplyExplosionDecay.explosionDecay())
-                        )
-                );
-        return LootTable.lootTable().withPool(builder);
-    }
-
-    private void writeTables(HashCache cache, Map<ResourceLocation, LootTable> tables) {
-        Path outputFolder = this.generator.getOutputFolder();
-        tables.forEach((key, lootTable) -> {
-            Path path = outputFolder.resolve("data/" + key.getNamespace() + "/loot_tables/" + key.getPath() + ".json");
-            try {
-                DataProvider.save(GSON, cache, LootTables.serialize(lootTable), path);
-            } catch (IOException e) {
-                LOGGER.error("Couldn't write loot table {}", path, e);
-            }
-        });
+        // Add the loot pool to the loot table of the block.
+        add(block, LootTable.lootTable().withPool(builder));
     }
 }

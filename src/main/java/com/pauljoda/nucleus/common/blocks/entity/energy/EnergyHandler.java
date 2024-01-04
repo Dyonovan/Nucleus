@@ -1,26 +1,19 @@
 package com.pauljoda.nucleus.common.blocks.entity.energy;
 
 import com.pauljoda.nucleus.common.blocks.entity.Syncable;
-import com.pauljoda.nucleus.energy.implementations.EnergyBank;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.energy.IEnergyStorage;
-
-import javax.annotation.Nonnull;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
- *
+ * <p>
  * Massive energy handler class to manage interfacing with all energy systems. This handler will manage the conversion
  * between systems by using our own internal implementation
  *
@@ -30,7 +23,7 @@ import javax.annotation.Nonnull;
 public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
 
     // Sync Values
-    public static final int UPDATE_ENERGY_ID     = 1000;
+    public static final int UPDATE_ENERGY_ID = 1000;
     public static final int UPDATE_DIFFERENCE_ID = 1001;
 
     // Energy Storage
@@ -56,18 +49,21 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
 
     /**
      * Used to define the default size of this energy bank
+     *
      * @return The default size of the energy bank
      */
     protected abstract int getDefaultEnergyStorageSize();
 
     /**
      * Is this tile an energy provider
+     *
      * @return True to allow energy out
      */
     protected abstract boolean isProvider();
 
     /**
      * Is this tile an energy reciever
+     *
      * @return True to accept energy
      */
     protected abstract boolean isReceiver();
@@ -81,20 +77,21 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
         super.onServerTick();
 
         // Handle Energy Difference
-        currentDifference = energyStorage.getCurrentStored() - lastEnergy;
+        currentDifference = energyStorage.getEnergyStored() - lastEnergy;
 
         // Update client
-        if(currentDifference != lastDifference)
+        if (currentDifference != lastDifference)
             sendValueToClient(UPDATE_DIFFERENCE_ID, currentDifference);
 
         // Store for next round
         lastDifference = currentDifference;
-        lastEnergy     = energyStorage.getCurrentStored();
+        lastEnergy = energyStorage.getEnergyStored();
     }
 
     @Override
     public void load(CompoundTag compound) {
         super.load(compound);
+        // Write the current stored
         energyStorage.writeToNBT(compound);
     }
 
@@ -105,55 +102,47 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
         energyStorage.readFromNBT(compound);
 
         // Check for bad tags
-        if(energyStorage.getMaxStored() == 0)
-            energyStorage.setMaxStored(getDefaultEnergyStorageSize());
-        if(energyStorage.getMaxInsert() == 0)
-            energyStorage.setMaxInsert(getDefaultEnergyStorageSize());
-        if(energyStorage.getMaxExtract() == 0)
+        if (energyStorage.getMaxEnergyStored() == 0)
+            energyStorage.setCapacity(getDefaultEnergyStorageSize());
+        if (energyStorage.getMaxReceive() == 0)
+            energyStorage.setMaxReceive(getDefaultEnergyStorageSize());
+        if (energyStorage.getMaxExtract() == 0)
             energyStorage.setMaxExtract(getDefaultEnergyStorageSize());
-    }
-
-    private LazyOptional<?> lazyOptional = LazyOptional.of(() -> this);
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, Direction facing) {
-        if(capability == CapabilityEnergy.ENERGY)
-            return (LazyOptional<T>) lazyOptional;
-        return super.getCapability(capability, facing);
     }
 
     /**
      * Used to set the value of a field
-     * @param id The field id
+     *
+     * @param id    The field id
      * @param value The value of the field
      */
     @Override
     public void setVariable(int id, double value) {
         switch (id) {
-            case UPDATE_ENERGY_ID :
-                energyStorage.setCurrentStored((int) value);
+            case UPDATE_ENERGY_ID:
+                energyStorage.setEnergy((int) value);
                 break;
-            case UPDATE_DIFFERENCE_ID :
+            case UPDATE_DIFFERENCE_ID:
                 currentDifference = (int) value;
                 break;
-            default :
+            default:
         }
     }
 
     /**
      * Used to get the field on the server, this will fetch the server value and overwrite the current
+     *
      * @param id The field id
      * @return The value on the server, now set to ourselves
      */
     @Override
     public Double getVariable(int id) {
         switch (id) {
-            case UPDATE_ENERGY_ID :
-                return (double) energyStorage.getCurrentStored();
-            case UPDATE_DIFFERENCE_ID :
+            case UPDATE_ENERGY_ID:
+                return (double) energyStorage.getEnergyStored();
+            case UPDATE_DIFFERENCE_ID:
                 return (double) currentDifference;
-            default :
+            default:
                 return 0.0;
         }
     }
@@ -185,7 +174,7 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
      */
     @Override
     public int getEnergyStored() {
-        return energyStorage.getCurrentStored();
+        return energyStorage.getEnergyStored();
     }
 
     /**
@@ -199,18 +188,16 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     /**
      * Adds energy to the storage. Returns quantity of energy that was accepted.
      *
-     * @param maxReceive
-     *            Maximum amount of energy to be inserted.
-     * @param simulate
-     *            If TRUE, the insertion will only be simulated.
+     * @param maxReceive Maximum amount of energy to be inserted.
+     * @param simulate   If TRUE, the insertion will only be simulated.
      * @return Amount of energy that was (or would have been, if simulated) accepted by the storage.
      */
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
-        if(isReceiver()) {
-            int returnValue = energyStorage.receivePower(maxReceive, !simulate);
-            if(!simulate)
-                sendValueToClient(UPDATE_ENERGY_ID, energyStorage.getCurrentStored());
+        if (isReceiver()) {
+            int returnValue = energyStorage.receiveEnergy(maxReceive, !simulate);
+            if (!simulate)
+                sendValueToClient(UPDATE_ENERGY_ID, energyStorage.getEnergyStored());
             return returnValue;
         }
         return 0;
@@ -219,18 +206,16 @@ public abstract class EnergyHandler extends Syncable implements IEnergyStorage {
     /**
      * Removes energy from the storage. Returns quantity of energy that was removed.
      *
-     * @param maxExtract
-     *            Maximum amount of energy to be extracted.
-     * @param simulate
-     *            If TRUE, the extraction will only be simulated.
+     * @param maxExtract Maximum amount of energy to be extracted.
+     * @param simulate   If TRUE, the extraction will only be simulated.
      * @return Amount of energy that was (or would have been, if simulated) extracted from the storage.
      */
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
-        if(isProvider()) {
-            int returnValue = energyStorage.providePower(maxExtract, !simulate);
-            if(!simulate)
-                sendValueToClient(UPDATE_ENERGY_ID, energyStorage.getCurrentStored());
+        if (isProvider()) {
+            int returnValue = energyStorage.extractEnergy(maxExtract, !simulate);
+            if (!simulate)
+                sendValueToClient(UPDATE_ENERGY_ID, energyStorage.getEnergyStored());
             return returnValue;
         }
         return 0;

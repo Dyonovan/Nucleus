@@ -3,30 +3,21 @@ package com.pauljoda.nucleus.common;
 import com.pauljoda.nucleus.util.ClientUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * This file was created for NeoTech
- * <p>
- * NeoTech is licensed under the
- * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
- * http://creativecommons.org/licenses/by-nc-sa/4.0/
- *
- * @author Paul Davis - pauljoda
- * @since 3/3/2017
- */
 public interface IAdvancedToolTipProvider extends IToolTipProvider {
 
     /**
      * Get the tool tip to present when shift is pressed
+     *
      * @param stack The itemstack
-     * @return      The list to display
+     * @return The list to display
      */
     @Nullable
     @OnlyIn(Dist.CLIENT)
@@ -34,7 +25,7 @@ public interface IAdvancedToolTipProvider extends IToolTipProvider {
 
     /**
      * Defines if the tooltip will add the press shift for more info text
-     *
+     * <p>
      * Override this to false if you just want it to show up on shift, useful if press shift for info may already be
      * present
      *

@@ -1,6 +1,6 @@
 package com.pauljoda.nucleus.common.blocks;
 
-import com.pauljoda.nucleus.util.WorldUtils;
+import com.pauljoda.nucleus.util.LevelUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -23,8 +23,9 @@ public interface IToolable {
 
     /**
      * Called to get what stack should be dropped on wrench
+     *
      * @param world The world
-     * @param pos The position of the block
+     * @param pos   The position of the block
      * @return The stack to drop in the world
      */
     @Nonnull
@@ -32,12 +33,13 @@ public interface IToolable {
 
     /**
      * Called when a wrench clicks on this block
+     *
      * @param context Use info
      * @return The result, pass to send to next, success to end
      */
     @SuppressWarnings("ConstantConditions")
     default InteractionResult onWrench(UseOnContext context) {
-        if(context.getPlayer().isShiftKeyDown() && WorldUtils.breakBlockSavingNBT(context.getLevel(),
+        if (context.getPlayer().isShiftKeyDown() && LevelUtils.breakBlockSavingNBT(context.getLevel(),
                 context.getClickedPos(), (IToolable) context.getLevel().getBlockState(context.getClickedPos()).getBlock()))
             return InteractionResult.SUCCESS;
         else

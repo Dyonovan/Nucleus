@@ -5,13 +5,14 @@ import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -27,11 +28,12 @@ public class GuiComponentText extends BaseComponent {
 
     /**
      * Creates the text component
+     *
      * @param parent The gui parent
-     * @param x The x pos
-     * @param y The y pos
-     * @param label The string to render
-     * @param color Optional color
+     * @param x      The x pos
+     * @param y      The y pos
+     * @param label  The string to render
+     * @param color  Optional color
      */
     public GuiComponentText(GuiBase<?> parent, int x, int y, String label, @Nullable Color color) {
         super(parent, x, y);
@@ -47,7 +49,7 @@ public class GuiComponentText extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
@@ -55,19 +57,20 @@ public class GuiComponentText extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
 
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.prepareRenderState();
 
 
-        if(color != null)
+        if (color != null)
             RenderUtils.setColor(color);
         else
             RenderUtils.restoreColor();
 
-        fontRenderer.draw(matrixStack, label, 0, 0, colorDefault);
+        graphics.drawString(font, label, 0, 0, colorDefault);
 
         RenderUtils.restoreColor();
         RenderUtils.restoreRenderState();
@@ -77,6 +80,7 @@ public class GuiComponentText extends BaseComponent {
 
     /**
      * Used to find how wide this is
+     *
      * @return How wide the component is
      */
     @Override
@@ -86,6 +90,7 @@ public class GuiComponentText extends BaseComponent {
 
     /**
      * Used to find how tall this is
+     *
      * @return How tall the component is
      */
     @Override

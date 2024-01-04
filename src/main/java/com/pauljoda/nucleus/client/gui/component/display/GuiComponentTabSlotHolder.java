@@ -3,11 +3,12 @@ package com.pauljoda.nucleus.client.gui.component.display;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.inventory.Slot;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -24,13 +25,13 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
 
     /**
      * Creates an object that will move the physical slot when should render
-     *
+     * <p>
      * This object will move the container slot, but also needs the texture to render
      *
-     * @param parentGui  The parent gui
-     * @param x          The component x
-     * @param y          The component y
-     * @param heldSlot   The slot to move about
+     * @param parentGui The parent gui
+     * @param x         The component x
+     * @param y         The component y
+     * @param heldSlot  The slot to move about
      */
     public GuiComponentTabSlotHolder(GuiBase<?> parentGui, int x, int y, Slot heldSlot, int slotX, int slotY, int u, int v, GuiTab parentTab) {
         super(parentGui, x, y);
@@ -60,9 +61,9 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        if(doRender) {
-            slotTexture.render(matrixStack, guiLeft, guiTop, mouseX, mouseY);
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        if (doRender) {
+            slotTexture.render(graphics, guiLeft, guiTop, mouseX, mouseY);
         }
     }
 
@@ -70,7 +71,7 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No op
     }
 

@@ -11,9 +11,9 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.*;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -150,25 +150,6 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     public void saveAdditional(CompoundTag compound) {
         super.saveAdditional(compound);
         ContainerHelper.loadAllItems(compound, inventoryContents);
-    }
-
-    private LazyOptional<?> lazyHandler = LazyOptional.of(() -> this);
-
-    /**
-     * Used to access the capability
-     *
-     * @param capability The capability
-     * @param facing     Which face
-     * @param <T>        The object to case
-     * @return Us as INSTANCE of T
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return (LazyOptional<T>) lazyHandler;
-        else
-            return super.getCapability(capability, facing);
     }
 
     /*******************************************************************************************************************
@@ -349,11 +330,11 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * <li>When isItemValid is true, no assumptions can be made and insertion must be simulated case-by-case.</li>
      * <li>The actual items in the inventory, its fullness, or any other state are <strong>not</strong> considered by isItemValid.</li>
      * </ul>
-     * @param slot    Slot to query for validity
-     * @param stack   Stack to test with for validity
      *
+     * @param slot  Slot to query for validity
+     * @param stack Stack to test with for validity
      * @return true if the slot can insert the ItemStack, not considering the current state of the inventory.
-     *         false if the slot can never insert the ItemStack in any situation.
+     * false if the slot can never insert the ItemStack in any situation.
      */
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {

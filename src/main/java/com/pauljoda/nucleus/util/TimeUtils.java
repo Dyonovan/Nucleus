@@ -1,15 +1,14 @@
 package com.pauljoda.nucleus.util;
 
-
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.TickEvent;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
- * http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">License</a>
  *
  * @author Paul Davis - pauljoda
  * @since 2/14/2017
@@ -46,6 +45,7 @@ public class TimeUtils {
 
     /**
      * Used to check if the current seconds is on the time multiple of the given variable
+     *
      * @param second What second, for instance checking on 5 will trigger every 5 seconds
      * @return True if on time
      */
@@ -55,6 +55,7 @@ public class TimeUtils {
 
     /**
      * Used to check if the current minutes is on the time multiple of the given variable
+     *
      * @param minute What minute, for instance checking on 5 will trigger every 5 minutes
      * @return True if on time
      */
@@ -64,6 +65,7 @@ public class TimeUtils {
 
     /**
      * Used to check if the current hours is on the time multiple of the given variable
+     *
      * @param hour What hour, for instance checking on 5 will trigger every 5 hours
      * @return True if on time
      */
@@ -72,8 +74,8 @@ public class TimeUtils {
     }
 
     @SubscribeEvent
-    public void onWorldTick(TickEvent.WorldTickEvent worldTick) {
-        if(worldTick.phase == TickEvent.Phase.END)
-            tick = worldTick.world.getGameTime();
+    public void onWorldTick(TickEvent.LevelTickEvent levelTickEvent) {
+        if (levelTickEvent.phase == TickEvent.Phase.END)
+            tick = levelTickEvent.level.getGameTime();
     }
 }

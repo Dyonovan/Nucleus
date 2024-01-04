@@ -6,13 +6,14 @@ import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -30,18 +31,18 @@ public class GuiComponentLongText extends BaseComponent {
 
     /**
      * Creates the long text object
-     *
+     * <p>
      * IMPORTANT: The up and down arrows should be together, up on top down on bottom. Provide u and v for top left of top
      * Arrow size should be 15x8 pixels
      *
-     * @param parent The parent GUI
-     * @param x The x pos
-     * @param y The y pos
-     * @param w The width
-     * @param h The height
-     * @param u The arrows u
-     * @param v The arrows v
-     * @param text The text to display
+     * @param parent    The parent GUI
+     * @param x         The x pos
+     * @param y         The y pos
+     * @param w         The width
+     * @param h         The height
+     * @param u         The arrows u
+     * @param v         The arrows v
+     * @param text      The text to display
      * @param textScale The text scale, default size is 100
      */
     public GuiComponentLongText(GuiBase<?> parent, int x, int y, int w, int h, int u, int v, String text, int textScale) {
@@ -59,29 +60,29 @@ public class GuiComponentLongText extends BaseComponent {
 
         // Setup Lines
         text = ClientUtils.translate(text);
-        if(fontRenderer.width(text) < lineWidth) {
+        if (fontRenderer.width(text) < lineWidth) {
             lines.add(text);
         } else {
             String string = text;
-            while(fontRenderer.width(string) > lineWidth) {
+            while (fontRenderer.width(string) > lineWidth) {
                 String trimmed = fontRenderer.plainSubstrByWidth(string, lineWidth);
 
                 int lastSpace = trimmed.lastIndexOf(" "); // Ensure full words
-                if(lastSpace != -1)
+                if (lastSpace != -1)
                     trimmed = trimmed.substring(0, lastSpace);
 
                 int newLine = trimmed.indexOf("\n"); // Break for new lines
-                if(newLine != -1)
+                if (newLine != -1)
                     trimmed = trimmed.substring(0, newLine);
 
                 lines.add(trimmed);
 
                 string = string.substring(trimmed.length());
 
-                if(string.charAt(0) == '\n') // Clear leading new lines
+                if (string.charAt(0) == '\n') // Clear leading new lines
                     string = string.replaceFirst("\n", "");
-                if(string.charAt(0) == ' ') // Clear leading spaces
-                    string = string .replaceFirst(" ", "");
+                if (string.charAt(0) == ' ') // Clear leading spaces
+                    string = string.replaceFirst(" ", "");
             }
             lines.add(string);
         }
@@ -89,6 +90,7 @@ public class GuiComponentLongText extends BaseComponent {
 
     /**
      * Used to get the last line to render on screen
+     *
      * @return The last index to render
      */
     private int getLastLineToRender() {
@@ -103,22 +105,22 @@ public class GuiComponentLongText extends BaseComponent {
     /**
      * Called when the mouse is pressed
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
     public boolean mouseClicked(double x, double y, int button) {
-        if(GuiHelper.isInBounds(x, y, xPos + width - 15, yPos, xPos + width, yPos + 8)) {
+        if (GuiHelper.isInBounds(x, y, xPos + width - 15, yPos, xPos + width, yPos + 8)) {
             upSelected = true;
             currentLine -= 1;
-            if(currentLine < 0)
+            if (currentLine < 0)
                 currentLine = 0;
             GuiHelper.playButtonSound();
-        } else if(GuiHelper.isInBounds(x, y, xPos + width - 15, yPos + height - 8, (int) (x + width), yPos + height)) {
+        } else if (GuiHelper.isInBounds(x, y, xPos + width - 15, yPos + height - 8, (int) (x + width), yPos + height)) {
             downSelected = true;
             currentLine += 1;
-            if(currentLine > getLastLineToRender())
+            if (currentLine > getLastLineToRender())
                 currentLine = getLastLineToRender();
             GuiHelper.playButtonSound();
         }
@@ -128,8 +130,8 @@ public class GuiComponentLongText extends BaseComponent {
     /**
      * Called when the mouse button is over the component and released
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
@@ -140,14 +142,15 @@ public class GuiComponentLongText extends BaseComponent {
 
     /**
      * Called when the mouse is scrolled
+     *
      * @param dir 1 for positive, -1 for negative
      */
     @Override
     public void mouseScrolled(int dir) {
         currentLine -= dir;
-        if(currentLine < 0)
+        if (currentLine < 0)
             currentLine = 0;
-        if(currentLine > getLastLineToRender())
+        if (currentLine > getLastLineToRender())
             currentLine = getLastLineToRender();
     }
 
@@ -155,13 +158,14 @@ public class GuiComponentLongText extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
 
-        blit(matrixStack, width - 15, 0, u, v, 15, 8);
-        blit(matrixStack, width - 15, height - 7, u, v + 8, 15, 8);
+        graphics.blit(parent.textureLocation, width - 15, 0, u, v, 15, 8);
+        graphics.blit(parent.textureLocation, width - 15, height - 7, u, v + 8, 15, 8);
         matrixStack.popPose();
     }
 
@@ -169,7 +173,8 @@ public class GuiComponentLongText extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
 
         matrixStack.translate(xPos, yPos, 0);
@@ -178,13 +183,13 @@ public class GuiComponentLongText extends BaseComponent {
         int yPos = -9;
         int actualY = 0;
         matrixStack.scale(textScale / 100F, textScale / 100F, textScale / 100F);
-        for(int x = currentLine; x < lines.size(); x++) {
-            if(actualY + ((textScale * 9) / 100) > height)
+        for (int x = currentLine; x < lines.size(); x++) {
+            if (actualY + ((textScale * 9) / 100) > height)
                 break;
             RenderUtils.restoreColor();
             String label = lines.get(x);
-
-            fontRenderer.draw(matrixStack, label, 0, yPos + 9, 0xFFFFFF);
+            
+            graphics.drawString(font, label, 0, yPos + 9, 0xFFFFFF);
             yPos += 9;
             actualY += (textScale * 9) / 100;
         }

@@ -1,12 +1,12 @@
 package com.pauljoda.nucleus.common.container.slots;
 
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -18,10 +18,11 @@ public class PhantomSlot extends SlotItemHandler implements IPhantomSlot {
 
     /**
      * Creates a phantom slot
+     *
      * @param itemHandler The ItemHandler to manage
-     * @param index The slot index
-     * @param xPosition The slot x pos
-     * @param yPosition The slot y pos
+     * @param index       The slot index
+     * @param xPosition   The slot x pos
+     * @param yPosition   The slot y pos
      */
     public PhantomSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
         super(itemHandler, index, xPosition, yPosition);
@@ -43,6 +44,7 @@ public class PhantomSlot extends SlotItemHandler implements IPhantomSlot {
 
     /**
      * Can slot change
+     *
      * @return True to allow change
      */
     @Override

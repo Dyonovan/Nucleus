@@ -3,10 +3,11 @@ package com.pauljoda.nucleus.client.gui.component.display;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -50,6 +51,7 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
 
     /**
      * Get the current scale, scaled to the width
+     *
      * @param scale What to scale to
      * @return How far along 0-scale in current animation
      */
@@ -63,7 +65,8 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
@@ -71,19 +74,19 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
         switch (animationDirection) {
             case RIGHT:
                 int progressRight = Math.min(width, getCurrentProgress(width));
-                blit(matrixStack, 0, 0, u, v, progressRight, height);
+                graphics.blit(parent.textureLocation, 0, 0, u, v, progressRight, height);
                 break;
             case DOWN:
                 int progressDown = Math.min(height, getCurrentProgress(height));
-                blit(matrixStack, 0, 0, u, v, width, progressDown);
+                graphics.blit(parent.textureLocation, 0, 0, u, v, width, progressDown);
                 break;
             case LEFT:
                 int progressLeft = Math.min(width, getCurrentProgress(width));
-                blit(matrixStack, -width + progressLeft, 0, u, v, progressLeft, height);
+                graphics.blit(parent.textureLocation, -width + progressLeft, 0, u, v, progressLeft, height);
                 break;
             case UP:
                 int progressUp = Math.min(height, getCurrentProgress(height));
-                blit(matrixStack, 0, height - progressUp, u, v + height - progressUp, width, progressUp);
+                graphics.blit(parent.textureLocation, 0, height - progressUp, u, v + height - progressUp, width, progressUp);
                 break;
         }
         matrixStack.popPose();

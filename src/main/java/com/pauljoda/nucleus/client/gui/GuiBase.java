@@ -8,9 +8,8 @@ import com.pauljoda.nucleus.client.gui.component.display.GuiTabCollection;
 import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +22,7 @@ import java.util.List;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -43,11 +42,12 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
 
     /**
      * Main constructor for Guis
+     *
      * @param inventory The container
-     * @param width The width of the gui
-     * @param height The height of the gui
-     * @param title The title of the gui
-     * @param texture The location of the background texture
+     * @param width     The width of the gui
+     * @param height    The height of the gui
+     * @param title     The title of the gui
+     * @param texture   The location of the background texture
      */
     public GuiBase(T inventory, Inventory playerInventory, Component title, int width, int height, ResourceLocation texture) {
         super(inventory, playerInventory, title);
@@ -89,14 +89,16 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      *
      * @param tabs List of tabs, put GuiTabs in
      */
-    protected void addRightTabs(GuiTabCollection tabs) {}
+    protected void addRightTabs(GuiTabCollection tabs) {
+    }
 
     /**
      * Add the tabs to the left. Overwrite this if you want tabs on your GUI
      *
      * @param tabs List of tabs, put GuiReverseTabs in
      */
-    protected void addLeftTabs(GuiTabCollection tabs) {}
+    protected void addLeftTabs(GuiTabCollection tabs) {
+    }
 
     /*******************************************************************************************************************
      * Gui                                                                                                             *
@@ -104,14 +106,15 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
 
     /**
      * Called when the mouse is clicked
-     *  @param mouseX The X Position
-     * @param mouseY The Y Position
+     *
+     * @param mouseX      The X Position
+     * @param mouseY      The Y Position
      * @param mouseButton The button pressed
      */
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         components.forEach((baseComponent -> {
-            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
+            if (baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
                 baseComponent.mouseDown(mouseX - leftPos, mouseY - topPos, mouseButton);
             }
         }));
@@ -123,12 +126,12 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      *
      * @param mouseX The X Position
      * @param mouseY The Y Position
-     * @param state The button released
+     * @param state  The button released
      */
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int state) {
         components.forEach((baseComponent -> {
-            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
+            if (baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
                 baseComponent.mouseUp(mouseX - leftPos, mouseY - topPos, state);
             }
         }));
@@ -138,14 +141,14 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
     /**
      * Used to track when the mouse is clicked and dragged
      *
-     * @param mouseX The Current X Position
-     * @param mouseY The Current Y Position
+     * @param mouseX             The Current X Position
+     * @param mouseY             The Current Y Position
      * @param clickedMouseButton The button being dragged
      */
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int clickedMouseButton, double xDragAmount, double yDragAmount) {
         components.forEach((baseComponent -> {
-            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
+            if (baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos)) {
                 baseComponent.mouseDrag(mouseX - leftPos, mouseY - topPos, clickedMouseButton, xDragAmount, yDragAmount);
             }
         }));
@@ -156,17 +159,17 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      * Handle the mouse input
      */
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double mouseDelta) {
-        if(mouseDelta != 0)
+    public boolean mouseScrolled(double mouseX, double mouseY, double mouseDelta, double i) {
+        if (mouseDelta != 0)
             components.forEach((baseComponent -> baseComponent.mouseScrolled(mouseDelta > 0 ? 1 : -1)));
-        return super.mouseScrolled(mouseX, mouseY, mouseDelta);
+        return super.mouseScrolled(mouseX, mouseY, mouseDelta, i);
     }
 
     /**
      * Called when a key is typed
      *
      * @param typedChar The letter pressed, as a char
-     * @param keyCode The Java key code
+     * @param keyCode   The Java key code
      */
     @Override
     public boolean charTyped(char typedChar, int keyCode) {
@@ -175,32 +178,33 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        drawTopLayer(matrixStack, mouseX, mouseY);
-        this.renderTooltip(matrixStack, mouseX, mouseY);
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
+        drawTopLayer(graphics, mouseX, mouseY);
+        this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     /**
      * Override to prevent vanilla label writing
      */
     @Override
-    protected void renderLabels(PoseStack p_97808_, int p_97809_, int p_97810_) {
+    protected void renderLabels(GuiGraphics graphics, int p_97809_, int p_97810_) {
 
     }
 
     /**
      * Called to draw the background
-     *
+     * <p>
      * Usually used to create the base on which to render things
      *
      * @param partialTicks partial ticks
-     * @param mouseX The mouse X
-     * @param mouseY The mouse Y
+     * @param mouseX       The mouse X
+     * @param mouseY       The mouse Y
      */
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY) {
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         RenderUtils.prepareRenderState();
         matrixStack.translate(leftPos, topPos, 0);
@@ -209,11 +213,11 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, this.textureLocation);
 
-        blit(matrixStack, 0, 0, 0, 0, imageWidth + 1, imageHeight + 1);
+        graphics.blit(this.textureLocation, 0, 0, 0, 0, imageWidth + 1, imageHeight + 1);
 
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
-            baseComponent.render(matrixStack, leftPos, topPos, mouseX - leftPos, mouseY - topPos);
+            baseComponent.render(graphics, leftPos, topPos, mouseX - leftPos, mouseY - topPos);
             RenderUtils.restoreRenderState();
             RenderUtils.restoreColor();
         }));
@@ -223,20 +227,21 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
 
     /**
      * The main draw call. The super will handle calling the background and foreground layers. Then our extra code will run
-     *
+     * <p>
      * Used mainly to attach tool tips as they will always be on the top
      *
      * @param mouseX The Mouse X Position
      * @param mouseY The mouse Y Position
      */
-    public void drawTopLayer(PoseStack matrixStack, int mouseX, int mouseY) {
+    public void drawTopLayer(GuiGraphics graphics, int mouseX, int mouseY) {
+        PoseStack matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(leftPos, topPos, 0);
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
-            baseComponent.renderOverlay(matrixStack, leftPos, topPos, mouseX, mouseY);
-            if(baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos))
-                baseComponent.renderToolTip(matrixStack, mouseX, mouseY);
+            baseComponent.renderOverlay(graphics, leftPos, topPos, mouseX, mouseY);
+            if (baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos))
+                baseComponent.renderToolTip(graphics, mouseX, mouseY);
         }));
         RenderUtils.restoreColor();
         RenderUtils.restoreRenderState();
@@ -296,7 +301,7 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
         List<Rectangle> areas = new ArrayList<>();
         areas.add(new Rectangle(leftPos, topPos, imageWidth, imageHeight));
         components.forEach((baseComponent -> {
-            if(baseComponent instanceof GuiTabCollection tabCollection) {
+            if (baseComponent instanceof GuiTabCollection tabCollection) {
                 areas.addAll(tabCollection.getAreasCovered(leftPos, topPos));
             } else
                 areas.add(new Rectangle(baseComponent.getArea(leftPos, topPos)));

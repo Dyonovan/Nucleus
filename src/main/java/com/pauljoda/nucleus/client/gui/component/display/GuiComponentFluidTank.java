@@ -5,11 +5,12 @@ import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraft.client.gui.GuiGraphics;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -24,11 +25,12 @@ public class GuiComponentFluidTank extends BaseComponent {
 
     /**
      * Creates a fluid tank renderer
-     * @param parent The parent GUI
-     * @param x The x pos
-     * @param y The y pos
-     * @param w The width
-     * @param h The height
+     *
+     * @param parent    The parent GUI
+     * @param x         The x pos
+     * @param y         The y pos
+     * @param w         The width
+     * @param h         The height
      * @param fluidTank The fluid tank, has fluid to render
      */
     public GuiComponentFluidTank(GuiBase<?> parent, int x, int y, int w, int h, FluidTank fluidTank) {
@@ -46,7 +48,7 @@ public class GuiComponentFluidTank extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
@@ -54,7 +56,8 @@ public class GuiComponentFluidTank extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         GuiHelper.renderFluid(tank, 0, height, height, width);

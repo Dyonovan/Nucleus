@@ -1,7 +1,5 @@
 package com.pauljoda.nucleus.helper;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -11,15 +9,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -47,24 +46,25 @@ public class GuiHelper {
 
     /**
      * Used to set the color of the GL stack from an int value
+     *
      * @param color The color value eg 0x000000
      */
     public static void setGLColorFromInt(int color) {
-        float red   = (color >> 16 & 255) / 255F;
+        float red = (color >> 16 & 255) / 255F;
         float green = (color >> 8 & 255) / 255F;
-        float blue  = (color & 255) / 255F;
+        float blue = (color & 255) / 255F;
         RenderUtils.setColor(new Color(red, green, blue, 1.0F));
     }
 
     /**
      * Draws the given icon with optional cut
      *
-     * @param icon The texture
-     * @param x X pos
-     * @param y Y pos
-     * @param width keep width of icon
+     * @param icon   The texture
+     * @param x      X pos
+     * @param y      Y pos
+     * @param width  keep width of icon
      * @param height keep height of icon
-     * @param cut 0 is full icon, 16 is full cut
+     * @param cut    0 is full icon, 16 is full cut
      */
     public static void drawIconWithCut(TextureAtlasSprite icon, int x, int y, int width, int height, int cut) {
         Tesselator tess = Tesselator.getInstance();
@@ -79,31 +79,32 @@ public class GuiHelper {
 
     /**
      * Renders a fluid from the given tank
-     * @param tank The tank
-     * @param x The x pos
-     * @param y The y pos
+     *
+     * @param tank      The tank
+     * @param x         The x pos
+     * @param y         The y pos
      * @param maxHeight Max height
-     * @param maxWidth Max width
+     * @param maxWidth  Max width
      */
     public static void renderFluid(FluidTank tank, int x, int y, int maxHeight, int maxWidth) {
         FluidStack fluid = tank.getFluid();
-        if(!fluid.isEmpty()) {
+        if (!fluid.isEmpty()) {
             GL11.glPushMatrix();
             int level = (fluid.getAmount() * maxHeight) / tank.getCapacity();
             TextureAtlasSprite icon = Minecraft.getInstance().getTextureAtlas(RenderUtils.MC_BLOCKS_RESOURCE_LOCATION)
-                    .apply(fluid.getFluid().getAttributes().getStillTexture());
+                    .apply(IClientFluidTypeExtensions.of(fluid.getFluid()).getStillTexture());
             RenderUtils.bindMinecraftBlockSheet();
-            setGLColorFromInt(fluid.getFluid().getAttributes().getColor(fluid));
+            setGLColorFromInt(IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor());
 
             double timesW = Math.floor(maxWidth / 16);
             int cutW = 16;
 
-            for(int j = 0; j <= timesW; j++) {
-                if(j == timesW)
+            for (int j = 0; j <= timesW; j++) {
+                if (j == timesW)
                     cutW = maxWidth % 16;
-                if(level >= 16) {
+                if (level >= 16) {
                     double times = Math.floor(level / 16);
-                    for(int i = 1; i <= times; i++) {
+                    for (int i = 1; i <= times; i++) {
                         drawIconWithCut(icon, x + (j * 16), y - (16 * i), cutW, 16, 0);
                     }
                     int cut = level % 16;
@@ -130,7 +131,7 @@ public class GuiHelper {
      * @param b Rectangle point b
      * @param c Rectangle point c
      * @param d Rectangle point d
-     *        (A,B)------------------
+     *          (A,B)------------------
      *          -                  -
      *          -----------------(C,D)
      * @return True if in bounds

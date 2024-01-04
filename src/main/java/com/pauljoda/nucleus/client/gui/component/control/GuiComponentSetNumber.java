@@ -6,6 +6,7 @@ import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 
@@ -13,7 +14,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -30,22 +31,22 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
 
     /**
      * Creates the set number object
-     *
+     * <p>
      * IMPORTANT: You must create the up and down arrow and pass the u and v or the top left corner
      * It should look like the following in the texture sheet:
      * UN|US
      * DN|DS
-     *
+     * <p>
      * With UN and DN being the normal up and down and US and DS being the selected versions (when clicked)
      * The arrow buttons should be 11x8 pixels and all touching to form one big rectangle
      *
-     * @param parent The parent GUI
-     * @param x The x pos
-     * @param y The y pos
-     * @param texU The texture u location
-     * @param texV The texture v location
-     * @param value The starting value
-     * @param lowestValue The lowest value
+     * @param parent       The parent GUI
+     * @param x            The x pos
+     * @param y            The y pos
+     * @param texU         The texture u location
+     * @param texV         The texture v location
+     * @param value        The starting value
+     * @param lowestValue  The lowest value
      * @param highestValue The highest value
      */
     public GuiComponentSetNumber(GuiBase<?> parent, int x, int y, int texU, int texV, int value, int lowestValue, int highestValue) {
@@ -56,7 +57,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
         this.floor = lowestValue;
         this.ceiling = highestValue;
 
-        textField = new EditBox( fontRenderer, x, y, width - 10, height, (Component) Component.EMPTY);
+        textField = new EditBox(fontRenderer, x, y, width - 10, height, (Component) Component.EMPTY);
         textField.setValue(String.valueOf(value));
     }
 
@@ -66,6 +67,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
 
     /**
      * Called when the user sets the value or when the value is changed
+     *
      * @param value The value set by the user
      */
     protected abstract void setValue(int value);
@@ -76,25 +78,26 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
 
     /**
      * Called when the mouse is pressed
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     *
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
     public boolean mouseClicked(double x, double y, int button) {
-        if(GuiHelper.isInBounds(x, y, xPos + width - 8, yPos - 1, xPos + width + 2, yPos + 7)) {
+        if (GuiHelper.isInBounds(x, y, xPos + width - 8, yPos - 1, xPos + width + 2, yPos + 7)) {
             upSelected = true;
 
-            if(value < ceiling)
+            if (value < ceiling)
                 value += 1;
 
             GuiHelper.playButtonSound();
             setValue(value);
             textField.setValue(String.valueOf(value));
-        } else if(GuiHelper.isInBounds(x, y, xPos + width - 8, yPos + 9, xPos + width + 2, yPos + 17)) {
+        } else if (GuiHelper.isInBounds(x, y, xPos + width - 8, yPos + 9, xPos + width + 2, yPos + 17)) {
             downSelected = true;
 
-            if(value > floor)
+            if (value > floor)
                 value -= 1;
 
             GuiHelper.playButtonSound();
@@ -107,8 +110,9 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
 
     /**
      * Called when the mouse button is over the component and released
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     *
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
@@ -119,7 +123,8 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
 
     /**
      * Used when a key is pressed
-     * @param letter The letter
+     *
+     * @param letter  The letter
      * @param keyCode The code
      */
     @SuppressWarnings("ConstantConditions")
@@ -133,7 +138,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
             return;
         }
         if (keyCode == 13)
-            textField.setFocus(false);
+            textField.setFocused(false);
         textField.setTextColor(0xFFFFFF);
         if (Integer.parseInt(textField.getValue()) > ceiling)
             textField.setValue(String.valueOf(ceiling));
@@ -147,14 +152,15 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
-        blit(matrixStack, width - 1, -1, upSelected  ? u + 11 : u, v, 11, 8);
-        blit(matrixStack, width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
+        graphics.blit(parent.textureLocation, width - 1, -1, upSelected ? u + 11 : u, v, 11, 8);
+        graphics.blit(parent.textureLocation, width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
         matrixStack.popPose();
         matrixStack.pushPose();
-        textField.render(matrixStack, mouseX, mouseY, Minecraft.getInstance().getDeltaFrameTime());
+        textField.render(graphics, mouseX, mouseY, Minecraft.getInstance().getDeltaFrameTime());
         matrixStack.popPose();
     }
 
@@ -162,7 +168,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 
