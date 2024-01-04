@@ -35,7 +35,7 @@ public abstract class BaseLootTableGenerator extends VanillaBlockLoot {
      * @param type  The type of the block entity.
      * @param tags  An array of tags that is copy data from the block entity NBT data.
      */
-    private void createStandardTable(Block block, BlockEntityType<?> type, String... tags) {
+    protected void createStandardTable(Block block, BlockEntityType<?> type, String... tags) {
         LootPoolSingletonContainer.Builder<?> lti = LootItem.lootTableItem(block);
 
         // Copy the name of the block entity over to the loot item.
