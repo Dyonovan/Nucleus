@@ -16,14 +16,14 @@ if (build == null || build == '') {
     version = "${project.minecraft_version}-${project.mod_version}-" + build
 }
 
-group = mod_group_id
+group = "com.pauljoda"
 
 repositories {
     mavenLocal()
 }
 
 base {
-    archivesName = mod_id
+    archivesName = "nucleus"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
