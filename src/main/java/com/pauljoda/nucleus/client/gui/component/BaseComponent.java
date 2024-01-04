@@ -6,18 +6,19 @@ import com.pauljoda.nucleus.client.gui.component.listeners.IMouseEventListener;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -37,15 +38,16 @@ public abstract class BaseComponent extends Screen {
 
     protected Font fontRenderer = Minecraft.getInstance().font;
 
-    public BaseComponent(GuiBase<?> parentGui,int x, int y) {
-        this(parentGui, new TextComponent("neotech:component"), x, y);
+    public BaseComponent(GuiBase<?> parentGui, int x, int y) {
+        this(parentGui, Component.translatable("neotech:component"), x, y);
     }
 
     /**
      * Main constructor for all components
+     *
      * @param parentGui The parent Gui
-     * @param x The x position
-     * @param y The y position
+     * @param x         The x position
+     * @param y         The y position
      */
     public BaseComponent(GuiBase<?> parentGui, Component titleIn, int x, int y) {
         super(titleIn);
@@ -61,12 +63,12 @@ public abstract class BaseComponent extends Screen {
     /**
      * Called to render the component
      */
-    public abstract void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
+    public abstract void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY);
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
-    public abstract void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY);
+    public abstract void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY);
 
     /**
      * Used to find how wide this is
@@ -88,6 +90,7 @@ public abstract class BaseComponent extends Screen {
 
     /**
      * Used to determine if a dynamic tooltip is needed at runtime
+     *
      * @param mouseX Mouse X Pos
      * @param mouseY Mouse Y Pos
      * @return A list of string to display
@@ -103,11 +106,11 @@ public abstract class BaseComponent extends Screen {
      * @param mouseX Mouse X
      * @param mouseY Mouse Y
      */
-    public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
-        if(toolTip != null && !toolTip.isEmpty())
-            parent.renderComponentTooltip(matrixStack, toolTip, mouseX, mouseY);
-        else if(getDynamicToolTip(mouseX, mouseY) != null)
-            parent.renderComponentTooltip(matrixStack, getDynamicToolTip(mouseX, mouseY), mouseX, mouseY);
+    public void renderToolTip(GuiGraphics graphics, int mouseX, int mouseY) {
+        if (toolTip != null && !toolTip.isEmpty())
+            graphics.renderTooltip(this.font, toolTip, Optional.empty(), mouseX, mouseY);
+        else if (getDynamicToolTip(mouseX, mouseY) != null)
+            graphics.renderTooltip(this.font, getDynamicToolTip(mouseX, mouseY), Optional.empty(), mouseX, mouseY);
 
     }
 
@@ -125,48 +128,50 @@ public abstract class BaseComponent extends Screen {
     /**
      * Called when the mouse is pressed
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     public void mouseDown(double x, double y, int button) {
-        if(mouseEventListener != null)
+        if (mouseEventListener != null)
             mouseEventListener.onMouseDown(this, x, y, button);
     }
 
     /**
      * Called when the mouse button is over the component and released
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     public void mouseUp(double x, double y, int button) {
-        if(mouseEventListener != null)
+        if (mouseEventListener != null)
             mouseEventListener.onMouseUp(this, x, y, button);
     }
 
     /**
      * Called when the user drags the component
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     public void mouseDrag(double x, double y, int button, double xDragAmount, double yDragAmount) {
-        if(mouseEventListener != null)
+        if (mouseEventListener != null)
             mouseEventListener.onMouseDrag(this, x, y, button, xDragAmount, yDragAmount);
     }
 
     /**
      * Called when the mouse is scrolled
+     *
      * @param dir 1 for positive, -1 for negative
      */
-    public void mouseScrolled(int dir) {}
+    public void mouseScrolled(int dir) {
+    }
 
     /**
      * Used to check if the mouse if currently over the component
-     *
+     * <p>
      * You must have the getWidth() and getHeight() functions defined for this to work properly
      *
      * @param mouseX Mouse X Position
@@ -174,17 +179,17 @@ public abstract class BaseComponent extends Screen {
      * @return True if mouse if over the component
      */
     public boolean isMouseOver(double mouseX, double mouseY) {
-        return  mouseX >= xPos && mouseX < xPos + getWidth() && mouseY >= yPos && mouseY < yPos + getHeight();
+        return mouseX >= xPos && mouseX < xPos + getWidth() && mouseY >= yPos && mouseY < yPos + getHeight();
     }
 
     /**
      * Used when a key is pressed
      *
-     * @param letter The letter
+     * @param letter  The letter
      * @param keyCode The code
      */
     public void keyTyped(char letter, int keyCode) {
-        if(keyboardEventListener != null)
+        if (keyboardEventListener != null)
             keyboardEventListener.charTyped(this, letter, keyCode);
     }
 

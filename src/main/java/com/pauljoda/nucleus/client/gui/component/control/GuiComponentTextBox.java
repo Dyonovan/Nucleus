@@ -1,21 +1,19 @@
 package com.pauljoda.nucleus.client.gui.component.control;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.util.ClientUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -30,21 +28,22 @@ public abstract class GuiComponentTextBox extends BaseComponent {
 
     /**
      * Creates the text box
-     * @param parent The parent gui
-     * @param x The x pos
-     * @param y The y pos
-     * @param boxWidth The text box width
-     * @param boxHeight The text box height, usually 16
+     *
+     * @param parent       The parent gui
+     * @param x            The x pos
+     * @param y            The y pos
+     * @param boxWidth     The text box width
+     * @param boxHeight    The text box height, usually 16
      * @param defaultLabel The default label, will translate, can be null
      */
     public GuiComponentTextBox(GuiBase<?> parent, int x, int y, int boxWidth, int boxHeight, @Nullable
-    TextComponent defaultLabel) {
+    Component defaultLabel) {
         super(parent, x, y);
         this.width = boxWidth;
         this.height = boxHeight;
 
         textField = new EditBox(fontRenderer, x, y, width, height, defaultLabel == null ? (Component) Component.EMPTY : defaultLabel);
-        textField.setValue(ClientUtils.translate(defaultLabel.getText() == null ? "ERROR": defaultLabel.getText()));
+        textField.setValue(ClientUtils.translate(defaultLabel.getString()));
     }
 
     /*******************************************************************************************************************
@@ -53,6 +52,7 @@ public abstract class GuiComponentTextBox extends BaseComponent {
 
     /**
      * Called when the value in the text box changes
+     *
      * @param value The current value
      */
     protected abstract void fieldUpdated(String value);
@@ -63,14 +63,15 @@ public abstract class GuiComponentTextBox extends BaseComponent {
 
     /**
      * Called when the mouse is pressed
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     *
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
     public boolean mouseClicked(double x, double y, int button) {
         textField.mouseClicked(x, y, button);
-        if(button == 1  && textField.isFocused()) {
+        if (button == 1 && textField.isFocused()) {
             textField.setValue("");
             fieldUpdated(textField.getValue());
         }
@@ -79,12 +80,13 @@ public abstract class GuiComponentTextBox extends BaseComponent {
 
     /**
      * Used when a key is pressed
-     * @param letter The letter
+     *
+     * @param letter  The letter
      * @param keyCode The code
      */
     @Override
     public boolean charTyped(char letter, int keyCode) {
-        if(textField.isFocused()) {
+        if (textField.isFocused()) {
             textField.charTyped(letter, keyCode);
             fieldUpdated(textField.getValue());
         }
@@ -96,9 +98,10 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
-        textField.render(matrixStack, mouseX, mouseY, Minecraft.getInstance().getDeltaFrameTime());
+        textField.render(graphics, mouseX, mouseY, Minecraft.getInstance().getDeltaFrameTime());
         GL11.glDisable(GL11.GL_ALPHA_TEST);
         matrixStack.popPose();
     }
@@ -107,7 +110,7 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // NO OP
     }
 

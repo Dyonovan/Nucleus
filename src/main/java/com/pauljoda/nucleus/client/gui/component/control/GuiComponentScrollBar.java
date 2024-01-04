@@ -5,10 +5,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -25,15 +26,15 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
 
     /**
      * Creates a scroll bar
-     *
+     * <p>
      * IMPORTANT: Scroll bar NUB for selected must be to the right of the normal one
      * NUB should be 12x15 pixels
      *
      * @param parent The parent GUI
-     * @param x The x pos
-     * @param y The y pos
-     * @param nU The nub texture u
-     * @param nV The nub texture v
+     * @param x      The x pos
+     * @param y      The y pos
+     * @param nU     The nub texture u
+     * @param nV     The nub texture v
      * @param height The height of this scroll bar
      */
     public GuiComponentScrollBar(GuiBase<?> parent, int x, int y, int nU, int nV, int height) {
@@ -50,6 +51,7 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
 
     /**
      * Called when the scroll box has moved.
+     *
      * @param position The position, 0 - 1 of how far along it is
      */
     protected abstract void onScroll(float position);
@@ -60,17 +62,18 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
 
     /**
      * Called when the mouse is pressed
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     *
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
     public boolean mouseClicked(double x, double y, int button) {
         isMoving = true;
         currentPosition = (int) ((y - yPos) - 7);
-        if(currentPosition > maxRange)
+        if (currentPosition > maxRange)
             currentPosition = maxRange;
-        else if(currentPosition < 0)
+        else if (currentPosition < 0)
             currentPosition = 0;
         onScroll(currentPosition / maxRange);
         return false;
@@ -78,16 +81,17 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
 
     /**
      * Called when the user drags the component
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     *
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
     public boolean mouseDragged(double x, double y, int button, double xAmount, double yAmount) {
         currentPosition = (int) ((y - yPos) - 7);
-        if(currentPosition > maxRange)
+        if (currentPosition > maxRange)
             currentPosition = maxRange;
-        else if(currentPosition < 0)
+        else if (currentPosition < 0)
             currentPosition = 0;
         onScroll(currentPosition / maxRange);
         return false;
@@ -95,8 +99,9 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
 
     /**
      * Called when the mouse button is over the component and released
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     *
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
@@ -110,22 +115,24 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        if(currentPosition > maxRange)
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
+
+        if (currentPosition > maxRange)
             currentPosition = maxRange;
 
         matrixStack.pushPose();
         matrixStack.translate(xPos + 1, yPos + currentPosition + 1, 0);
-        if(isMoving && !Minecraft.getInstance().mouseHandler.isLeftPressed())
+        if (isMoving && !Minecraft.getInstance().mouseHandler.isLeftPressed())
             isMoving = false;
-        blit(matrixStack, 0, 0, isMoving ? nubU + 12 : nubU, nubV, 12, 15);
+        graphics.blit(parent.textureLocation, 0, 0, isMoving ? nubU + 12 : nubU, nubV, 12, 15);
     }
 
     /**
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 

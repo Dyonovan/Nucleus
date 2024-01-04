@@ -4,11 +4,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -22,6 +23,7 @@ public abstract class GuiComponentItemStackButton extends GuiComponentButton {
 
     /**
      * Constructor for itemstack button
+     *
      * @param stack The stack to display
      */
     public GuiComponentItemStackButton(GuiBase<?> parent, int x, int y, int u, int v, int w, int h, ItemStack stack) {
@@ -33,12 +35,13 @@ public abstract class GuiComponentItemStackButton extends GuiComponentButton {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        super.renderOverlay(matrixStack, guiLeft, guiTop, mouseX, mouseY);
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        super.renderOverlay(graphics, guiLeft, guiTop, mouseX, mouseY);
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 1);
 
-        Minecraft.getInstance().getItemRenderer().renderGuiItem(displayStack, (width / 2) - 8, (height / 2) - 8);
+        graphics.renderItem(displayStack, (width / 2) - 8, (height / 2) - 8);
 
         matrixStack.popPose();
     }

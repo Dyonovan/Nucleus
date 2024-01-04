@@ -7,13 +7,14 @@ import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 
 import javax.annotation.Nullable;
 import java.awt.*;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -30,17 +31,17 @@ public abstract class GuiComponentButton extends BaseComponent {
 
     /**
      * Constructor for the button component
-     *
+     * <p>
      * In your texture, you should put the hovered over texture directly below the main texture passed
      *
      * @param parent The parent gui
-     * @param xPos The x position
-     * @param yPos The y position
-     * @param uPos The texture u position
-     * @param vPos The texture v position
-     * @param w The width
-     * @param h The height
-     * @param text The text to display, translated
+     * @param xPos   The x position
+     * @param yPos   The y position
+     * @param uPos   The texture u position
+     * @param vPos   The texture v position
+     * @param w      The width
+     * @param h      The height
+     * @param text   The text to display, translated
      */
     public GuiComponentButton(GuiBase<?> parent, int xPos, int yPos, int uPos, int vPos, int w, int h, @Nullable String text) {
         super(parent, xPos, yPos);
@@ -48,7 +49,7 @@ public abstract class GuiComponentButton extends BaseComponent {
         v = vPos;
         width = w;
         height = h;
-        if(text != null)
+        if (text != null)
             label = ClientUtils.translate(text);
         else
             label = null;
@@ -96,7 +97,7 @@ public abstract class GuiComponentButton extends BaseComponent {
      */
     @Override
     public void mouseDown(double mouseX, double mouseY, int button) {
-        if(mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height) {
+        if (mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height) {
             GuiHelper.playButtonSound();
             doAction();
         }
@@ -107,7 +108,7 @@ public abstract class GuiComponentButton extends BaseComponent {
      */
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if(mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height) {
+        if (mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height) {
             isOver = true;
             return true;
         }
@@ -119,12 +120,13 @@ public abstract class GuiComponentButton extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         RenderUtils.prepareRenderState();
         RenderUtils.bindTexture(parent.textureLocation);
         matrixStack.translate(xPos, yPos, 0);
-        blit(matrixStack, 0, 0, u, isOver ? v + height : v, width, height);
+        graphics.blit(parent.textureLocation, 0, 0, u, isOver ? v + height : v, width, height);
         RenderUtils.restoreRenderState();
         matrixStack.popPose();
     }
@@ -133,14 +135,15 @@ public abstract class GuiComponentButton extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        if(label != null) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        if (label != null) {
+            var matrixStack = graphics.pose();
             matrixStack.pushPose();
             RenderUtils.prepareRenderState();
             RenderUtils.restoreColor();
             float size = fontRenderer.width(label);
             matrixStack.translate(xPos + (width / 2F - size / 2F), yPos + 6, 0);
-            fontRenderer.draw(matrixStack, label, 0, 0, Color.darkGray.getRGB());
+            graphics.drawString(font, label, 0, 0, Color.DARK_GRAY.getRGB());
             RenderUtils.restoreColor();
             RenderUtils.restoreRenderState();
             matrixStack.popPose();

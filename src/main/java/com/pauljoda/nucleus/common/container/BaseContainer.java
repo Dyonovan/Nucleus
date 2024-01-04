@@ -9,14 +9,14 @@ import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 import javax.annotation.Nullable;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -33,8 +33,9 @@ public abstract class BaseContainer extends AbstractContainerMenu {
 
     /**
      * Creates the container object
+     *
      * @param playerInventory The players inventory
-     * @param inventory The tile/object inventory
+     * @param inventory       The tile/object inventory
      */
     public BaseContainer(@Nullable MenuType<?> type, int id,
                          Inventory playerInventory, IItemHandler inventory) {
@@ -47,6 +48,7 @@ public abstract class BaseContainer extends AbstractContainerMenu {
 
     /**
      * Get the size of the inventory that isn't the players
+     *
      * @return The inventory size that doesn't count the player inventory
      */
     public int getInventorySizeNotPlayer() {
@@ -69,15 +71,15 @@ public abstract class BaseContainer extends AbstractContainerMenu {
      * @param offsetY Y offset
      */
     protected void addPlayerInventorySlots(int offsetX, int offsetY) {
-        for(int row = 0; row < 3; row++) {
-            for(int column = 0; column < 9; column++)
+        for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < 9; column++)
                 addSlot(new Slot(playerInventory,
                         column + row * 9 + 9,
                         offsetX + column * 18,
                         offsetY + row * 18));
         }
 
-        for(int slot = 0; slot < 9; slot++)
+        for (int slot = 0; slot < 9; slot++)
             addSlot(new Slot(playerInventory, slot, offsetX + slot * 18, offsetY + 58));
     }
 
@@ -86,8 +88,8 @@ public abstract class BaseContainer extends AbstractContainerMenu {
      *
      * @param xOffset X offset
      * @param yOffset Y offset
-     * @param start start slot number
-     * @param count how many slots
+     * @param start   start slot number
+     * @param count   how many slots
      */
     protected void addInventoryLine(int xOffset, int yOffset, int start, int count) {
         addInventoryLine(xOffset, yOffset, start, count, 0);
@@ -98,13 +100,13 @@ public abstract class BaseContainer extends AbstractContainerMenu {
      *
      * @param xOffset X Offset
      * @param yOffset Y Offset
-     * @param start The start slot id
-     * @param count The count of slots
-     * @param margin How much to pad the slots
+     * @param start   The start slot id
+     * @param count   The count of slots
+     * @param margin  How much to pad the slots
      */
     protected void addInventoryLine(int xOffset, int yOffset, int start, int count, int margin) {
         int slotID = start;
-        for(int x = 0; x < count; x++) {
+        for (int x = 0; x < count; x++) {
             addSlot(new SlotItemHandler(inventory, slotID, xOffset + x * (18 + margin), yOffset));
             slotID++;
         }
@@ -115,14 +117,14 @@ public abstract class BaseContainer extends AbstractContainerMenu {
      *
      * @param xOffset X pixel offset
      * @param yOffset Y pixel offset
-     * @param width How many wide
-     * @param start The start slot id
+     * @param width   How many wide
+     * @param start   The start slot id
      */
     protected void addInventoryGrid(int xOffset, int yOffset, int width, int start) {
         int height = (int) Math.ceil(inventorySize / width);
         int slotID = start;
-        for(int y = 0; y < height; y++) {
-            for(int x = 0; x < width; x++) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 addSlot(new SlotItemHandler(inventory, slotID, xOffset + x * 18, yOffset + y * 18));
                 slotID++;
             }
@@ -131,35 +133,36 @@ public abstract class BaseContainer extends AbstractContainerMenu {
 
     /**
      * The logic for when a phantom slot is clicked
-     * @param slot The slot
+     *
+     * @param slot        The slot
      * @param mouseButton The mouse button
-     * @param modifier The modifier
-     * @param player The player
+     * @param modifier    The modifier
+     * @param player      The player
      * @return The stack
      */
     private void slotClickPhantom(Slot slot, int mouseButton, ClickType modifier, Player player) {
         ItemStack stack = ItemStack.EMPTY;
 
-        if(mouseButton == 2) {
-            if(((IPhantomSlot)slot).canAdjust())
+        if (mouseButton == 2) {
+            if (((IPhantomSlot) slot).canAdjust())
                 slot.set(ItemStack.EMPTY);
-        } else if(mouseButton == 0 || mouseButton == 1) {
+        } else if (mouseButton == 0 || mouseButton == 1) {
             Inventory playerInv = player.getInventory();
             slot.setChanged();
             ItemStack stackSlot = slot.getItem();
             ItemStack stackHeld = getCarried();
 
-            if(!stackSlot.isEmpty())
+            if (!stackSlot.isEmpty())
                 stack = stackSlot.copy();
 
-            if(stackSlot.isEmpty()) {
-                if(!stackHeld.isEmpty() && slot.mayPlace(stackHeld))
+            if (stackSlot.isEmpty()) {
+                if (!stackHeld.isEmpty() && slot.mayPlace(stackHeld))
                     fillPhantomSlot(slot, stackHeld, mouseButton, modifier);
-            } else if(stackHeld.isEmpty()) {
+            } else if (stackHeld.isEmpty()) {
                 adjustPhantomSlot(slot, mouseButton, modifier);
                 slot.onTake(player, playerInv.getSelected());
-            } else if(slot.mayPlace(stackHeld)) {
-                if(InventoryUtils.canStacksMerge(stackSlot, stackHeld))
+            } else if (slot.mayPlace(stackHeld)) {
+                if (InventoryUtils.canStacksMerge(stackSlot, stackHeld))
                     adjustPhantomSlot(slot, mouseButton, modifier);
                 else
                     fillPhantomSlot(slot, stackHeld, mouseButton, modifier);
@@ -169,44 +172,46 @@ public abstract class BaseContainer extends AbstractContainerMenu {
 
     /**
      * Used to adjust the items in the phantom slot
-     * @param slot The slot being clicked
+     *
+     * @param slot        The slot being clicked
      * @param mouseButton The mouse button
-     * @param modifier The modifier
+     * @param modifier    The modifier
      */
     private void adjustPhantomSlot(Slot slot, int mouseButton, ClickType modifier) {
-        if(!((IPhantomSlot)slot).canAdjust())
+        if (!((IPhantomSlot) slot).canAdjust())
             return;
 
         ItemStack stackSlot = slot.getItem();
         int stackSize = 0;
-        if(modifier == ClickType.QUICK_MOVE)
+        if (modifier == ClickType.QUICK_MOVE)
             stackSize = (mouseButton == 0) ? (stackSlot.getCount() + 1) / 2 : stackSlot.getCount() * 2;
         else
-            stackSize =  (mouseButton == 0) ? stackSlot.getCount() - 1 : stackSlot.getCount() + 1;
+            stackSize = (mouseButton == 0) ? stackSlot.getCount() - 1 : stackSlot.getCount() + 1;
 
-        if(stackSize > slot.getMaxStackSize())
+        if (stackSize > slot.getMaxStackSize())
             stackSize = slot.getMaxStackSize();
 
         stackSlot.setCount(stackSize);
 
-        if(stackSlot.getCount() <= 0)
+        if (stackSlot.getCount() <= 0)
             slot.set(ItemStack.EMPTY);
     }
 
     /**
      * Fills the phantom slot with the given slot, not consuming the held stack
-     * @param slot The slot
-     * @param stackHeld The stack held
+     *
+     * @param slot        The slot
+     * @param stackHeld   The stack held
      * @param mouseButton The mouse button
-     * @param modifier The modifier
+     * @param modifier    The modifier
      */
     private void fillPhantomSlot(Slot slot, ItemStack stackHeld, int mouseButton, ClickType modifier) {
-        if(!((IPhantomSlot)slot).canAdjust())
+        if (!((IPhantomSlot) slot).canAdjust())
             return;
 
         int stackSize = (mouseButton == 0) ? stackHeld.getCount() : 1;
 
-        if(stackSize > slot.getMaxStackSize())
+        if (stackSize > slot.getMaxStackSize())
             stackSize = slot.getMaxStackSize();
 
         ItemStack phantomStack = stackHeld.copy();
@@ -221,16 +226,17 @@ public abstract class BaseContainer extends AbstractContainerMenu {
 
     /**
      * The logic for when a slot is clicked
-     * @param slotId The slot
-     * @param dragType The mouse button
+     *
+     * @param slotId      The slot
+     * @param dragType    The mouse button
      * @param clickTypeIn The modifier
-     * @param player The player
+     * @param player      The player
      */
     @Override
     public void clicked(int slotId, int dragType, ClickType clickTypeIn, Player player) {
         Slot slot = (slotId < 0) ? null : slots.get(slotId);
-        if(slot != null) {
-            if(slot instanceof IPhantomSlot) {
+        if (slot != null) {
+            if (slot instanceof IPhantomSlot) {
                 slotClickPhantom(slot, dragType, clickTypeIn, player);
                 return;
             }
@@ -243,25 +249,23 @@ public abstract class BaseContainer extends AbstractContainerMenu {
      */
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {
-        if(index < 0 || index > slots.size())
-            return super.quickMoveStack(playerIn, index);
         Slot slot = slots.get(index);
-        if(slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack itemToTransfer = slot.getItem();
             ItemStack copy = itemToTransfer.copy();
 
-            if(index < getInventorySizeNotPlayer()) {
+            if (index < getInventorySizeNotPlayer()) {
                 if (!moveItemStackTo(itemToTransfer, getInventorySizeNotPlayer(), slots.size(), true))
                     return ItemStack.EMPTY;
-            } else if(!moveItemStackTo(itemToTransfer, 0, getInventorySizeNotPlayer(), false))
+            } else if (!moveItemStackTo(itemToTransfer, 0, getInventorySizeNotPlayer(), false))
                 return ItemStack.EMPTY;
 
-            if(itemToTransfer.isEmpty())
+            if (itemToTransfer.isEmpty())
                 slot.set(ItemStack.EMPTY);
             else
                 slot.setChanged();
 
-            if(itemToTransfer.getCount() != copy.getCount())
+            if (itemToTransfer.getCount() != copy.getCount())
                 return copy;
         }
         return ItemStack.EMPTY;

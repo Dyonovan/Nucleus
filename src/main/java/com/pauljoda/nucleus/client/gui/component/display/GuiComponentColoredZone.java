@@ -6,13 +6,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -43,6 +44,7 @@ public class GuiComponentColoredZone extends BaseComponent {
 
     /**
      * Override this to change the color
+     *
      * @return The color, by default the passed color
      */
     protected Color getDynamicColor() {
@@ -57,14 +59,14 @@ public class GuiComponentColoredZone extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         color = getDynamicColor();
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         GlStateManager._blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderSystem.enableBlend();
         //RenderSystem.enableAlphaTest();
         RenderSystem.disableDepthTest();
-        RenderSystem.disableTexture();
         matrixStack.translate(xPos, yPos, 10);
         RenderUtils.setColor(color);
         GL11.glBegin(GL11.GL_QUADS);
@@ -75,7 +77,6 @@ public class GuiComponentColoredZone extends BaseComponent {
         GL11.glEnd();
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
-        RenderSystem.enableTexture();
         matrixStack.popPose();
     }
 
@@ -83,7 +84,7 @@ public class GuiComponentColoredZone extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // Op OP, we want bars and stuff to render on top of this
     }
 

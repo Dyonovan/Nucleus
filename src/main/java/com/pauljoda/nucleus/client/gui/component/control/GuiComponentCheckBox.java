@@ -7,6 +7,7 @@ import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLUtil;
@@ -15,7 +16,7 @@ import java.awt.*;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -31,15 +32,15 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
 
     /**
      * Main constructor for check boxes
-     *
+     * <p>
      * IMPORTANT: You must put the selected texture directly to the right of this one in the texture for it to work
      *
      * @param parent The parent
-     * @param x The x pos
-     * @param y The y pos
-     * @param u The texture u pos
-     * @param v The texture v pos
-     * @param text The text to display to the right
+     * @param x      The x pos
+     * @param y      The y pos
+     * @param u      The texture u pos
+     * @param v      The texture v pos
+     * @param text   The text to display to the right
      */
     public GuiComponentCheckBox(GuiBase<?> parent, int x, int y, int u, int v, boolean initialValue, String text) {
         super(parent, x, y);
@@ -67,13 +68,13 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
     /**
      * Called when the mouse is pressed
      *
-     * @param x Mouse X Position
-     * @param y Mouse Y Position
+     * @param x      Mouse X Position
+     * @param y      Mouse Y Position
      * @param button Mouse Button
      */
     @Override
     public void mouseDown(double x, double y, int button) {
-        if(x > xPos && x < xPos + 10 && y > yPos && y < yPos + 10) {
+        if (x > xPos && x < xPos + 10 && y > yPos && y < yPos + 10) {
             selected = !selected;
             setValue(selected);
         }
@@ -83,12 +84,13 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        blit(matrixStack, 0, 0, selected ? u + 10 : u, v, 10, 10);
+        graphics.blit(parent.textureLocation, 0, 0, selected ? u + 10 : u, v, 10, 10);
         matrixStack.popPose();
     }
 
@@ -96,11 +98,12 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos + 10, yPos, 0);
         RenderUtils.setColor(Color.darkGray);//Minecraft doesn't play nice with GL, so we will just set our own color
-        fontRenderer.draw(matrixStack, label, 0, 0, Color.darkGray.getRGB());
+        graphics.drawString(font, label, 0, 0, Color.darkGray.getRGB());
         RenderUtils.restoreColor();
         matrixStack.popPose();
     }

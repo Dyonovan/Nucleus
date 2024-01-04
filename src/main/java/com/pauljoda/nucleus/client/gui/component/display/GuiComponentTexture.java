@@ -4,10 +4,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.BaseComponent;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -20,12 +22,13 @@ public class GuiComponentTexture extends BaseComponent {
 
     /**
      * Creates a textured area
-     * @param parent The parent GUI
-     * @param x The x pos
-     * @param y The y pos
-     * @param texU The texture u
-     * @param texV The texture v
-     * @param imageWidth The image width
+     *
+     * @param parent      The parent GUI
+     * @param x           The x pos
+     * @param y           The y pos
+     * @param texU        The texture u
+     * @param texV        The texture v
+     * @param imageWidth  The image width
      * @param imageHeight The image height
      */
     public GuiComponentTexture(GuiBase<?> parent, int x, int y, int texU, int texV, int imageWidth, int imageHeight) {
@@ -44,11 +47,12 @@ public class GuiComponentTexture extends BaseComponent {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
         RenderUtils.bindTexture(parent.textureLocation);
-        blit(matrixStack, 0, 0, u, v, width, height);
+        graphics.blit(parent.textureLocation, 0, 0, u, v, width, height);
         matrixStack.popPose();
     }
 
@@ -56,7 +60,7 @@ public class GuiComponentTexture extends BaseComponent {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         // No Op
     }
 

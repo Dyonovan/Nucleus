@@ -8,14 +8,14 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -23,7 +23,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/7/2017
  */
-public class WorldUtils {
+public class LevelUtils {
 
     /*******************************************************************************************************************
      * World Methods                                                                                                   *
@@ -37,7 +37,7 @@ public class WorldUtils {
      */
     public static Direction rotateLeft(Direction toTurn) {
         switch (toTurn) {
-            case NORTH :
+            case NORTH:
                 return Direction.WEST;
             case EAST:
                 return Direction.NORTH;
@@ -47,7 +47,7 @@ public class WorldUtils {
                 return Direction.SOUTH;
             case UP: // No rotation on y axis
             case DOWN:
-            default :
+            default:
                 return toTurn;
         }
     }
@@ -60,7 +60,7 @@ public class WorldUtils {
      */
     public static Direction rotateRight(Direction toTurn) {
         switch (toTurn) {
-            case NORTH :
+            case NORTH:
                 return Direction.EAST;
             case EAST:
                 return Direction.SOUTH;
@@ -70,21 +70,22 @@ public class WorldUtils {
                 return Direction.NORTH;
             case UP: // No rotation on y axis
             case DOWN:
-            default :
+            default:
                 return toTurn;
         }
     }
 
     /**
      * Checks if there is air within the given list
-     * @param world The world
+     *
+     * @param world  The world
      * @param blocks The list of offsets from the origin
      * @param origin The origin to compare against
      * @return True if any block in the list has air
      */
     public static boolean doesContainAirBlock(Level world, List<BlockPos> blocks, BlockPos origin) {
-        for(BlockPos pos : blocks)
-            if(world.isEmptyBlock(new BlockPos(
+        for (BlockPos pos : blocks)
+            if (world.isEmptyBlock(new BlockPos(
                     origin.getX() + pos.getX(),
                     origin.getY() + pos.getY(),
                     origin.getZ() + pos.getZ())))
@@ -99,9 +100,9 @@ public class WorldUtils {
     /**
      * Drops and Array of ItemStacks into the world
      *
-     * @param world Instance of ``World
+     * @param world  Instance of ``World
      * @param stacks ItemStack Array to drop into the world
-     * @param pos BlockPos to drop them from
+     * @param pos    BlockPos to drop them from
      */
     public static void dropStacks(Level world, List<ItemStack> stacks, BlockPos pos) {
         stacks.forEach((ItemStack stack) -> dropStack(world, stack, pos));
@@ -112,10 +113,10 @@ public class WorldUtils {
      *
      * @param world Instance of ``World
      * @param stack temStack Array to drop into the world
-     * @param pos BlockPos to drop them from
+     * @param pos   BlockPos to drop them from
      */
     public static void dropStack(Level world, ItemStack stack, BlockPos pos) {
-        if(stack != null && stack.getCount() > 0) {
+        if (stack != null && stack.getCount() > 0) {
             float rx = world.random.nextFloat() * 0.8F;
             float ry = world.random.nextFloat() * 0.8F;
             float rz = world.random.nextFloat() * 0.8F;
@@ -140,14 +141,15 @@ public class WorldUtils {
 
     /**
      * Helper method to drop items in an inventory, used on break mostly
+     *
      * @param itemHandler The itemhandler
-     * @param world The world
-     * @param pos The block pos
+     * @param world       The world
+     * @param pos         The block pos
      */
     public static void dropStacksInInventory(IItemHandler itemHandler, Level world, BlockPos pos) {
-        for(int slot = 0; slot < itemHandler.getSlots(); slot++) {
+        for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
             ItemStack stack = itemHandler.getStackInSlot(slot);
-            if(stack != null)
+            if (!stack.isEmpty())
                 dropStack(world, stack, pos);
         }
     }
@@ -158,14 +160,15 @@ public class WorldUtils {
 
     /**
      * Breaks the block and saves the NBT to the tag, calls getStackDropped to drop (just item)
+     *
      * @param world The world
-     * @param pos The block pos
+     * @param pos   The block pos
      * @param block The block object
      * @return True if successful
      */
     public static boolean breakBlockSavingNBT(Level world, BlockPos pos, @Nonnull IToolable block) {
-        if(world.isClientSide) return false;
-        if(world.getBlockEntity(pos) != null) {
+        if (world.isClientSide) return false;
+        if (world.getBlockEntity(pos) != null) {
             BlockEntity savableTile = world.getBlockEntity(pos);
             CompoundTag tag = savableTile.saveWithFullMetadata();
             ItemStack stack = block.getStackDroppedByWrench(world, pos);
@@ -180,13 +183,14 @@ public class WorldUtils {
 
     /**
      * Call this after onBlockPlacedBy to write saved data to the stack if present
+     *
      * @param world The world
-     * @param pos The block position
+     * @param pos   The block position
      * @param stack The stack that had the tag
      */
     public static void writeStackNBTToBlock(Level world, BlockPos pos, ItemStack stack) {
-        if(stack.hasTag()) {
-            if(world.getBlockEntity(pos) != null) {
+        if (stack.hasTag()) {
+            if (world.getBlockEntity(pos) != null) {
                 BlockEntity tile = world.getBlockEntity(pos);
                 CompoundTag tag = stack.getTag();
                 tag.putInt("x", pos.getX()); // Add back MC tags

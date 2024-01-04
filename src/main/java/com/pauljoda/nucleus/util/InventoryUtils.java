@@ -4,10 +4,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
  * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
- * http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">License</a>
  *
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
@@ -56,7 +55,7 @@ public class InventoryUtils {
      * @return Can stacks merge
      */
     public static boolean canStacksMerge(ItemStack stackOne, ItemStack stackTwo) {
-        return !(stackOne.isEmpty() || stackTwo.isEmpty()) && stackOne.sameItem(stackTwo) &&
+        return !(stackOne.isEmpty() || stackTwo.isEmpty()) && stackOne.getItem() == stackTwo.getItem() &&
                 ItemStack.isSameItemSameTags(stackOne, stackTwo);
     }
 
@@ -68,7 +67,7 @@ public class InventoryUtils {
      * @return True if merged at all
      */
     public static boolean tryMergeStacks(ItemStack stackToMerge, ItemStack stackInSlot) {
-        if (stackInSlot.isEmpty() || !stackInSlot.sameItem(stackToMerge) ||
+        if (stackInSlot.isEmpty() || !(stackInSlot.getItem() == stackToMerge.getItem()) ||
                 !ItemStack.isSameItemSameTags(stackToMerge, stackInSlot))
             return false;
 
@@ -123,10 +122,9 @@ public class InventoryUtils {
 
         // If required, check for sidedness on tiles
         if (checkSidedSource) {
-            if (source instanceof BlockEntity) {
-                BlockEntity tile = (BlockEntity) source;
-                if (tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).isPresent())
-                    fromInventory = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).orElse(null);
+            if (source instanceof BlockEntity tile) {
+                if (CapabilityUtils.getBlockCapability(tile, Capabilities.ItemHandler.BLOCK, dir) != null)
+                    fromInventory = CapabilityUtils.getBlockCapability(tile, Capabilities.ItemHandler.BLOCK, dir);
                 else
                     return false; // Source does not want to expose access
             }
@@ -147,12 +145,10 @@ public class InventoryUtils {
 
         // If required, check for sidedness on tiles
         if (checkSidedTarget) {
-            if (target instanceof BlockEntity) {
-                BlockEntity tile = (BlockEntity) target;
-                if (tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent())
+            if (target instanceof BlockEntity tile) {
+                if (CapabilityUtils.getBlockCapability(tile, Capabilities.ItemHandler.BLOCK, dir.getOpposite()) != null)
                     targetInventory =
-                            tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite())
-                                    .orElse(null);
+                            CapabilityUtils.getBlockCapability(tile, Capabilities.ItemHandler.BLOCK, dir.getOpposite());
                 else
                     return false; // Target does not want to expose access
             }
@@ -185,7 +181,7 @@ public class InventoryUtils {
                         int slotID = toSlot; // Grab slot
                         ItemStack movedStack =
                                 targetInventory.insertItem(slotID, fromStack.copy(), !doMove); // Try insert
-                        if (!ItemStack.isSame(fromStack, movedStack)) { // If a change was made to the stack
+                        if (!ItemStack.matches(fromStack, movedStack)) { // If a change was made to the stack
                             fromInventory.extractItem(fromSlot1,
                                     (!movedStack.isEmpty()) ? fromStack.getCount() - movedStack.getCount() : maxAmount,
                                     !doMove); // Extract from original

@@ -6,13 +6,9 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,7 +25,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 11/13/17
  */
-public abstract class InventoryHandlerItem implements IItemHandlerModifiable, ICapabilityProvider {
+public abstract class InventoryHandlerItem implements IItemHandlerModifiable {
 
     // Variables
     private ItemStack heldStack;
@@ -200,11 +196,11 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
      * If the result is null, then the slot is empty.
      * If the result is not null but the stack size is zero, then it represents
      * an empty slot that will only accept* a specific itemstack.
-     *
+     * <p>
      * IMPORTANT: This ItemStack MUST NOT be modified. This method is not for
      * altering an inventories contents. Any implementers who are able to detect
      * modification through this method should throw an exception.
-     *
+     * <p>
      * SERIOUSLY: DO NOT MODIFY THE RETURNED ITEMSTACK
      *
      * @param slot Slot to query
@@ -316,30 +312,5 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable, IC
     @Override
     public int getSlotLimit(int slot) {
         return 64;
-    }
-
-    /*******************************************************************************************************************
-     * ICapabilityProvider                                                                                             *
-     *******************************************************************************************************************/
-
-    private LazyOptional<?> capabilityItemHandler = LazyOptional.of(() -> this);
-
-    /**
-     * Retrieves the handler for the capability requested on the specific side.
-     * The return value CAN be null if the object does not support the capability.
-     * The return value CAN be the same for multiple faces.
-     *
-     * @param capability The capability to check
-     * @param facing     The Side to check from:
-     *                   CAN BE NULL. Null is defined to represent 'internal' or 'self'
-     * @return The requested capability. Returns null when hasCapability(Capability, EnumFacing) would return false.
-     */
-    @SuppressWarnings("unchecked")
-    @Nullable
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-            return (LazyOptional<T>) capabilityItemHandler;
-        return LazyOptional.empty();
     }
 }

@@ -1,10 +1,10 @@
 package com.pauljoda.nucleus.common.container;
 
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandler;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -16,7 +16,8 @@ public interface IInventoryCallback {
 
     /**
      * Called when an inventory has a change in state
-     * @param inventory The inventory changed
+     *
+     * @param inventory  The inventory changed
      * @param slotNumber The slot modified
      */
     void onInventoryChanged(IItemHandler inventory, int slotNumber);

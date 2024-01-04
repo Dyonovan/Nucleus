@@ -5,13 +5,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.client.gui.GuiBase;
 import com.pauljoda.nucleus.client.gui.component.NinePatchRenderer;
 import com.pauljoda.nucleus.util.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 
 /**
  * This file was created for Nucleus
- *
+ * <p>
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -23,7 +24,7 @@ public class GuiReverseTab extends GuiTab {
 
     /**
      * Creates a Gui Tab
-     *
+     * <p>
      * IMPORTANT: Texture should be a full nine patch renderer minus the right column of cells
      * See NinePatchRenderer construction for more info
      *
@@ -50,42 +51,43 @@ public class GuiReverseTab extends GuiTab {
      * Called to render the component
      */
     @Override
-    public void render(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         matrixStack.pushPose();
 
         // Set targets to stun
-        double targetWidth  = isActive ? expandedWidth  : FOLDED_SIZE;
+        double targetWidth = isActive ? expandedWidth : FOLDED_SIZE;
         double targetHeight = isActive ? expandedHeight : FOLDED_SIZE;
 
         // Move size
-        if(currentWidth != targetWidth)
+        if (currentWidth != targetWidth)
             dWidth += (targetWidth - dWidth);
-        if(currentHeight != targetHeight)
+        if (currentHeight != targetHeight)
             dHeight += (targetHeight - dHeight);
 
         // Set size
-        currentWidth  = dWidth;
+        currentWidth = dWidth;
         currentHeight = dHeight;
 
         // Render the tab
-        tabRenderer.render(matrixStack, this, -currentWidth, 0, currentWidth, currentHeight);
+        tabRenderer.render(graphics, -currentWidth, 0, currentWidth, currentHeight);
 
         // Render the stack, if available
         RenderUtils.restoreColor();
-        if(stack != null) {
+        if (stack != null) {
             //RenderHelper.enableStandardItemLighting();
             matrixStack.pushPose();
             matrixStack.translate(0F, yPos, 0F);
             RenderUtils.restoreRenderState();
-            itemRenderer.renderGuiItem(stack, guiLeft - 16, guiTop + 4);
+            graphics.renderItem(stack, guiLeft - 16, guiTop + 4);
             matrixStack.popPose();
         }
 
         // Render the children
-        if(areChildrenActive()) {
+        if (areChildrenActive()) {
             matrixStack.translate(-expandedWidth, 0, 0);
             children.forEach((component -> {
-                component.render(matrixStack, -expandedWidth, 0, mouseX, mouseY);
+                component.render(graphics, -expandedWidth, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
             }));
         }
@@ -97,13 +99,14 @@ public class GuiReverseTab extends GuiTab {
      * Called after base render, is already translated to guiLeft and guiTop, just move offset
      */
     @Override
-    public void renderOverlay(PoseStack matrixStack, int guiLeft, int guiTop, int mouseX, int mouseY) {
+    public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
+        var matrixStack = graphics.pose();
         // Render the children
-        if(areChildrenActive()) {
+        if (areChildrenActive()) {
             matrixStack.translate(-expandedWidth, 0, 0);
             children.forEach((component -> {
                 RenderUtils.prepareRenderState();
-                component.renderOverlay(matrixStack, -expandedWidth, 0, mouseX, mouseY);
+                component.renderOverlay(graphics, -expandedWidth, 0, mouseX, mouseY);
                 RenderUtils.restoreColor();
                 RenderUtils.restoreRenderState();
             }));
@@ -112,7 +115,7 @@ public class GuiReverseTab extends GuiTab {
 
     /**
      * Used to check if the mouse if currently over the component
-     *
+     * <p>
      * You must have the getWidth() and getHeight() functions defined for this to work properly
      *
      * @param mouseX Mouse X Position

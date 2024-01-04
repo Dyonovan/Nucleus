@@ -3,7 +3,7 @@ package com.pauljoda.nucleus.util;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.pauljoda.nucleus.helper.LogHelper;
+import com.pauljoda.nucleus.Nucleus;
 
 import java.io.*;
 
@@ -11,13 +11,13 @@ public class JsonUtils {
     public static boolean writeToJson(Object toWrite, String path) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(toWrite);
-        try{
+        try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(path));
             writer.write(json);
             writer.close();
             return true;
         } catch (IOException e) {
-            LogHelper.logger.warn("Failed to write to: " + path);
+            Nucleus.LOGGER.warn("Failed to write to: " + path);
             return false;
         }
     }
@@ -28,7 +28,7 @@ public class JsonUtils {
             Gson gson = new Gson();
             return gson.fromJson(reader, type.getType());
         } catch (FileNotFoundException e) {
-            LogHelper.logger.warn("Could not find file: " + path);
+            Nucleus.LOGGER.warn("Could not find file: " + path);
             return null;
         }
     }
