@@ -149,15 +149,12 @@ crashlytics-build.properties
 eclipse
 APIToken
 LICENSE-fml.txt
-MinecraftForge-Credits.txt
-MinecraftForge-License.txt
 README.txt
-forge-1.8-11.14.3.1502-changelog.txt
 CREDITS-fml.txt
 src/main/resources/.DS_Store
 src/.DS_Store
 src/main/.DS_Store
 run/
+runs/
 .DS_Store
-.DS_Store
-.DS_Store
+/runs/client/logs/
