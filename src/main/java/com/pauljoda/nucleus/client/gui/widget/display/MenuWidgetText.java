@@ -22,7 +22,7 @@ import java.awt.*;
 public class MenuWidgetText extends BaseWidget {
     // Variables
     protected String label;
-    protected int colorDefault = Color.GRAY.getRGB();
+    protected int colorDefault = Color.DARK_GRAY.getRGB();
     protected Color color;
 
     protected boolean dropShadow = false;
