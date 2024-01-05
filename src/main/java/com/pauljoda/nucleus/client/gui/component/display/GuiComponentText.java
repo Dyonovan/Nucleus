@@ -70,7 +70,7 @@ public class GuiComponentText extends BaseComponent {
         else
             RenderUtils.restoreColor();
 
-        graphics.drawString(font, label, 0, 0, colorDefault);
+        graphics.drawString(fontRenderer, label, 0, 0, colorDefault);
 
         RenderUtils.restoreColor();
         RenderUtils.restoreRenderState();

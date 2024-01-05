@@ -51,6 +51,7 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      */
     public GuiBase(T inventory, Inventory playerInventory, Component title, int width, int height, ResourceLocation texture) {
         super(inventory, playerInventory, title);
+        font = Minecraft.getInstance().font;
         this.imageWidth = width;
         this.imageHeight = height;
         this.textureLocation = texture;
