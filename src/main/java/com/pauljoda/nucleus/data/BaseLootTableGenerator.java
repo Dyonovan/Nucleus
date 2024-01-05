@@ -28,6 +28,24 @@ import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
  */
 public abstract class BaseLootTableGenerator extends VanillaBlockLoot {
 
+
+    /**
+     * This method creates a standard loot table for a given block with a specific block entity type.
+     *
+     * @param block The block for which the loot table is to be created.
+     */
+    protected void createSimpleTable(Block block) {
+        LootPoolSingletonContainer.Builder<?> lti = LootItem.lootTableItem(block);
+
+        // Create a loot pool that rolls once and add the loot item to it.
+        LootPool.Builder builder = LootPool.lootPool()
+                .setRolls(ConstantValue.exactly(1))
+                .add(lti);
+
+        // Add the loot pool to the loot table of the block.
+        add(block, LootTable.lootTable().withPool(builder));
+    }
+
     /**
      * This method creates a standard loot table for a given block with a specific block entity type.
      *
