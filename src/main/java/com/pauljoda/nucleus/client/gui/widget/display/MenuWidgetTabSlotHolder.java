@@ -1,8 +1,7 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.inventory.Slot;
 
@@ -16,11 +15,11 @@ import net.minecraft.world.inventory.Slot;
  * @author Paul Davis - pauljoda
  * @since 2/16/2017
  */
-public class GuiComponentTabSlotHolder extends BaseComponent {
+public class MenuWidgetTabSlotHolder extends BaseWidget {
     protected Slot heldSlot;
     protected int shownX, shownY;
-    protected GuiTab parentTab;
-    protected GuiComponentTexture slotTexture;
+    protected MenuTab parentTab;
+    protected MenuWidgetTexture slotTexture;
     public boolean doRender;
 
     /**
@@ -33,13 +32,13 @@ public class GuiComponentTabSlotHolder extends BaseComponent {
      * @param y         The component y
      * @param heldSlot  The slot to move about
      */
-    public GuiComponentTabSlotHolder(GuiBase<?> parentGui, int x, int y, Slot heldSlot, int slotX, int slotY, int u, int v, GuiTab parentTab) {
+    public MenuWidgetTabSlotHolder(MenuBase<?> parentGui, int x, int y, Slot heldSlot, int slotX, int slotY, int u, int v, MenuTab parentTab) {
         super(parentGui, x, y);
         this.heldSlot = heldSlot;
         this.shownX = slotX;
         this.shownY = slotY;
         this.parentTab = parentTab;
-        slotTexture = new GuiComponentTexture(parent, x - 1, y - 1, u, v, 18, 18);
+        slotTexture = new MenuWidgetTexture(parent, x - 1, y - 1, u, v, 18, 18);
     }
 
 //    /**

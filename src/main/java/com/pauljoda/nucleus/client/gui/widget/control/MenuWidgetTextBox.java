@@ -1,7 +1,7 @@
-package com.pauljoda.nucleus.client.gui.component.control;
+package com.pauljoda.nucleus.client.gui.widget.control;
 
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public abstract class GuiComponentTextBox extends BaseComponent {
+public abstract class MenuWidgetTextBox extends BaseWidget {
     // Variables
     protected int width, height;
     protected EditBox textField;
@@ -36,7 +36,7 @@ public abstract class GuiComponentTextBox extends BaseComponent {
      * @param boxHeight    The text box height, usually 16
      * @param defaultLabel The default label, will translate, can be null
      */
-    public GuiComponentTextBox(GuiBase<?> parent, int x, int y, int boxWidth, int boxHeight, @Nullable
+    public MenuWidgetTextBox(MenuBase<?> parent, int x, int y, int boxWidth, int boxHeight, @Nullable
     Component defaultLabel) {
         super(parent, x, y);
         this.width = boxWidth;

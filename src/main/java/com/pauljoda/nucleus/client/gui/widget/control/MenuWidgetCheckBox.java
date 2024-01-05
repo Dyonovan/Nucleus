@@ -1,16 +1,12 @@
-package com.pauljoda.nucleus.client.gui.component.control;
+package com.pauljoda.nucleus.client.gui.widget.control;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.util.ClientUtils;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLUtil;
 
 import java.awt.*;
 
@@ -24,7 +20,7 @@ import java.awt.*;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class GuiComponentCheckBox extends BaseComponent {
+public abstract class MenuWidgetCheckBox extends BaseWidget {
     // Variables
     protected int u, v;
     protected boolean selected;
@@ -42,7 +38,7 @@ public abstract class GuiComponentCheckBox extends BaseComponent {
      * @param v      The texture v pos
      * @param text   The text to display to the right
      */
-    public GuiComponentCheckBox(GuiBase<?> parent, int x, int y, int u, int v, boolean initialValue, String text) {
+    public MenuWidgetCheckBox(MenuBase<?> parent, int x, int y, int u, int v, boolean initialValue, String text) {
         super(parent, x, y);
         this.u = u;
         this.v = v;

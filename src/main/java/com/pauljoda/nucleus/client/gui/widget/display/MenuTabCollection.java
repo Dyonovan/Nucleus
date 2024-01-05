@@ -1,9 +1,8 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.component.listeners.IMouseEventListener;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.widget.listeners.IMouseEventListener;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
@@ -23,10 +22,10 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public class GuiTabCollection extends BaseComponent {
+public class MenuTabCollection extends BaseWidget {
     // Variables
-    protected List<GuiTab> tabs;
-    protected GuiTab activeTab;
+    protected List<MenuTab> tabs;
+    protected MenuTab activeTab;
 
     /**
      * Main constructor for all components
@@ -34,7 +33,7 @@ public class GuiTabCollection extends BaseComponent {
      * @param parentGui The parent Gui
      * @param x         The x position
      */
-    public GuiTabCollection(GuiBase<?> parentGui, int x) {
+    public MenuTabCollection(MenuBase<?> parentGui, int x) {
         super(parentGui, x, 2);
         tabs = new ArrayList<>();
         setMouseEventListener(new TabMouseListener());
@@ -51,9 +50,9 @@ public class GuiTabCollection extends BaseComponent {
      * @param stack      The display stack, can be null
      * @return This, to enable chaining
      */
-    public GuiTabCollection addTab(List<BaseComponent> components, int maxWidth, int maxHeight,
-                                   int textureU, int textureV, @Nullable ItemStack stack) {
-        GuiTab tab = new GuiTab(parent, xPos - 5, yPos + (yPos + (tabs.size()) * 24),
+    public MenuTabCollection addTab(List<BaseWidget> components, int maxWidth, int maxHeight,
+                                    int textureU, int textureV, @Nullable ItemStack stack) {
+        MenuTab tab = new MenuTab(parent, xPos - 5, yPos + (yPos + (tabs.size()) * 24),
                 textureU, textureV, maxWidth, maxHeight, stack);
         components.forEach((tab::addChild));
         tabs.add(tab);
@@ -71,9 +70,9 @@ public class GuiTabCollection extends BaseComponent {
      * @param stack      The display stack, can be null
      * @return This, to enable chaining
      */
-    public GuiTabCollection addReverseTab(List<BaseComponent> components, int maxWidth, int maxHeight,
-                                          int textureU, int textureV, @Nullable ItemStack stack) {
-        GuiTab tab = new GuiReverseTab(parent, xPos + 5, yPos + (yPos + (tabs.size()) * 24),
+    public MenuTabCollection addReverseTab(List<BaseWidget> components, int maxWidth, int maxHeight,
+                                           int textureU, int textureV, @Nullable ItemStack stack) {
+        MenuTab tab = new MenuReverseTab(parent, xPos + 5, yPos + (yPos + (tabs.size()) * 24),
                 textureU, textureV, maxWidth, maxHeight, stack);
         components.forEach((tab::addChild));
         tabs.add(tab);
@@ -85,7 +84,7 @@ public class GuiTabCollection extends BaseComponent {
      */
     private void realignTabsVertically() {
         int y = yPos;
-        for (GuiTab tab : tabs) {
+        for (MenuTab tab : tabs) {
             tab.setYPos(y);
             y += tab.getHeight();
         }
@@ -100,13 +99,13 @@ public class GuiTabCollection extends BaseComponent {
      */
     public List<Rectangle> getAreasCovered(int guiLeft, int guiTop) {
         List<Rectangle> list = new ArrayList<>();
-        tabs.forEach((guiTab -> {
-            if (guiTab instanceof GuiReverseTab)
-                list.add(new Rectangle(guiLeft + guiTab.getXPos() - getWidth(), guiTop + guiTab.getYPos(),
-                        guiTab.getWidth(), guiTab.getHeight()));
+        tabs.forEach((menuTab -> {
+            if (menuTab instanceof MenuReverseTab)
+                list.add(new Rectangle(guiLeft + menuTab.getXPos() - getWidth(), guiTop + menuTab.getYPos(),
+                        menuTab.getWidth(), menuTab.getHeight()));
             else
-                list.add(new Rectangle(guiLeft + guiTab.getXPos(), guiTop + guiTab.getYPos(),
-                        guiTab.getWidth(), guiTab.getHeight()));
+                list.add(new Rectangle(guiLeft + menuTab.getXPos(), guiTop + menuTab.getYPos(),
+                        menuTab.getWidth(), menuTab.getHeight()));
         }));
         return list;
     }
@@ -122,7 +121,7 @@ public class GuiTabCollection extends BaseComponent {
      */
     @Override
     public void mouseScrolled(int dir) {
-        tabs.forEach((guiTab -> guiTab.mouseScrolledTab(dir)));
+        tabs.forEach((menuTab -> menuTab.mouseScrolledTab(dir)));
     }
 
     /**
@@ -136,7 +135,7 @@ public class GuiTabCollection extends BaseComponent {
      */
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        for (GuiTab tab : tabs) {
+        for (MenuTab tab : tabs) {
             if (tab.isMouseOver(mouseX, mouseY))
                 return true;
         }
@@ -151,7 +150,7 @@ public class GuiTabCollection extends BaseComponent {
      */
     @Override
     public void keyTyped(char letter, int keyCode) {
-        tabs.forEach((guiTab -> guiTab.keyTyped(letter, keyCode)));
+        tabs.forEach((menuTab -> menuTab.keyTyped(letter, keyCode)));
     }
 
     /**
@@ -162,9 +161,9 @@ public class GuiTabCollection extends BaseComponent {
      */
     @Override
     public void renderToolTip(GuiGraphics graphics, int mouseX, int mouseY) {
-        tabs.forEach((guiTab -> {
-            if (guiTab.isMouseOver(mouseX - parent.getGuiLeft(), mouseY - parent.getGuiTop()))
-                guiTab.renderToolTip(graphics, mouseX, mouseY);
+        tabs.forEach((menuTab -> {
+            if (menuTab.isMouseOver(mouseX - parent.getGuiLeft(), mouseY - parent.getGuiTop()))
+                menuTab.renderToolTip(graphics, mouseX, mouseY);
         }));
     }
 
@@ -175,7 +174,7 @@ public class GuiTabCollection extends BaseComponent {
     public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         var matrixStack = graphics.pose();
         realignTabsVertically();
-        for (GuiTab tab : tabs) {
+        for (MenuTab tab : tabs) {
             matrixStack.pushPose();
             matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
             tab.render(graphics, guiLeft, guiTop, mouseX - tab.getXPos(), mouseY - tab.getYPos());
@@ -190,7 +189,7 @@ public class GuiTabCollection extends BaseComponent {
     @Override
     public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
         var matrixStack = graphics.pose();
-        for (GuiTab tab : tabs) {
+        for (MenuTab tab : tabs) {
             matrixStack.pushPose();
             RenderUtils.prepareRenderState();
             matrixStack.translate(tab.getXPos(), tab.getYPos(), 0);
@@ -225,11 +224,11 @@ public class GuiTabCollection extends BaseComponent {
      * Accessors/Mutators                                                                                              *
      *******************************************************************************************************************/
 
-    public List<GuiTab> getTabs() {
+    public List<MenuTab> getTabs() {
         return tabs;
     }
 
-    public void setTabs(List<GuiTab> tabs) {
+    public void setTabs(List<MenuTab> tabs) {
         this.tabs = tabs;
     }
 
@@ -251,13 +250,13 @@ public class GuiTabCollection extends BaseComponent {
          * @param button    Which button was clicked
          */
         @Override
-        public void onMouseDown(BaseComponent component, double mouseX, double mouseY, int button) {
+        public void onMouseDown(BaseWidget component, double mouseX, double mouseY, int button) {
             for (int i = 0; i < tabs.size(); i++) {
-                GuiTab tab = tabs.get(i);
+                MenuTab tab = tabs.get(i);
                 if (tab.isMouseOver(mouseX, mouseY)) {
                     if (tab.getMouseEventListener() == null) {
                         if (!tab.mouseDownActivated(
-                                (tab instanceof GuiReverseTab) ? mouseX + tab.expandedWidth - 5 : mouseX - parent.getXSize() + 5,
+                                (tab instanceof MenuReverseTab) ? mouseX + tab.expandedWidth - 5 : mouseX - parent.getXSize() + 5,
                                 mouseY - (i * 24) - 2, button)) {
                             if (activeTab != null &&
                                     activeTab != tab) {
@@ -292,11 +291,11 @@ public class GuiTabCollection extends BaseComponent {
          * @param button    Which button was clicked
          */
         @Override
-        public void onMouseUp(BaseComponent component, double mouseX, double mouseY, int button) {
+        public void onMouseUp(BaseWidget component, double mouseX, double mouseY, int button) {
             for (int i = 0; i < tabs.size(); i++) {
-                GuiTab tab = tabs.get(i);
+                MenuTab tab = tabs.get(i);
                 if (tab.isMouseOver(mouseX, mouseY)) {
-                    tab.mouseUpActivated((tab instanceof GuiReverseTab) ? mouseX + tab.expandedWidth - 5 : mouseX - parent.getXSize() + 5,
+                    tab.mouseUpActivated((tab instanceof MenuReverseTab) ? mouseX + tab.expandedWidth - 5 : mouseX - parent.getXSize() + 5,
                             mouseY - (i * 24) - 2, button);
                     return;
                 }
@@ -312,11 +311,11 @@ public class GuiTabCollection extends BaseComponent {
          * @param button    Which button was clicked
          */
         @Override
-        public void onMouseDrag(BaseComponent component, double mouseX, double mouseY, int button, double xAmount, double yAmount) {
+        public void onMouseDrag(BaseWidget component, double mouseX, double mouseY, int button, double xAmount, double yAmount) {
             for (int i = 0; i < tabs.size(); i++) {
-                GuiTab tab = tabs.get(i);
+                MenuTab tab = tabs.get(i);
                 if (tab.isMouseOver(mouseX, mouseY)) {
-                    tab.mouseDragActivated((tab instanceof GuiReverseTab) ? mouseX + tab.expandedWidth - 5 : mouseX - parent.getXSize() + 5,
+                    tab.mouseDragActivated((tab instanceof MenuReverseTab) ? mouseX + tab.expandedWidth - 5 : mouseX - parent.getXSize() + 5,
                             mouseY - (i * 24) - 2, button, xAmount, yAmount);
                     return;
                 }

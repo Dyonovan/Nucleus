@@ -1,9 +1,8 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.util.ClientUtils;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -20,10 +19,10 @@ import java.awt.*;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public class GuiComponentText extends BaseComponent {
+public class MenuWidgetText extends BaseWidget {
     // Variables
     protected String label;
-    protected int colorDefault = 4210752;
+    protected int colorDefault = Color.WHITE.getRGB();
     protected Color color;
 
     /**
@@ -35,7 +34,7 @@ public class GuiComponentText extends BaseComponent {
      * @param label  The string to render
      * @param color  Optional color
      */
-    public GuiComponentText(GuiBase<?> parent, int x, int y, String label, @Nullable Color color) {
+    public MenuWidgetText(MenuBase<?> parent, int x, int y, String label, @Nullable Color color) {
         super(parent, x, y);
         this.label = ClientUtils.translate(label);
         this.color = color;

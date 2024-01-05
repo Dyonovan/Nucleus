@@ -1,12 +1,14 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.helper.GuiHelper;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
 
 /**
  * This file was created for Nucleus
@@ -18,26 +20,34 @@ import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public class GuiComponentFluidTank extends BaseComponent {
+public class MenuWidgetColoredZone extends BaseWidget {
     // Variables
     protected int width, height;
-    protected FluidTank tank;
+    protected Color color;
 
-    /**
-     * Creates a fluid tank renderer
-     *
-     * @param parent    The parent GUI
-     * @param x         The x pos
-     * @param y         The y pos
-     * @param w         The width
-     * @param h         The height
-     * @param fluidTank The fluid tank, has fluid to render
+    /***
+     * Creates the colored zone
+     * @param parent The parent GUI
+     * @param x The x pos
+     * @param y The y pos
+     * @param w The width
+     * @param h The height
+     * @param color The color
      */
-    public GuiComponentFluidTank(GuiBase<?> parent, int x, int y, int w, int h, FluidTank fluidTank) {
+    public MenuWidgetColoredZone(MenuBase<?> parent, int x, int y, int w, int h, Color color) {
         super(parent, x, y);
         this.width = w;
         this.height = h;
-        this.tank = fluidTank;
+        this.color = color;
+    }
+
+    /**
+     * Override this to change the color
+     *
+     * @return The color, by default the passed color
+     */
+    protected Color getDynamicColor() {
+        return color;
     }
 
     /*******************************************************************************************************************
@@ -49,7 +59,24 @@ public class GuiComponentFluidTank extends BaseComponent {
      */
     @Override
     public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        // No Op
+        color = getDynamicColor();
+        var matrixStack = graphics.pose();
+        matrixStack.pushPose();
+        GlStateManager._blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.enableBlend();
+        //RenderSystem.enableAlphaTest();
+        RenderSystem.disableDepthTest();
+        matrixStack.translate(xPos, yPos, 10);
+        RenderUtils.setColor(color);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glVertex3d(0, 0, 0);
+        GL11.glVertex3d(0, height, 0);
+        GL11.glVertex3d(width, height, 0);
+        GL11.glVertex3d(width, 0, 0);
+        GL11.glEnd();
+        RenderSystem.disableBlend();
+        RenderSystem.enableDepthTest();
+        matrixStack.popPose();
     }
 
     /**
@@ -57,12 +84,7 @@ public class GuiComponentFluidTank extends BaseComponent {
      */
     @Override
     public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
-        var matrixStack = graphics.pose();
-        matrixStack.pushPose();
-        matrixStack.translate(xPos, yPos, 0);
-        GuiHelper.renderFluid(tank, 0, height, height, width);
-        RenderUtils.bindTexture(parent.textureLocation);
-        matrixStack.popPose();
+        // Op OP, we want bars and stuff to render on top of this
     }
 
     /**
@@ -97,11 +119,11 @@ public class GuiComponentFluidTank extends BaseComponent {
         this.height = height;
     }
 
-    public FluidTank getTank() {
-        return tank;
+    public Color getColor() {
+        return color;
     }
 
-    public void setTank(FluidTank tank) {
-        this.tank = tank;
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

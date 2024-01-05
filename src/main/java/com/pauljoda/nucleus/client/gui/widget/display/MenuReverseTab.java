@@ -1,9 +1,7 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.NinePatchRenderer;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.NinePatchRenderer;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +18,7 @@ import javax.annotation.Nullable;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public class GuiReverseTab extends GuiTab {
+public class MenuReverseTab extends MenuTab {
 
     /**
      * Creates a Gui Tab
@@ -37,7 +35,7 @@ public class GuiReverseTab extends GuiTab {
      * @param exHeight     The expanded height
      * @param displayStack The stack to display
      */
-    public GuiReverseTab(GuiBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable
+    public MenuReverseTab(MenuBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable
     ItemStack displayStack) {
         super(parent, x, y, u, v, exWidth, exHeight, displayStack);
         tabRenderer = new NinePatchRenderer(u, v, 8, parent.textureLocation);

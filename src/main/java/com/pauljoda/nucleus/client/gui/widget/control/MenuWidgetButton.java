@@ -1,11 +1,9 @@
-package com.pauljoda.nucleus.client.gui.component.control;
+package com.pauljoda.nucleus.client.gui.widget.control;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.util.ClientUtils;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -18,21 +16,23 @@ import java.awt.*;
  * Nucleus is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
+ * <p>
+ * This class implements a button component for the menu, which includes features like
+ * mouse hover detection and rendering the button and its overlay.
  *
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class GuiComponentButton extends BaseComponent {
-    //Variables
+public abstract class MenuWidgetButton extends BaseWidget {
+
     protected int u, v, width, height;
     protected String label;
-
     private boolean isOver = false;
 
     /**
      * Constructor for the button component
      * <p>
-     * In your texture, you should put the hovered over texture directly below the main texture passed
+     * In your texture, you should put the hovered-over texture directly below the main texture passed
      *
      * @param parent The parent gui
      * @param xPos   The x position
@@ -41,37 +41,24 @@ public abstract class GuiComponentButton extends BaseComponent {
      * @param vPos   The texture v position
      * @param w      The width
      * @param h      The height
-     * @param text   The text to display, translated
+     * @param text   The text to display, if any
      */
-    public GuiComponentButton(GuiBase<?> parent, int xPos, int yPos, int uPos, int vPos, int w, int h, @Nullable String text) {
+    public MenuWidgetButton(MenuBase<?> parent, int xPos, int yPos, int uPos, int vPos, int w, int h, @Nullable String text) {
         super(parent, xPos, yPos);
         u = uPos;
         v = vPos;
         width = w;
         height = h;
-        if (text != null)
-            label = ClientUtils.translate(text);
-        else
-            label = null;
+        label = (text != null) ? ClientUtils.translate(text) : null;
     }
 
-    /*******************************************************************************************************************
-     * Abstract Methods                                                                                                *
-     *******************************************************************************************************************/
-
     /**
-     * Called when button is pressed
+     * Defines action to be taken when button is pressed
      */
     protected abstract void doAction();
 
-    /*******************************************************************************************************************
-     * BaseComponent                                                                                                   *
-     *******************************************************************************************************************/
-
     /**
-     * Used to find how wide this is
-     *
-     * @return How wide the component is
+     * @return Width of the button
      */
     @Override
     public int getWidth() {
@@ -79,9 +66,7 @@ public abstract class GuiComponentButton extends BaseComponent {
     }
 
     /**
-     * Used to find how tall this is
-     *
-     * @return How tall the component is
+     * @return Height of the button
      */
     @Override
     public int getHeight() {
@@ -89,7 +74,7 @@ public abstract class GuiComponentButton extends BaseComponent {
     }
 
     /**
-     * Called when the mouse is pressed
+     * Triggers button action if the mouse click was within button boundaries
      *
      * @param mouseX Mouse X Position
      * @param mouseY Mouse Y Position
@@ -104,20 +89,20 @@ public abstract class GuiComponentButton extends BaseComponent {
     }
 
     /**
-     * Used to enable the hovered over texture
+     * Checks if the mouse is over the button and sets `isOver` accordingly
+     *
+     * @param mouseX Mouse X Position
+     * @param mouseY Mouse Y Position
+     * @return Whether the mouse is over the button
      */
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
-        if (mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height) {
-            isOver = true;
-            return true;
-        }
-        isOver = false;
-        return false;
+        isOver = mouseX >= xPos && mouseX < xPos + width && mouseY >= yPos && mouseY < yPos + height;
+        return isOver;
     }
 
     /**
-     * Called to render the component
+     * Renders the button component
      */
     @Override
     public void render(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {
@@ -132,7 +117,7 @@ public abstract class GuiComponentButton extends BaseComponent {
     }
 
     /**
-     * Called after base render, is already translated to guiLeft and guiTop, just move offset
+     * Renders the button overlay, including the label if it is not null
      */
     @Override
     public void renderOverlay(GuiGraphics graphics, int guiLeft, int guiTop, int mouseX, int mouseY) {

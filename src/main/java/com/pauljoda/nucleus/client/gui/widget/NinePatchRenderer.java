@@ -1,9 +1,7 @@
-package com.pauljoda.nucleus.client.gui.component;
+package com.pauljoda.nucleus.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;

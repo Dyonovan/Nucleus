@@ -1,9 +1,8 @@
-package com.pauljoda.nucleus.client.gui.component;
+package com.pauljoda.nucleus.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.component.listeners.IKeyboardListener;
-import com.pauljoda.nucleus.client.gui.component.listeners.IMouseEventListener;
-import com.pauljoda.nucleus.client.gui.GuiBase;
+import com.pauljoda.nucleus.client.gui.widget.listeners.IKeyboardListener;
+import com.pauljoda.nucleus.client.gui.widget.listeners.IMouseEventListener;
+import com.pauljoda.nucleus.client.gui.MenuBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -26,10 +25,10 @@ import java.util.Optional;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class BaseComponent extends Screen {
+public abstract class BaseWidget extends Screen {
     // Variables
     protected int xPos, yPos;
-    protected GuiBase<?> parent;
+    protected MenuBase<?> parent;
 
     protected List<Component> toolTip = new ArrayList<>();
 
@@ -38,7 +37,7 @@ public abstract class BaseComponent extends Screen {
 
     protected Font fontRenderer = Minecraft.getInstance().font;
 
-    public BaseComponent(GuiBase<?> parentGui, int x, int y) {
+    public BaseWidget(MenuBase<?> parentGui, int x, int y) {
         this(parentGui, Component.translatable("neotech:component"), x, y);
     }
 
@@ -49,7 +48,7 @@ public abstract class BaseComponent extends Screen {
      * @param x         The x position
      * @param y         The y position
      */
-    public BaseComponent(GuiBase<?> parentGui, Component titleIn, int x, int y) {
+    public BaseWidget(MenuBase<?> parentGui, Component titleIn, int x, int y) {
         super(titleIn);
         parent = parentGui;
         xPos = x;
@@ -213,11 +212,11 @@ public abstract class BaseComponent extends Screen {
         this.yPos = yPos;
     }
 
-    public GuiBase getParent() {
+    public MenuBase getParent() {
         return parent;
     }
 
-    public void setParent(GuiBase parent) {
+    public void setParent(MenuBase parent) {
         this.parent = parent;
     }
 

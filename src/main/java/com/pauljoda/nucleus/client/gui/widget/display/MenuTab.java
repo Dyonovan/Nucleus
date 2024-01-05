@@ -1,14 +1,10 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
-import com.pauljoda.nucleus.client.gui.component.NinePatchRenderer;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
+import com.pauljoda.nucleus.client.gui.widget.NinePatchRenderer;
 import com.pauljoda.nucleus.util.RenderUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -25,7 +21,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public class GuiTab extends BaseComponent {
+public class MenuTab extends BaseWidget {
     // Class Variables
     protected static final int FOLDED_SIZE = 24;
 
@@ -35,7 +31,7 @@ public class GuiTab extends BaseComponent {
     protected int currentWidth, currentHeight, dWidth, dHeight = FOLDED_SIZE;
     protected boolean isActive = false;
 
-    protected List<BaseComponent> children;
+    protected List<BaseWidget> children;
 
     protected NinePatchRenderer tabRenderer;
 
@@ -54,7 +50,7 @@ public class GuiTab extends BaseComponent {
      * @param exHeight     The expanded height
      * @param displayStack The stack to display
      */
-    public GuiTab(GuiBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable
+    public MenuTab(MenuBase<?> parent, int x, int y, int u, int v, int exWidth, int exHeight, @Nullable
     ItemStack displayStack) {
         super(parent, x, y);
         this.u = u;
@@ -73,7 +69,7 @@ public class GuiTab extends BaseComponent {
      * @param component The component to add
      * @return The tab, to enable chaining
      */
-    public GuiTab addChild(BaseComponent component) {
+    public MenuTab addChild(BaseWidget component) {
         children.add(component);
         return this;
     }
@@ -100,7 +96,7 @@ public class GuiTab extends BaseComponent {
         if (this.mouseEventListener != null)
             this.mouseEventListener.onMouseDown(this, x, y, button);
         if (areChildrenActive()) {
-            for (BaseComponent component : children) {
+            for (BaseWidget component : children) {
                 if (component.isMouseOver(x, y)) {
                     component.mouseDown(x, y, button);
                     return true;
@@ -121,7 +117,7 @@ public class GuiTab extends BaseComponent {
      */
     public boolean mouseUpActivated(double x, double y, int button) {
         if (areChildrenActive()) {
-            for (BaseComponent component : children) {
+            for (BaseWidget component : children) {
                 if (component.isMouseOver(x, y)) {
                     component.mouseUp(x, y, button);
                     return true;
@@ -142,7 +138,7 @@ public class GuiTab extends BaseComponent {
      */
     public boolean mouseDragActivated(double x, double y, int button, double xAmount, double yAmount) {
         if (areChildrenActive()) {
-            for (BaseComponent component : children) {
+            for (BaseWidget component : children) {
                 if (component.isMouseOver(x, y)) {
                     component.mouseDrag(x, y, button, xAmount, yAmount);
                     return true;
@@ -306,11 +302,11 @@ public class GuiTab extends BaseComponent {
         this.stack = stack;
     }
 
-    public List<BaseComponent> getChildren() {
+    public List<BaseWidget> getChildren() {
         return children;
     }
 
-    public void setChildren(List<BaseComponent> children) {
+    public void setChildren(List<BaseWidget> children) {
         this.children = children;
     }
 

@@ -1,9 +1,6 @@
-package com.pauljoda.nucleus.client.gui.component.control;
+package com.pauljoda.nucleus.client.gui.widget.control;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import net.minecraft.client.Minecraft;
+import com.pauljoda.nucleus.client.gui.MenuBase;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
@@ -17,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class GuiComponentItemStackButton extends GuiComponentButton {
+public abstract class MenuWidgetItemStackButton extends MenuWidgetButton {
     // Variables
     protected ItemStack displayStack;
 
@@ -26,7 +23,7 @@ public abstract class GuiComponentItemStackButton extends GuiComponentButton {
      *
      * @param stack The stack to display
      */
-    public GuiComponentItemStackButton(GuiBase<?> parent, int x, int y, int u, int v, int w, int h, ItemStack stack) {
+    public MenuWidgetItemStackButton(MenuBase<?> parent, int x, int y, int u, int v, int w, int h, ItemStack stack) {
         super(parent, x, y, u, v, w, h, null);
         displayStack = stack;
     }

@@ -1,9 +1,7 @@
-package com.pauljoda.nucleus.client.gui.component.control;
+package com.pauljoda.nucleus.client.gui.widget.control;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -18,7 +16,7 @@ import net.minecraft.client.gui.GuiGraphics;
  * @since 2/12/2017
  */
 @SuppressWarnings("IntegerDivisionInFloatingPointContext")
-public abstract class GuiComponentScrollBar extends BaseComponent {
+public abstract class MenuWidgetScrollBar extends BaseWidget {
     // Variables
     protected int nubU, nubV, height, maxRange;
     protected int currentPosition = 0;
@@ -37,7 +35,7 @@ public abstract class GuiComponentScrollBar extends BaseComponent {
      * @param nV     The nub texture v
      * @param height The height of this scroll bar
      */
-    public GuiComponentScrollBar(GuiBase<?> parent, int x, int y, int nU, int nV, int height) {
+    public MenuWidgetScrollBar(MenuBase<?> parent, int x, int y, int nU, int nV, int height) {
         super(parent, x, y);
         nubU = nU;
         nubV = nV;

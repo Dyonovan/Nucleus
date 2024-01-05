@@ -1,10 +1,9 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.helper.GuiHelper;
 import com.pauljoda.nucleus.util.ClientUtils;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -21,7 +20,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public class GuiComponentLongText extends BaseComponent {
+public class MenuWidgetLongText extends BaseWidget {
     // Variables
     protected int width, height, u, v, textScale;
     protected boolean upSelected, downSelected = false;
@@ -45,7 +44,7 @@ public class GuiComponentLongText extends BaseComponent {
      * @param text      The text to display
      * @param textScale The text scale, default size is 100
      */
-    public GuiComponentLongText(GuiBase<?> parent, int x, int y, int w, int h, int u, int v, String text, int textScale) {
+    public MenuWidgetLongText(MenuBase<?> parent, int x, int y, int w, int h, int u, int v, String text, int textScale) {
         super(parent, x, y);
         this.width = w;
         this.height = h;
@@ -188,7 +187,7 @@ public class GuiComponentLongText extends BaseComponent {
                 break;
             RenderUtils.restoreColor();
             String label = lines.get(x);
-            
+
             graphics.drawString(font, label, 0, yPos + 9, 0xFFFFFF);
             yPos += 9;
             actualY += (textScale * 9) / 100;

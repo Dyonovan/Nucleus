@@ -1,10 +1,8 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 
 /**
@@ -17,7 +15,7 @@ import net.minecraft.client.gui.GuiGraphics;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public class GuiComponentTexture extends BaseComponent {
+public class MenuWidgetTexture extends BaseWidget {
     protected int u, v, width, height;
 
     /**
@@ -31,7 +29,7 @@ public class GuiComponentTexture extends BaseComponent {
      * @param imageWidth  The image width
      * @param imageHeight The image height
      */
-    public GuiComponentTexture(GuiBase<?> parent, int x, int y, int texU, int texV, int imageWidth, int imageHeight) {
+    public MenuWidgetTexture(MenuBase<?> parent, int x, int y, int texU, int texV, int imageWidth, int imageHeight) {
         super(parent, x, y);
         this.u = texU;
         this.v = texV;

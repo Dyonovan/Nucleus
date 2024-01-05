@@ -1,7 +1,6 @@
-package com.pauljoda.nucleus.client.gui.component.display;
+package com.pauljoda.nucleus.client.gui.widget.display;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.GuiBase;
+import com.pauljoda.nucleus.client.gui.MenuBase;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -15,7 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
+public abstract class MenuWidgetTextureAnimated extends MenuWidgetTexture {
     // Variables
     protected ANIMATION_DIRECTION animationDirection;
 
@@ -40,7 +39,7 @@ public abstract class GuiComponentTextureAnimated extends GuiComponentTexture {
      * @param imageWidth  The image width
      * @param imageHeight The image height
      */
-    public GuiComponentTextureAnimated(GuiBase<?> parent, int x, int y, int texU, int texV, int imageWidth, int imageHeight, ANIMATION_DIRECTION dir) {
+    public MenuWidgetTextureAnimated(MenuBase<?> parent, int x, int y, int texU, int texV, int imageWidth, int imageHeight, ANIMATION_DIRECTION dir) {
         super(parent, x, y, texU, texV, imageWidth, imageHeight);
         this.animationDirection = dir;
     }

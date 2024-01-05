@@ -2,9 +2,9 @@ package com.pauljoda.nucleus.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
-import com.pauljoda.nucleus.client.gui.component.display.GuiComponentText;
-import com.pauljoda.nucleus.client.gui.component.display.GuiTabCollection;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
+import com.pauljoda.nucleus.client.gui.widget.display.MenuWidgetText;
+import com.pauljoda.nucleus.client.gui.widget.display.MenuTabCollection;
 import com.pauljoda.nucleus.util.ClientUtils;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -30,15 +30,15 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/12/2017
  */
-public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
+public abstract class MenuBase<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
     // Variables
-    protected GuiComponentText titleComponent;
+    protected MenuWidgetText titleComponent;
 
     public ResourceLocation textureLocation;
 
-    protected List<BaseComponent> components = new ArrayList<>();
-    protected GuiTabCollection rightTabs;
-    protected GuiTabCollection leftTabs;
+    protected List<BaseWidget> components = new ArrayList<>();
+    protected MenuTabCollection rightTabs;
+    protected MenuTabCollection leftTabs;
 
     /**
      * Main constructor for Guis
@@ -49,17 +49,17 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      * @param title     The title of the gui
      * @param texture   The location of the background texture
      */
-    public GuiBase(T inventory, Inventory playerInventory, Component title, int width, int height, ResourceLocation texture) {
+    public MenuBase(T inventory, Inventory playerInventory, Component title, int width, int height, ResourceLocation texture) {
         super(inventory, playerInventory, title);
         font = Minecraft.getInstance().font;
         this.imageWidth = width;
         this.imageHeight = height;
         this.textureLocation = texture;
 
-        rightTabs = new GuiTabCollection(this, imageWidth + 1);
-        leftTabs = new GuiTabCollection(this, -1);
+        rightTabs = new MenuTabCollection(this, imageWidth + 1);
+        leftTabs = new MenuTabCollection(this, -1);
 
-        titleComponent = new GuiComponentText(this,
+        titleComponent = new MenuWidgetText(this,
                 imageWidth / 2 - (Minecraft.getInstance().font.width(ClientUtils.translate(title.getString())) / 2),
                 3, title.getString(), null);
         components.add(titleComponent);
@@ -90,7 +90,7 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      *
      * @param tabs List of tabs, put GuiTabs in
      */
-    protected void addRightTabs(GuiTabCollection tabs) {
+    protected void addRightTabs(MenuTabCollection tabs) {
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
      *
      * @param tabs List of tabs, put GuiReverseTabs in
      */
-    protected void addLeftTabs(GuiTabCollection tabs) {
+    protected void addLeftTabs(MenuTabCollection tabs) {
     }
 
     /*******************************************************************************************************************
@@ -302,7 +302,7 @@ public abstract class GuiBase<T extends AbstractContainerMenu> extends AbstractC
         List<Rectangle> areas = new ArrayList<>();
         areas.add(new Rectangle(leftPos, topPos, imageWidth, imageHeight));
         components.forEach((baseComponent -> {
-            if (baseComponent instanceof GuiTabCollection tabCollection) {
+            if (baseComponent instanceof MenuTabCollection tabCollection) {
                 areas.addAll(tabCollection.getAreasCovered(leftPos, topPos));
             } else
                 areas.add(new Rectangle(baseComponent.getArea(leftPos, topPos)));

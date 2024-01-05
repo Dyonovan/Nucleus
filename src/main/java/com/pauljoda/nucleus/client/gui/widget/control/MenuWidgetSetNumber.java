@@ -1,10 +1,8 @@
-package com.pauljoda.nucleus.client.gui.component.control;
+package com.pauljoda.nucleus.client.gui.widget.control;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.pauljoda.nucleus.helper.GuiHelper;
-import com.pauljoda.nucleus.client.gui.GuiBase;
-import com.pauljoda.nucleus.client.gui.component.BaseComponent;
+import com.pauljoda.nucleus.client.gui.MenuBase;
+import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -22,7 +20,7 @@ import static org.apache.commons.lang3.StringUtils.isNumeric;
  * @author Paul Davis - pauljoda
  * @since 2/13/2017
  */
-public abstract class GuiComponentSetNumber extends BaseComponent {
+public abstract class MenuWidgetSetNumber extends BaseWidget {
     // Variables
     protected int width, u, v, value, floor, ceiling;
     protected int height = 16;
@@ -49,7 +47,7 @@ public abstract class GuiComponentSetNumber extends BaseComponent {
      * @param lowestValue  The lowest value
      * @param highestValue The highest value
      */
-    public GuiComponentSetNumber(GuiBase<?> parent, int x, int y, int texU, int texV, int value, int lowestValue, int highestValue) {
+    public MenuWidgetSetNumber(MenuBase<?> parent, int x, int y, int texU, int texV, int value, int lowestValue, int highestValue) {
         super(parent, x, y);
         this.u = texU;
         this.v = texV;
