@@ -25,6 +25,8 @@ public class MenuWidgetText extends BaseWidget {
     protected int colorDefault = Color.GRAY.getRGB();
     protected Color color;
 
+    protected boolean dropShadow = false;
+
     /**
      * Creates the text component
      *
@@ -38,6 +40,23 @@ public class MenuWidgetText extends BaseWidget {
         super(parent, x, y);
         this.label = ClientUtils.translate(label);
         this.color = color;
+    }
+
+    /**
+     * Creates the text component
+     *
+     * @param parent The gui parent
+     * @param x      The x pos
+     * @param y      The y pos
+     * @param label  The string to render
+     * @param color  Optional color
+     * @param shadow Draw drop shadow
+     */
+    public MenuWidgetText(MenuBase<?> parent, int x, int y, String label, @Nullable Color color, boolean shadow) {
+        super(parent, x, y);
+        this.label = ClientUtils.translate(label);
+        this.color = color;
+        this.dropShadow = shadow;
     }
 
     /*******************************************************************************************************************
@@ -69,7 +88,7 @@ public class MenuWidgetText extends BaseWidget {
         else
             RenderUtils.restoreColor();
 
-        graphics.drawString(fontRenderer, label, 0, 0, colorDefault);
+        graphics.drawString(fontRenderer, label, 0, 0, colorDefault, false);
 
         RenderUtils.restoreColor();
         RenderUtils.restoreRenderState();
@@ -115,5 +134,13 @@ public class MenuWidgetText extends BaseWidget {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public boolean isDropShadow() {
+        return dropShadow;
+    }
+
+    public void setDropShadow(boolean dropShadow) {
+        this.dropShadow = dropShadow;
     }
 }
