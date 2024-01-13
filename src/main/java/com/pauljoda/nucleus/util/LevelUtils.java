@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -92,6 +93,51 @@ public class LevelUtils {
                 return true;
         return false;
     }
+
+    /**
+     * Gets all BlockPos between two specified BlockPos, with options to include the inside and/or outside edges.
+     *
+     * @param first          The first BlockPos
+     * @param second         The second BlockPos
+     * @param includeInside  Whether to include the inside edges
+     * @param includeOutside Whether to include the outside edges
+     * @return A list of BlockPos between the first and second positions
+     */
+    public static List<BlockPos> getAllBetween(BlockPos first, BlockPos second, boolean includeInside, boolean includeOutside) {
+        var locations = new ArrayList<BlockPos>();
+
+        // Get direction offset (positive or negative)
+        var xDirMultiplier = Integer.signum(second.getX() - first.getX());
+        var yDirMultiplier = Integer.signum(second.getY() - first.getY());
+        var zDirMultiplier = Integer.signum(second.getZ() - first.getZ());
+
+        // Get depths
+        var xDepth = Math.abs(second.getX() - first.getX());
+        var yDepth = Math.abs(second.getY() - first.getY());
+        var zDepth = Math.abs(second.getZ() - first.getZ());
+
+        // Build List
+        for (int x = 0; x <= xDepth; x++) {
+            for (int y = 0; y <= yDepth; y++) {
+                for (int z = 0; z <= zDepth; z++) {
+                    var xa = first.getX() + (xDirMultiplier * x);
+                    var ya = first.getY() + (yDirMultiplier * y);
+                    var za = first.getZ() + (zDirMultiplier * z);
+
+                    if (x == 0 || x == xDepth ||
+                            y == 0 || y == yDepth ||
+                            z == 0 || z == zDepth) {
+                        if (includeOutside)
+                            locations.add(new BlockPos(xa, ya, za));
+                    } else if (includeInside)
+                        locations.add(new BlockPos(xa, ya, za));
+                }
+            }
+        }
+
+        return locations;
+    }
+
 
     /*******************************************************************************************************************
      * Spawning Methods                                                                                                *
