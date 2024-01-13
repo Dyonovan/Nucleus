@@ -4,6 +4,7 @@ import com.pauljoda.nucleus.common.blocks.IToolable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Tuple;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -136,6 +137,49 @@ public class LevelUtils {
         }
 
         return locations;
+    }
+
+    /**
+     * Returns a tuple containing two lists of BlockPos: one list for the blocks on the outside edges,
+     * and one list for the blocks on the inside edges, between the given first and second BlockPos.
+     *
+     * @param first  The first BlockPos
+     * @param second The second BlockPos
+     * @return A tuple containing two lists of BlockPos: one list for the inside edges, and one list for the outside edges
+     */
+    public static Tuple<List<BlockPos>, List<BlockPos>> getAllBetweenTogether(BlockPos first, BlockPos second) {
+        var inside = new ArrayList<BlockPos>();
+        var outside = new ArrayList<BlockPos>();
+
+        // Get direction offset (positive or negative)
+        var xDirMultiplier = Integer.signum(second.getX() - first.getX());
+        var yDirMultiplier = Integer.signum(second.getY() - first.getY());
+        var zDirMultiplier = Integer.signum(second.getZ() - first.getZ());
+
+        // Get depths
+        var xDepth = Math.abs(second.getX() - first.getX());
+        var yDepth = Math.abs(second.getY() - first.getY());
+        var zDepth = Math.abs(second.getZ() - first.getZ());
+
+        // Build List
+        for (int x = 0; x <= xDepth; x++) {
+            for (int y = 0; y <= yDepth; y++) {
+                for (int z = 0; z <= zDepth; z++) {
+                    var xa = first.getX() + (xDirMultiplier * x);
+                    var ya = first.getY() + (yDirMultiplier * y);
+                    var za = first.getZ() + (zDirMultiplier * z);
+
+                    if (x == 0 || x == xDepth ||
+                            y == 0 || y == yDepth ||
+                            z == 0 || z == zDepth) {
+                        outside.add(new BlockPos(xa, ya, za));
+                    } else
+                        inside.add(new BlockPos(xa, ya, za));
+                }
+            }
+        }
+
+        return new Tuple<>(inside, outside);
     }
 
 
