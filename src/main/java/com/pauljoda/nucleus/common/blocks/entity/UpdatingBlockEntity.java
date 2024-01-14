@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 /**
  * This file was created for Nucleus - Java
- *
+ * <p>
  * Nucleus - Java is licensed under the
  * Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License:
  * http://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -35,15 +35,18 @@ public class UpdatingBlockEntity extends BlockEntity {
     /**
      * Called only on the client side tick. Override for client side operations
      */
-    public void onClientTick() {}
+    public void onClientTick() {
+    }
 
     /**
      * Called only on the server side tick. Override for server side operations
      */
-    public void onServerTick() {}
+    public void onServerTick() {
+    }
 
     /**
      * Call to mark this block for update in the world
+     *
      * @param flags 6 to avoid re-render, 3 to force client changes
      */
     @SuppressWarnings("ConstantConditions")
@@ -57,7 +60,7 @@ public class UpdatingBlockEntity extends BlockEntity {
      *******************************************************************************************************************/
 
     public static void tick(Level level, BlockPos pos, BlockState state, BlockEntity blockEntity) {
-        if(level.getBlockEntity(pos) instanceof UpdatingBlockEntity updatingEntity) {
+        if (level.getBlockEntity(pos) instanceof UpdatingBlockEntity updatingEntity) {
             if (level.isClientSide)
                 updatingEntity.onClientTick();
             else
@@ -67,6 +70,7 @@ public class UpdatingBlockEntity extends BlockEntity {
 
     /**
      * We want the update tag to take in outside info
+     *
      * @return Our tag
      */
     @Nonnull
@@ -84,8 +88,19 @@ public class UpdatingBlockEntity extends BlockEntity {
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
         CompoundTag tagCompound = packet.getTag();
         super.onDataPacket(net, packet);
-        if(tagCompound != null)
-            deserializeNBT(tagCompound);
+        if (tagCompound != null)
+            load(tagCompound);
+    }
+
+    /**
+     * Handles the update tag for the BlockEntity.
+     * Loads the tag into the BlockEntity instance using the load method.
+     *
+     * @param tag The CompoundTag containing the update data for the BlockEntity.
+     */
+    @Override
+    public void handleUpdateTag(CompoundTag tag) {
+        load(tag);
     }
 
     /**
@@ -93,7 +108,7 @@ public class UpdatingBlockEntity extends BlockEntity {
      */
     @Nullable
     @Override
-    public ClientboundBlockEntityDataPacket  getUpdatePacket() {
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
         CompoundTag nbtTag = new CompoundTag();
         saveAdditional(nbtTag);
         return ClientboundBlockEntityDataPacket.create(this);
