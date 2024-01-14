@@ -108,7 +108,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param slot Which slot
      */
     protected boolean isValidSlot(int slot) {
-        return slot > 0 && slot <= inventoryContents.size();
+        return slot >= 0 && slot <= inventoryContents.size();
     }
 
     /*******************************************************************************************************************
