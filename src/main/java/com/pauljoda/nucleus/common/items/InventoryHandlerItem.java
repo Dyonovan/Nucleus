@@ -41,17 +41,7 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable {
     public InventoryHandlerItem(ItemStack stack, CompoundTag compound) {
         heldStack = stack;
 
-        inventory = new InventoryHolder() {
-            @Override
-            protected int getInventorySize() {
-                return InventoryHandlerItem.this.getInventorySize();
-            }
-
-            @Override
-            protected boolean isItemValidForSlot(int index, ItemStack stack) {
-                return InventoryHandlerItem.this.isItemValidForSlot(index, stack);
-            }
-        };
+        inventory = initializeInventory();
 
         inventory.load(compound);
         checkStackTag();
@@ -76,6 +66,13 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable {
      * @return True if you can put this there
      */
     protected abstract boolean isItemValidForSlot(int index, ItemStack stack);
+
+    /**
+     * Initializes the inventory for an InventoryHandlerItem object.
+     *
+     * @return The initialized InventoryHolder object.
+     */
+    protected abstract InventoryHolder initializeInventory();
 
     /*******************************************************************************************************************
      * InventoryHandler                                                                                                *

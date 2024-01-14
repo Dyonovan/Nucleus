@@ -37,17 +37,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     public InventoryHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
 
-        inventory = new InventoryHolder() {
-            @Override
-            protected int getInventorySize() {
-                return InventoryHandler.this.getInventorySize();
-            }
-
-            @Override
-            protected boolean isItemValidForSlot(int index, ItemStack stack) {
-                return InventoryHandler.this.isItemValidForSlot(index, stack);
-            }
-        };
+        inventory = initializeInventory();
     }
 
     /*******************************************************************************************************************
@@ -69,6 +59,13 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @return True if you can put this there
      */
     protected abstract boolean isItemValidForSlot(int index, ItemStack stack);
+
+    /**
+     * Initializes the inventory for an InventoryHandlerItem object.
+     *
+     * @return The initialized InventoryHolder object.
+     */
+    protected abstract InventoryHolder initializeInventory();
 
     /*******************************************************************************************************************
      * Capabilities                                                                                                    *
