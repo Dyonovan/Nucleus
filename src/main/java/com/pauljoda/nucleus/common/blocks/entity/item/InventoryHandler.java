@@ -108,7 +108,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
      * @param slot Which slot
      */
     protected boolean isValidSlot(int slot) {
-        return slot > 0 || slot <= inventoryContents.size();
+        return slot > 0 && slot <= inventoryContents.size();
     }
 
     /*******************************************************************************************************************
@@ -231,7 +231,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-        if (!isItemValidForSlot(slot, stack))
+        if (!isInputSlot(slot) || !isItemValidForSlot(slot, stack))
             return stack;
 
         if (stack.isEmpty() || !isValidSlot(slot))
@@ -266,6 +266,16 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     }
 
     /**
+     * Checks if the specified slot is an input slot.
+     *
+     * @param slot The slot number to check.
+     * @return true if the slot is an input slot, false otherwise.
+     */
+    public boolean isInputSlot(int slot) {
+        return true;
+    }
+
+    /**
      * Extracts an ItemStack from the given slot. The returned value must be null
      * if nothing is extracted, otherwise it's stack size must not be greater than amount or the
      * itemstacks getMaxStackSize().
@@ -278,7 +288,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
-        if (amount == 0)
+        if (!isOutputSlot(slot) || amount == 0)
             return ItemStack.EMPTY;
 
         if (!isValidSlot(slot))
@@ -304,6 +314,15 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
 
             return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
         }
+    }
+
+    /**
+     * Checks if the current slot is an output slot.
+     *
+     * @return true if the current slot is an output slot, false otherwise.
+     */
+    public boolean isOutputSlot(int slot) {
+        return true;
     }
 
     /**
