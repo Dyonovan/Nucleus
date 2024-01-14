@@ -44,12 +44,12 @@ public abstract class InventoryHandlerItem implements IItemHandlerModifiable {
         inventory = new InventoryHolder() {
             @Override
             protected int getInventorySize() {
-                return InventoryHandlerItem.this.getInventorySize()
+                return InventoryHandlerItem.this.getInventorySize();
             }
 
             @Override
             protected boolean isItemValidForSlot(int index, ItemStack stack) {
-                return InventoryHandlerItem.this.isItemValidForSlot();
+                return InventoryHandlerItem.this.isItemValidForSlot(index, stack);
             }
         };
 
