@@ -2,13 +2,13 @@ package com.pauljoda.nucleus.common.container;
 
 import com.pauljoda.nucleus.common.container.slots.IPhantomSlot;
 import com.pauljoda.nucleus.util.InventoryUtils;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
@@ -28,8 +28,10 @@ public abstract class BaseContainer extends AbstractContainerMenu {
     // Variables
     protected Inventory playerInventory;
     protected IItemHandler inventory;
-
     protected int inventorySize;
+    protected ContainerLevelAccess access;
+    protected Block blockType;
+
 
     /**
      * Creates the container object
@@ -38,8 +40,13 @@ public abstract class BaseContainer extends AbstractContainerMenu {
      * @param inventory       The tile/object inventory
      */
     public BaseContainer(@Nullable MenuType<?> type, int id,
-                         Inventory playerInventory, IItemHandler inventory) {
+                         Inventory playerInventory, IItemHandler inventory,
+                         @Nullable Level level, @Nullable BlockPos pos, @Nullable Block blockType) {
         super(type, id);
+
+        if (level != null && pos != null && blockType != null)
+            access = ContainerLevelAccess.create(level, pos);
+
         this.playerInventory = playerInventory;
         this.inventory = inventory;
 
@@ -269,5 +276,15 @@ public abstract class BaseContainer extends AbstractContainerMenu {
                 return copy;
         }
         return ItemStack.EMPTY;
+    }
+
+    /**
+     * Determines whether supplied player can use this container
+     *
+     * @param pPlayer
+     */
+    @Override
+    public boolean stillValid(Player pPlayer) {
+        return access == null || AbstractContainerMenu.stillValid(access, pPlayer, blockType);
     }
 }
