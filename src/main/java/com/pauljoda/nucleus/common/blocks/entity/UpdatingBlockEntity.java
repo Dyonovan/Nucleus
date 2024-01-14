@@ -86,10 +86,7 @@ public class UpdatingBlockEntity extends BlockEntity {
      */
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket packet) {
-        CompoundTag tagCompound = packet.getTag();
-        super.onDataPacket(net, packet);
-        if (tagCompound != null)
-            load(tagCompound);
+        load(packet.getTag());
     }
 
     /**
@@ -111,6 +108,6 @@ public class UpdatingBlockEntity extends BlockEntity {
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
         CompoundTag nbtTag = new CompoundTag();
         saveAdditional(nbtTag);
-        return ClientboundBlockEntityDataPacket.create(this);
+        return ClientboundBlockEntityDataPacket.create(this, entity -> this.getUpdateTag());
     }
 }
