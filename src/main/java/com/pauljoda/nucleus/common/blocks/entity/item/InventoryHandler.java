@@ -124,7 +124,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     public void load(CompoundTag compound) {
         super.load(compound);
 
-        ContainerHelper.saveAllItems(compound, inventoryContents);
+        ContainerHelper.loadAllItems(compound, inventoryContents);
 
         ListTag nbttaglist = new ListTag();
 
@@ -149,7 +149,7 @@ public abstract class InventoryHandler extends Syncable implements IItemHandlerM
     @Override
     public void saveAdditional(CompoundTag compound) {
         super.saveAdditional(compound);
-        ContainerHelper.loadAllItems(compound, inventoryContents);
+        ContainerHelper.saveAllItems(compound, inventoryContents);
     }
 
     /*******************************************************************************************************************
