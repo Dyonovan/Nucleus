@@ -30,7 +30,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 2/6/2017
  */
-public abstract class InventoryHandler extends Syncable implements IItemHandlerModifiable {
+public abstract class InventoryHandler extends Syncable {
 
     private InventoryHolder inventory;
 

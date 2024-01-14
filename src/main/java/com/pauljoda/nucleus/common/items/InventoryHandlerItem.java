@@ -26,7 +26,7 @@ import java.util.List;
  * @author Paul Davis - pauljoda
  * @since 11/13/17
  */
-public abstract class InventoryHandlerItem implements IItemHandlerModifiable {
+public abstract class InventoryHandlerItem {
 
     // Variables
     private ItemStack heldStack;
