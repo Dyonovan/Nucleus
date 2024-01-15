@@ -21,7 +21,11 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
     // A list to hold all callback objects
     public List<IInventoryCallback> callBacks = new ArrayList<>();
     // List of Inventory contents
-    public NonNullList<ItemStack> inventoryContents = NonNullList.withSize(getInventorySize(), ItemStack.EMPTY);
+    public final InventoryContents inventoryContents;
+
+    public InventoryHolder(InventoryContents contents) {
+        this.inventoryContents = contents;
+    }
 
     /*******************************************************************************************************************
      * Abstract Methods                                                                                                *
@@ -74,12 +78,12 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
      */
     public void copyFrom(IItemHandler inventory) {
         for (int i = 0; i < inventory.getSlots(); i++) {
-            if (i < inventoryContents.size()) {
+            if (i < inventoryContents.inventory.size()) {
                 ItemStack stack = inventory.getStackInSlot(i);
                 if (!stack.isEmpty())
-                    inventoryContents.set(i, stack.copy());
+                    inventoryContents.inventory.set(i, stack.copy());
                 else
-                    inventoryContents.set(i, ItemStack.EMPTY);
+                    inventoryContents.inventory.set(i, ItemStack.EMPTY);
             }
         }
     }
@@ -90,7 +94,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
      * @param slot Which slot
      */
     protected boolean isValidSlot(int slot) {
-        return slot >= 0 && slot <= inventoryContents.size();
+        return slot >= 0 && slot <= inventoryContents.inventory.size();
     }
 
     /*******************************************************************************************************************
@@ -112,9 +116,9 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
     public void setStackInSlot(int slot, ItemStack stack) {
         if (!isValidSlot(slot))
             return;
-        if (ItemStack.isSameItemSameTags(this.inventoryContents.get(slot), stack))
+        if (ItemStack.isSameItemSameTags(this.inventoryContents.inventory.get(slot), stack))
             return;
-        this.inventoryContents.set(slot, stack);
+        this.inventoryContents.inventory.set(slot, stack);
         onInventoryChanged(slot);
     }
 
@@ -128,7 +132,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
      **/
     @Override
     public int getSlots() {
-        return inventoryContents.size();
+        return inventoryContents.inventory.size();
     }
 
     /**
@@ -154,7 +158,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
     public ItemStack getStackInSlot(int slot) {
         if (!isValidSlot(slot))
             return ItemStack.EMPTY;
-        return inventoryContents.get(slot);
+        return inventoryContents.inventory.get(slot);
     }
 
     /**
@@ -177,7 +181,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
         if (stack.isEmpty() || !isValidSlot(slot))
             return stack;
 
-        ItemStack existing = this.inventoryContents.get(slot);
+        ItemStack existing = this.inventoryContents.inventory.get(slot);
 
         int limit = getSlotLimit(slot);
 
@@ -195,7 +199,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
 
         if (!simulate) {
             if (existing.isEmpty()) {
-                this.inventoryContents.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
+                this.inventoryContents.inventory.set(slot, reachedLimit ? ItemHandlerHelper.copyStackWithSize(stack, limit) : stack);
             } else {
                 existing.setCount(existing.getCount() + (reachedLimit ? limit : stack.getCount()));
             }
@@ -233,7 +237,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
 
         if (!isValidSlot(slot))
             return ItemStack.EMPTY;
-        ItemStack existing = this.inventoryContents.get(slot);
+        ItemStack existing = this.inventoryContents.inventory.get(slot);
 
         if (existing.isEmpty())
             return ItemStack.EMPTY;
@@ -242,13 +246,13 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
 
         if (existing.getCount() <= toExtract) {
             if (!simulate) {
-                this.inventoryContents.set(slot, ItemStack.EMPTY);
+                this.inventoryContents.inventory.set(slot, ItemStack.EMPTY);
                 onInventoryChanged(slot);
             }
             return existing;
         } else {
             if (!simulate) {
-                this.inventoryContents.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
+                this.inventoryContents.inventory.set(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.getCount() - toExtract));
                 onInventoryChanged(slot);
             }
 
@@ -298,46 +302,5 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
     @Override
     public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
         return isItemValidForSlot(slot, stack);
-    }
-
-    /*******************************************************************************************************************
-     * Savable Methods                                                                                                 *
-     *******************************************************************************************************************/
-
-
-    /**
-     * Loads the data from the given CompoundTag.
-     *
-     * @param tag The CompoundTag containing the data to be loaded.
-     */
-    @Override
-    public void load(CompoundTag tag) {
-        ContainerHelper.loadAllItems(tag, inventoryContents);
-
-        ListTag nbttaglist = new ListTag();
-
-        for (int i = 0; i < inventoryContents.size(); ++i) {
-            ItemStack itemstack = inventoryContents.get(i);
-            CompoundTag nbttagcompound = new CompoundTag();
-            nbttagcompound.putByte("Slot", (byte) i);
-            itemstack.save(nbttagcompound);
-            nbttaglist.add(nbttagcompound);
-        }
-
-        if (!nbttaglist.isEmpty()) {
-            tag.put("Items", nbttaglist);
-        }
-    }
-
-    /**
-     * Saves the data of the object into the specified CompoundTag.
-     *
-     * @param tag The CompoundTag to store the data into.
-     * @return The updated CompoundTag with the saved data.
-     */
-    @Override
-    public CompoundTag save(CompoundTag tag) {
-        ContainerHelper.saveAllItems(tag, inventoryContents);
-        return tag;
     }
 }

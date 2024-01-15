@@ -269,7 +269,7 @@ public abstract class BaseContainer extends AbstractContainerMenu {
             ItemStack copy = itemToTransfer.copy();
 
             if (index < getInventorySizeNotPlayer()) {
-                if (!moveItemStackTo(itemToTransfer, getInventorySizeNotPlayer(), slots.size(), true))
+                if (!moveItemStackTo(itemToTransfer, getInventorySizeNotPlayer(), slots.size(), false))
                     return ItemStack.EMPTY;
             } else if (!moveItemStackTo(itemToTransfer, 0, getInventorySizeNotPlayer(), false))
                 return ItemStack.EMPTY;
