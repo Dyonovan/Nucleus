@@ -1,11 +1,6 @@
 package com.pauljoda.nucleus.capabilities;
 
-import com.pauljoda.nucleus.common.Savable;
 import com.pauljoda.nucleus.common.container.IInventoryCallback;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -15,7 +10,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class InventoryHolder implements IItemHandlerModifiable, Savable {
+public abstract class InventoryHolderCapability implements IItemHandlerModifiable {
 
     // Variables
     // A list to hold all callback objects
@@ -23,7 +18,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
     // List of Inventory contents
     public final InventoryContents inventoryContents;
 
-    public InventoryHolder(InventoryContents contents) {
+    public InventoryHolderCapability(InventoryContents contents) {
         this.inventoryContents = contents;
     }
 
@@ -57,7 +52,7 @@ public abstract class InventoryHolder implements IItemHandlerModifiable, Savable
      * @param iInventoryCallback The callback you wish to add
      * @return This object, to enable chaining
      */
-    public InventoryHolder addCallback(IInventoryCallback iInventoryCallback) {
+    public InventoryHolderCapability addCallback(IInventoryCallback iInventoryCallback) {
         callBacks.add(iInventoryCallback);
         return this;
     }

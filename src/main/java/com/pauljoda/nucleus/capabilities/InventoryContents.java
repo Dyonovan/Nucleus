@@ -20,7 +20,7 @@ public abstract class InventoryContents implements Savable {
      *
      * @return How big to make the inventory on creation
      */
-    protected abstract int getInventorySize();
+    public abstract int getInventorySize();
 
     /*******************************************************************************************************************
      * Savable Methods                                                                                                 *

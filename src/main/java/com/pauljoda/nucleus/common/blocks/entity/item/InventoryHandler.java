@@ -1,24 +1,15 @@
 package com.pauljoda.nucleus.common.blocks.entity.item;
 
-import com.pauljoda.nucleus.capabilities.InventoryHolder;
+import com.pauljoda.nucleus.capabilities.InventoryContents;
+import com.pauljoda.nucleus.capabilities.InventoryHolderCapability;
 import com.pauljoda.nucleus.common.blocks.entity.Syncable;
-import com.pauljoda.nucleus.common.container.IInventoryCallback;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This file was created for Nucleus - Java
@@ -32,7 +23,7 @@ import java.util.List;
  */
 public abstract class InventoryHandler extends Syncable {
 
-    private InventoryHolder inventory;
+    private final InventoryContents inventory;
 
     public InventoryHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
         super(tileEntityTypeIn, pos, state);
@@ -65,7 +56,7 @@ public abstract class InventoryHandler extends Syncable {
      *
      * @return The initialized InventoryHolder object.
      */
-    protected abstract InventoryHolder initializeInventory();
+    protected abstract InventoryContents initializeInventory();
 
     /*******************************************************************************************************************
      * Capabilities                                                                                                    *
@@ -77,7 +68,27 @@ public abstract class InventoryHandler extends Syncable {
      * @return The item capability of the inventory.
      */
     public IItemHandlerModifiable getItemCapability() {
-        return inventory;
+        return new InventoryHolderCapability(inventory) {
+            @Override
+            protected int getInventorySize() {
+                return InventoryHandler.this.getInventorySize();
+            }
+
+            @Override
+            protected boolean isItemValidForSlot(int index, ItemStack stack) {
+                return InventoryHandler.this.isItemValidForSlot(index, stack);
+            }
+        };
+    }
+
+    /**
+     * Retrieves the item capability of the inventory in the specified direction.
+     *
+     * @param direction The direction in which to retrieve the item capability.
+     * @return The item capability of the inventory in the specified direction.
+     */
+    public IItemHandlerModifiable getItemCapabilitySided(Direction direction) {
+        return getItemCapability();
     }
 
     /*******************************************************************************************************************

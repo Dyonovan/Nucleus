@@ -1,20 +1,9 @@
 package com.pauljoda.nucleus.common.items;
 
-import com.pauljoda.nucleus.capabilities.InventoryHolder;
-import com.pauljoda.nucleus.common.container.IInventoryCallback;
-import net.minecraft.core.Direction;
-import net.minecraft.core.NonNullList;
+import com.pauljoda.nucleus.capabilities.InventoryHolderCapability;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This file was created for Nucleus
@@ -31,7 +20,7 @@ public abstract class InventoryHandlerItem {
     // Variables
     private ItemStack heldStack;
 
-    private InventoryHolder inventory;
+    private InventoryHolderCapability inventory;
 
     /**
      * Creates a handler with given stack
@@ -72,7 +61,7 @@ public abstract class InventoryHandlerItem {
      *
      * @return The initialized InventoryHolder object.
      */
-    protected abstract InventoryHolder initializeInventory();
+    protected abstract InventoryHolderCapability initializeInventory();
 
     /*******************************************************************************************************************
      * InventoryHandler                                                                                                *
