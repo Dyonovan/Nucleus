@@ -34,18 +34,25 @@ public abstract class BaseContainer extends AbstractContainerMenu {
 
 
     /**
-     * Creates the container object
+     * A base container class that represents a container for items and slots.
      *
-     * @param playerInventory The players inventory
-     * @param inventory       The tile/object inventory
+     * @param type            The menu type
+     * @param id              The container id
+     * @param playerInventory The player's inventory
+     * @param inventory       The container's inventory
+     * @param level           The World level
+     * @param pos             The position of the container in the World
+     * @param block           The block type associated with the container
      */
     public BaseContainer(@Nullable MenuType<?> type, int id,
                          Inventory playerInventory, IItemHandler inventory,
-                         @Nullable Level level, @Nullable BlockPos pos, @Nullable Block blockType) {
+                         @Nullable Level level, @Nullable BlockPos pos, @Nullable Block block) {
         super(type, id);
 
-        if (level != null && pos != null && blockType != null)
+        if (level != null && pos != null && block != null) {
             access = ContainerLevelAccess.create(level, pos);
+            this.blockType = block;
+        }
 
         this.playerInventory = playerInventory;
         this.inventory = inventory;
