@@ -91,6 +91,15 @@ public abstract class InventoryHandler extends Syncable {
         return getItemCapability();
     }
 
+    /**
+     * Retrieves the current contents of the inventory.
+     *
+     * @return The InventoryContents object representing the current state of the inventory.
+     */
+    public InventoryContents getInventoryContents() {
+        return inventory;
+    }
+
     /*******************************************************************************************************************
      * TileEntity                                                                                                      *
      *******************************************************************************************************************/
