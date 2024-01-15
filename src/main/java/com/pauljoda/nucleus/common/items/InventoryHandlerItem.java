@@ -1,5 +1,6 @@
 package com.pauljoda.nucleus.common.items;
 
+import com.pauljoda.nucleus.capabilities.InventoryContents;
 import com.pauljoda.nucleus.capabilities.InventoryHolderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
@@ -20,7 +21,7 @@ public abstract class InventoryHandlerItem {
     // Variables
     private ItemStack heldStack;
 
-    private InventoryHolderCapability inventory;
+    private InventoryContents inventory;
 
     /**
      * Creates a handler with given stack
@@ -61,7 +62,7 @@ public abstract class InventoryHandlerItem {
      *
      * @return The initialized InventoryHolder object.
      */
-    protected abstract InventoryHolderCapability initializeInventory();
+    protected abstract InventoryContents initializeInventory();
 
     /*******************************************************************************************************************
      * InventoryHandler                                                                                                *
@@ -73,7 +74,17 @@ public abstract class InventoryHandlerItem {
      * @return The item handler capability.
      */
     public IItemHandlerModifiable getItemHandlerCapability() {
-        return inventory;
+        return new InventoryHolderCapability(inventory) {
+            @Override
+            protected int getInventorySize() {
+                return InventoryHandlerItem.this.getInventorySize();
+            }
+
+            @Override
+            protected boolean isItemValidForSlot(int index, ItemStack stack) {
+                return InventoryHandlerItem.this.isItemValidForSlot(index, stack);
+            }
+        };
     }
 
     /**
