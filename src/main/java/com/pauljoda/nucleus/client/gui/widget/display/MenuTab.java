@@ -223,7 +223,7 @@ public class MenuTab extends BaseWidget {
             matrixStack.pushPose();
             matrixStack.translate(0F, yPos, 0F);
             RenderUtils.restoreRenderState();
-            graphics.renderItem(stack, guiLeft + getParent().getXSize(), guiTop + 4);
+            graphics.renderItem(stack, 3, 2);
             matrixStack.popPose();
         }
 

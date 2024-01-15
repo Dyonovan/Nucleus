@@ -77,7 +77,7 @@ public class MenuReverseTab extends MenuTab {
             matrixStack.pushPose();
             matrixStack.translate(0F, yPos, 0F);
             RenderUtils.restoreRenderState();
-            graphics.renderItem(stack, guiLeft - 16, guiTop + 4);
+            graphics.renderItem(stack, -13, 2);
             matrixStack.popPose();
         }
 
