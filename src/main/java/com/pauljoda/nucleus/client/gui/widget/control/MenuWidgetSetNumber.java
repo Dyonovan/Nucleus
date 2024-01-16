@@ -47,15 +47,16 @@ public abstract class MenuWidgetSetNumber extends BaseWidget {
      * @param lowestValue  The lowest value
      * @param highestValue The highest value
      */
-    public MenuWidgetSetNumber(MenuBase<?> parent, int x, int y, int texU, int texV, int value, int lowestValue, int highestValue) {
+    public MenuWidgetSetNumber(MenuBase<?> parent, int x, int y, int texU, int texV, int width, int value, int lowestValue, int highestValue) {
         super(parent, x, y);
         this.u = texU;
         this.v = texV;
         this.value = value;
         this.floor = lowestValue;
         this.ceiling = highestValue;
+        this.width = width;
 
-        textField = new EditBox(fontRenderer, x, y, width - 10, height, (Component) Component.EMPTY);
+        textField = new EditBox(fontRenderer, 0, 0, width - 12, height, Component.translatable("Test"));
         textField.setValue(String.valueOf(value));
     }
 
@@ -82,7 +83,7 @@ public abstract class MenuWidgetSetNumber extends BaseWidget {
      * @param button Mouse Button
      */
     @Override
-    public boolean mouseClicked(double x, double y, int button) {
+    public void mouseDown(double x, double y, int button) {
         if (GuiHelper.isInBounds(x, y, xPos + width - 8, yPos - 1, xPos + width + 2, yPos + 7)) {
             upSelected = true;
 
@@ -103,7 +104,7 @@ public abstract class MenuWidgetSetNumber extends BaseWidget {
             textField.setValue(String.valueOf(value));
         }
         textField.mouseClicked(x, y, button);
-        return super.mouseClicked(x, y, button);
+        super.mouseDown(x, y, button);
     }
 
     /**
@@ -114,9 +115,8 @@ public abstract class MenuWidgetSetNumber extends BaseWidget {
      * @param button Mouse Button
      */
     @Override
-    public boolean mouseReleased(double x, double y, int button) {
+    public void mouseUp(double x, double y, int button) {
         upSelected = downSelected = false;
-        return false;
     }
 
     /**
@@ -154,10 +154,8 @@ public abstract class MenuWidgetSetNumber extends BaseWidget {
         var matrixStack = graphics.pose();
         matrixStack.pushPose();
         matrixStack.translate(xPos, yPos, 0);
-        graphics.blit(parent.textureLocation, width - 1, -1, upSelected ? u + 11 : u, v, 11, 8);
-        graphics.blit(parent.textureLocation, width - 8, 9, downSelected ? u + 11 : u, v + 8, 11, 9);
-        matrixStack.popPose();
-        matrixStack.pushPose();
+        graphics.blit(parent.textureLocation, width - 10, -1, upSelected ? u + 12 : u + 1, v, 11, 8);
+        graphics.blit(parent.textureLocation, width - 10, 9, downSelected ? u + 12 : u + 1, v + 7, 11, 8);
         textField.render(graphics, mouseX, mouseY, Minecraft.getInstance().getDeltaFrameTime());
         matrixStack.popPose();
     }
@@ -242,3 +240,4 @@ public abstract class MenuWidgetSetNumber extends BaseWidget {
         this.textField = textField;
     }
 }
+
