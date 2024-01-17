@@ -99,7 +99,7 @@ public abstract class MenuWidgetCheckBox extends BaseWidget {
         matrixStack.pushPose();
         matrixStack.translate(xPos + 10, yPos, 0);
         RenderUtils.setColor(Color.darkGray);//Minecraft doesn't play nice with GL, so we will just set our own color
-        graphics.drawString(font, label, 0, 0, Color.darkGray.getRGB());
+        graphics.drawString(fontRenderer, label, 2, 1, Color.darkGray.getRGB(), false);
         RenderUtils.restoreColor();
         matrixStack.popPose();
     }
