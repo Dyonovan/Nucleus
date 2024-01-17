@@ -1,14 +1,12 @@
 package com.pauljoda.nucleus.common.blocks.entity.energy;
 
+import com.pauljoda.nucleus.capabilities.energy.EnergyBank;
 import com.pauljoda.nucleus.common.blocks.entity.fluid.FluidHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-
-import javax.annotation.Nonnull;
 
 /**
  * This file was created for Nucleus
@@ -20,17 +18,14 @@ import javax.annotation.Nonnull;
  * @author Paul Davis - pauljoda
  * @since 8/30/20
  */
-public abstract class EnergyAndFluidHandler extends FluidHandler implements IEnergyStorage {
+public abstract class EnergyAndFluidHandler extends FluidHandler {
 
     // Sync Values
     public static final int UPDATE_ENERGY_ID = 1000;
     public static final int UPDATE_DIFFERENCE_ID = 1001;
 
     // Energy Storage
-    public EnergyBank energyStorage;
-
-    // IC2 Update Variable
-    protected boolean firstRun = true;
+    protected final EnergyBank energyStorage;
 
     // Energy Change Values
     public int lastEnergy, lastDifference, currentDifference = 0;
@@ -38,9 +33,9 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
     /**
      * Main Constructor
      */
-    public EnergyAndFluidHandler(BlockEntityType<?> type, BlockPos pos, BlockState state) {
-        super(type, pos, state);
-        energyStorage = new EnergyBank(getDefaultEnergyStorageSize());
+    public EnergyAndFluidHandler(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
+        energyStorage = initializeEnergyStorage();
     }
 
     /*******************************************************************************************************************
@@ -55,22 +50,24 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
     protected abstract int getDefaultEnergyStorageSize();
 
     /**
-     * Is this tile an energy provider
+     * Initializes the energy storage for the EnergyHandler class.
+     * <p>
+     * Be sure to override methods for canExtract etc if only wanting to extract vs insert, default
+     * implementation will do both
      *
-     * @return True to allow energy out
+     * @return The initialized EnergyBank object.
      */
-    protected abstract boolean isProvider();
-
-    /**
-     * Is this tile an energy reciever
-     *
-     * @return True to accept energy
-     */
-    protected abstract boolean isReceiver();
+    protected abstract EnergyBank initializeEnergyStorage();
 
     /*******************************************************************************************************************
      * Tile Methods                                                                                                    *
      *******************************************************************************************************************/
+
+    /**
+     * This method is called on the server tick and is used to handle energy difference,
+     * update the client if there is a change in the difference, and store the current
+     * difference and energy for the next tick.
+     */
 
     @Override
     public void onServerTick() {
@@ -85,29 +82,53 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
 
         // Store for next round
         lastDifference = currentDifference;
-        lastEnergy = energyStorage.getEnergy();
+        lastEnergy = energyStorage.getEnergyStored();
     }
 
+    /**
+     * Loads the data from the given CompoundTag.
+     *
+     * @param compound The CompoundTag containing the data to be loaded.
+     */
     @Override
     public void load(CompoundTag compound) {
         super.load(compound);
-        energyStorage.writeToNBT(compound);
-    }
-
-    @Override
-    public void saveAdditional(CompoundTag compound) {
-        super.saveAdditional(compound);
-
-        energyStorage.readFromNBT(compound);
+        // Write the current stored
+        energyStorage.load(compound);
 
         // Check for bad tags
-        if (energyStorage.getCapacity() == 0)
+        if (energyStorage.getMaxEnergyStored() == 0)
             energyStorage.setCapacity(getDefaultEnergyStorageSize());
         if (energyStorage.getMaxReceive() == 0)
             energyStorage.setMaxReceive(getDefaultEnergyStorageSize());
         if (energyStorage.getMaxExtract() == 0)
             energyStorage.setMaxExtract(getDefaultEnergyStorageSize());
     }
+
+    /**
+     * Saves additional data of the EnergyHandler object into the specified CompoundTag.
+     *
+     * @param compound The CompoundTag to store the data into.
+     */
+    @Override
+    public void saveAdditional(CompoundTag compound) {
+        super.saveAdditional(compound);
+
+        energyStorage.save(compound);
+    }
+
+    /**
+     * Retrieves the energy capability of the EnergyHandler object.
+     *
+     * @return The energy capability of the EnergyHandler object.
+     */
+    public IEnergyStorage getEnergyCapability() {
+        return energyStorage;
+    }
+
+    /*******************************************************************************************************************
+     * Syncable                                                                                                        *
+     *******************************************************************************************************************/
 
     /**
      * Used to set the value of a field
@@ -138,85 +159,11 @@ public abstract class EnergyAndFluidHandler extends FluidHandler implements IEne
     public Double getVariable(int id) {
         switch (id) {
             case UPDATE_ENERGY_ID:
-                return (double) energyStorage.getEnergy();
+                return (double) energyStorage.getEnergyStored();
             case UPDATE_DIFFERENCE_ID:
                 return (double) currentDifference;
             default:
                 return 0.0;
         }
-    }
-
-    /*******************************************************************************************************************
-     * ForgeEnergy                                                                                                     *
-     *******************************************************************************************************************/
-
-    /**
-     * Used to determine if this storage can receive energy.
-     * If this is false, then any calls to receiveEnergy will return 0.
-     */
-    @Override
-    public boolean canReceive() {
-        return isReceiver();
-    }
-
-    /**
-     * Returns if this storage can have energy extracted.
-     * If this is false, then any calls to extractEnergy will return 0.
-     */
-    @Override
-    public boolean canExtract() {
-        return isProvider();
-    }
-
-    /**
-     * Returns the amount of energy currently stored.
-     */
-    @Override
-    public int getEnergyStored() {
-        return energyStorage.getEnergyStored();
-    }
-
-    /**
-     * Returns the maximum amount of energy that can be stored.
-     */
-    @Override
-    public int getMaxEnergyStored() {
-        return energyStorage.getMaxEnergyStored();
-    }
-
-    /**
-     * Adds energy to the storage. Returns quantity of energy that was accepted.
-     *
-     * @param maxReceive Maximum amount of energy to be inserted.
-     * @param simulate   If TRUE, the insertion will only be simulated.
-     * @return Amount of energy that was (or would have been, if simulated) accepted by the storage.
-     */
-    @Override
-    public int receiveEnergy(int maxReceive, boolean simulate) {
-        if (isReceiver()) {
-            int returnValue = energyStorage.receiveEnergy(maxReceive, !simulate);
-            if (!simulate)
-                sendValueToClient(UPDATE_ENERGY_ID, energyStorage.getEnergyStored());
-            return returnValue;
-        }
-        return 0;
-    }
-
-    /**
-     * Removes energy from the storage. Returns quantity of energy that was removed.
-     *
-     * @param maxExtract Maximum amount of energy to be extracted.
-     * @param simulate   If TRUE, the extraction will only be simulated.
-     * @return Amount of energy that was (or would have been, if simulated) extracted from the storage.
-     */
-    @Override
-    public int extractEnergy(int maxExtract, boolean simulate) {
-        if (isProvider()) {
-            int returnValue = energyStorage.extractEnergy(maxExtract, !simulate);
-            if (!simulate)
-                sendValueToClient(UPDATE_ENERGY_ID, energyStorage.getEnergyStored());
-            return returnValue;
-        }
-        return 0;
     }
 }

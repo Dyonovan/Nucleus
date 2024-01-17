@@ -1,4 +1,4 @@
-package com.pauljoda.nucleus.capabilities;
+package com.pauljoda.nucleus.capabilities.item;
 
 import com.pauljoda.nucleus.common.container.IInventoryCallback;
 import net.minecraft.world.item.ItemStack;

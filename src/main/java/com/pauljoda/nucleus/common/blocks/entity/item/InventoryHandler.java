@@ -1,7 +1,7 @@
 package com.pauljoda.nucleus.common.blocks.entity.item;
 
-import com.pauljoda.nucleus.capabilities.InventoryContents;
-import com.pauljoda.nucleus.capabilities.InventoryHolderCapability;
+import com.pauljoda.nucleus.capabilities.item.InventoryContents;
+import com.pauljoda.nucleus.capabilities.item.InventoryHolderCapability;
 import com.pauljoda.nucleus.common.blocks.entity.Syncable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;

@@ -1,7 +1,7 @@
 package com.pauljoda.nucleus.common.items;
 
-import com.pauljoda.nucleus.capabilities.InventoryContents;
-import com.pauljoda.nucleus.capabilities.InventoryHolderCapability;
+import com.pauljoda.nucleus.capabilities.item.InventoryContents;
+import com.pauljoda.nucleus.capabilities.item.InventoryHolderCapability;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -21,7 +21,7 @@ public abstract class InventoryHandlerItem {
     // Variables
     private ItemStack heldStack;
 
-    private InventoryContents inventory;
+    private final InventoryContents inventory;
 
     /**
      * Creates a handler with given stack

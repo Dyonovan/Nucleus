@@ -117,6 +117,15 @@ public abstract class FluidHandler extends Syncable implements IFluidHandler {
         return false;
     }
 
+    /**
+     * Returns the fluid handler for the object.
+     *
+     * @return The fluid handler.
+     */
+    public IFluidHandler getFluidHandler() {
+        return this;
+    }
+
     /*******************************************************************************************************************
      * Tile Methods                                                                                                    *
      *******************************************************************************************************************/

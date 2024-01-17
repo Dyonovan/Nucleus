@@ -117,6 +117,15 @@ public abstract class FluidAndItemHandler extends InventoryHandler implements IF
         return false;
     }
 
+    /**
+     * Returns the fluid handler for the object.
+     *
+     * @return The fluid handler.
+     */
+    public IFluidHandler getFluidHandler() {
+        return this;
+    }
+
     /*******************************************************************************************************************
      * Tile Methods                                                                                                    *
      *******************************************************************************************************************/

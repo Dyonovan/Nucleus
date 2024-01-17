@@ -1,14 +1,10 @@
 package com.pauljoda.nucleus.common.items;
 
-import com.pauljoda.nucleus.common.blocks.entity.energy.EnergyBank;
-import net.minecraft.core.Direction;
+import com.pauljoda.nucleus.capabilities.energy.EnergyBank;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.energy.IEnergyStorage;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This file was created for Nucleus
@@ -20,19 +16,17 @@ import javax.annotation.Nonnull;
  * @author Paul Davis - pauljoda
  * @since 3/1/2017
  */
-public class EnergyContainingItem implements IEnergyStorage {
+public abstract class EnergyContainingItem implements IEnergyStorage {
     // Variables
-    private ItemStack heldStack;
-    private EnergyBank localEnergy;
+    private final ItemStack heldStack;
+    private final EnergyBank localEnergy;
 
     /**
      * Simplest constructor of EnergyBank
-     *
-     * @param size The max stored, also sets max in and out
      */
-    public EnergyContainingItem(ItemStack stack, int size) {
+    public EnergyContainingItem(@NotNull ItemStack stack) {
         heldStack = stack;
-        localEnergy = new EnergyBank(size);
+        localEnergy = initializeEnergyStorage();
 
         checkStackTag();
     }
@@ -40,13 +34,24 @@ public class EnergyContainingItem implements IEnergyStorage {
     /**
      * Makes sure we always have a valid tag
      */
+    @SuppressWarnings("DataFlowIssue")
     protected void checkStackTag() {
         // Give the stack a tag
         if (!heldStack.hasTag()) {
             heldStack.setTag(new CompoundTag());
-            localEnergy.writeToNBT(heldStack.getTag());
+            localEnergy.save(heldStack.getTag());
         }
     }
+
+    /**
+     * Initializes the energy storage for the EnergyHandler class.
+     * <p>
+     * Be sure to override methods for canExtract etc if only wanting to extract vs insert, default
+     * implementation will do both
+     *
+     * @return The initialized EnergyBank object.
+     */
+    protected abstract EnergyBank initializeEnergyStorage();
 
     /*******************************************************************************************************************
      * IEnergyStorage                                                                                                  *
@@ -62,9 +67,9 @@ public class EnergyContainingItem implements IEnergyStorage {
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTag());
+        localEnergy.load(heldStack.getTag());
         int energyReceived = localEnergy.receiveEnergy(maxReceive, !simulate);
-        localEnergy.writeToNBT(heldStack.getTag());
+        localEnergy.save(heldStack.getTag());
         return energyReceived;
     }
 
@@ -78,9 +83,9 @@ public class EnergyContainingItem implements IEnergyStorage {
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTag());
+        localEnergy.load(heldStack.getTag());
         int extractedEnergy = localEnergy.extractEnergy(maxExtract, !simulate);
-        localEnergy.writeToNBT(heldStack.getTag());
+        localEnergy.save(heldStack.getTag());
         return extractedEnergy;
     }
 
@@ -90,7 +95,7 @@ public class EnergyContainingItem implements IEnergyStorage {
     @Override
     public int getEnergyStored() {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTag());
+        localEnergy.load(heldStack.getTag());
         return localEnergy.getEnergyStored();
     }
 
@@ -100,7 +105,7 @@ public class EnergyContainingItem implements IEnergyStorage {
     @Override
     public int getMaxEnergyStored() {
         checkStackTag();
-        localEnergy.readFromNBT(heldStack.getTag());
+        localEnergy.load(heldStack.getTag());
         return localEnergy.getMaxEnergyStored();
     }
 
