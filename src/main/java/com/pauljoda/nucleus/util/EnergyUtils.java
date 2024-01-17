@@ -82,32 +82,6 @@ public class EnergyUtils {
     }
 
     /**
-     * Gets a list of all capabilities that touch a BlockPos. This will search for tile
-     * entities touching the BlockPos and then query them for access to their capabilities.
-     *
-     * @param capability The capability you want to retrieve.
-     * @param level      The world that this is happening in.
-     * @param pos        The position to search around.
-     * @return A list of all capabilities that are being held by connected blocks.
-     */
-    public static <T, C> List<T> getConnectedCapabilities(BlockCapability<T, C> capability, Level level, BlockPos pos) {
-
-        final List<T> capabilities = new ArrayList<>();
-
-        for (final Direction side : Direction.values()) {
-
-            final BlockEntity tile = level.getBlockEntity(pos.relative(side));
-
-            if (tile != null &&
-                    !tile.isRemoved() &&
-                    CapabilityUtils.getBlockCapability(level, capability, tile.getBlockPos(), (C) side.getOpposite()) != null)
-                capabilities.add(CapabilityUtils.getBlockCapability(level, capability, tile.getBlockPos(), (C) side.getOpposite()));
-        }
-
-        return capabilities;
-    }
-
-    /**
      * Sends power to all faces connected
      *
      * @param source        The energy source
@@ -117,7 +91,8 @@ public class EnergyUtils {
      * @param simulated     True to just simulate
      * @return How much energy consumed
      */
-    public static int distributePowerToFaces(IEnergyStorage source, Level level, BlockPos pos, int amountPerFace, boolean simulated) {
+    public static int distributePowerToFaces(IEnergyStorage source, Level level, BlockPos pos,
+                                             int amountPerFace, boolean simulated) {
         int consumedPower = 0;
 
         for (Direction dir : Direction.values()) {
@@ -143,7 +118,8 @@ public class EnergyUtils {
      * @param simulated     True to just simulate
      * @return How much energy consumed
      */
-    public static int consumePowerFromFaces(IEnergyStorage source, Level level, BlockPos pos, int amountPerFace, boolean simulated) {
+    public static int consumePowerFromFaces(IEnergyStorage source, Level level, BlockPos pos,
+                                            int amountPerFace, boolean simulated) {
         int receivedPower = 0;
 
         for (Direction dir : Direction.values()) {

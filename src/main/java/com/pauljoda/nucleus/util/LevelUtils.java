@@ -9,6 +9,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -75,6 +76,32 @@ public class LevelUtils {
             default:
                 return toTurn;
         }
+    }
+
+    /**
+     * Gets a list of all capabilities that touch a BlockPos. This will search for tile
+     * entities touching the BlockPos and then query them for access to their capabilities.
+     *
+     * @param capability The capability you want to retrieve.
+     * @param level      The world that this is happening in.
+     * @param pos        The position to search around.
+     * @return A list of all capabilities that are being held by connected blocks.
+     */
+    public static <T, C> List<T> getConnectedCapabilities(BlockCapability<T, C> capability, Level level, BlockPos pos) {
+
+        final List<T> capabilities = new ArrayList<>();
+
+        for (final Direction side : Direction.values()) {
+
+            final BlockEntity tile = level.getBlockEntity(pos.relative(side));
+
+            if (tile != null &&
+                    !tile.isRemoved() &&
+                    CapabilityUtils.getBlockCapability(level, capability, tile.getBlockPos(), (C) side.getOpposite()) != null)
+                capabilities.add(CapabilityUtils.getBlockCapability(level, capability, tile.getBlockPos(), (C) side.getOpposite()));
+        }
+
+        return capabilities;
     }
 
     /**

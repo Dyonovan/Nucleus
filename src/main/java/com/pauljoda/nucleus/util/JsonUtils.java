@@ -8,6 +8,13 @@ import com.pauljoda.nucleus.Nucleus;
 import java.io.*;
 
 public class JsonUtils {
+    /**
+     * Writes an object to a JSON file.
+     *
+     * @param toWrite the object to write to JSON
+     * @param path    the path to the JSON file
+     * @return true if the object is successfully written to the JSON file, false otherwise
+     */
     public static boolean writeToJson(Object toWrite, String path) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String json = gson.toJson(toWrite);
@@ -22,6 +29,14 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * Reads data from a JSON file and converts it to the specified type using Gson.
+     *
+     * @param <C>  The type of object to convert the JSON data to.
+     * @param type The TypeToken representing the type of object to convert the JSON data to.
+     * @param path The path to the JSON file.
+     * @return The converted object of the specified type, or null if the file was not found.
+     */
     public static <C> C readFromJson(TypeToken type, String path) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(path));
