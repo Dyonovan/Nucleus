@@ -88,6 +88,15 @@ public abstract class InventoryHandlerItem {
     }
 
     /**
+     * Retrieves the inventory contents.
+     *
+     * @return The inventory contents.
+     */
+    public InventoryContents getInventory() {
+        return inventory;
+    }
+
+    /**
      * Makes sure we always have a valid tag
      */
     protected void checkStackTag() {
