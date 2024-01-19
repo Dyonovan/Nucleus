@@ -5,6 +5,7 @@ import com.pauljoda.nucleus.client.gui.MenuBase;
 import com.pauljoda.nucleus.client.gui.widget.BaseWidget;
 import com.pauljoda.nucleus.util.RenderUtils;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
@@ -97,14 +98,14 @@ public class MenuTabCollection extends BaseWidget {
      * @param guiTop  The gui top of the parent
      * @return A list of covered areas
      */
-    public List<Rectangle> getAreasCovered(int guiLeft, int guiTop) {
-        List<Rectangle> list = new ArrayList<>();
+    public List<Rect2i> getAreasCovered(int guiLeft, int guiTop) {
+        List<Rect2i> list = new ArrayList<>();
         tabs.forEach((menuTab -> {
             if (menuTab instanceof MenuReverseTab)
-                list.add(new Rectangle(guiLeft + menuTab.getXPos() - getWidth(), guiTop + menuTab.getYPos(),
+                list.add(new Rect2i(guiLeft + menuTab.getXPos() - getWidth(), guiTop + menuTab.getYPos(),
                         menuTab.getWidth(), menuTab.getHeight()));
             else
-                list.add(new Rectangle(guiLeft + menuTab.getXPos(), guiTop + menuTab.getYPos(),
+                list.add(new Rect2i(guiLeft + menuTab.getXPos(), guiTop + menuTab.getYPos(),
                         menuTab.getWidth(), menuTab.getHeight()));
         }));
         return list;

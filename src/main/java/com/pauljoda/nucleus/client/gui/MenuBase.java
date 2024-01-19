@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -298,14 +299,14 @@ public abstract class MenuBase<T extends AbstractContainerMenu> extends Abstract
      *
      * @return A list of covered areas
      */
-    public List<Rectangle> getCoveredAreas() {
-        List<Rectangle> areas = new ArrayList<>();
-        areas.add(new Rectangle(leftPos, topPos, imageWidth, imageHeight));
+    public List<Rect2i> getCoveredAreas() {
+        List<Rect2i> areas = new ArrayList<>();
+        areas.add(new Rect2i(leftPos, topPos, imageWidth, imageHeight));
         components.forEach((baseComponent -> {
             if (baseComponent instanceof MenuTabCollection tabCollection) {
                 areas.addAll(tabCollection.getAreasCovered(leftPos, topPos));
             } else
-                areas.add(new Rectangle(baseComponent.getArea(leftPos, topPos)));
+                areas.add(baseComponent.getArea(leftPos, topPos));
         }));
         return areas;
     }

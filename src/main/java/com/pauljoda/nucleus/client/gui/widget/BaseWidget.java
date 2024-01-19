@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
@@ -116,8 +117,8 @@ public abstract class BaseWidget extends Screen {
     /**
      * Used to get what area is being displayed, mainly used for JEI
      */
-    public Rectangle getArea(int guiLeft, int guiTop) {
-        return new Rectangle(xPos + guiLeft, yPos + guiTop, getWidth(), getHeight());
+    public Rect2i getArea(int guiLeft, int guiTop) {
+        return new Rect2i(xPos + guiLeft, yPos + guiTop, getWidth(), getHeight());
     }
 
     /*******************************************************************************************************************
