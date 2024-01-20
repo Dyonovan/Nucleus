@@ -30,7 +30,7 @@ public abstract class BaseBlockStateGenerator extends BlockStateProvider {
      * @param direction   The direction for which to build the face.
      * @param faceBuilder The builder for the face.
      */
-    private static void buildDirectionFaces(Direction direction, ModelBuilder<BlockModelBuilder>.ElementBuilder.FaceBuilder faceBuilder) {
+    public static void buildDirectionFaces(Direction direction, ModelBuilder<BlockModelBuilder>.ElementBuilder.FaceBuilder faceBuilder) {
         switch (direction) {
             case UP -> faceBuilder.texture("#up").cullface(Direction.UP);
             case DOWN -> faceBuilder.texture("#down").cullface(Direction.DOWN);
