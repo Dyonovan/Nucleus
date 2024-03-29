@@ -236,10 +236,16 @@ public abstract class MenuBase<T extends AbstractContainerMenu> extends Abstract
     public void drawTopLayer(GuiGraphics graphics, int mouseX, int mouseY) {
         PoseStack matrixStack = graphics.pose();
         matrixStack.pushPose();
-        //matrixStack.translate(leftPos, topPos, 0);
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
+
+            // Render the base overlay
+            matrixStack.pushPose();
+            matrixStack.translate(leftPos, topPos, 0);
             baseComponent.renderOverlay(graphics, leftPos, topPos, mouseX, mouseY);
+            matrixStack.popPose();
+
+            // Render the tooltip
             if (baseComponent.isMouseOver(mouseX - leftPos, mouseY - topPos))
                 baseComponent.renderToolTip(graphics, mouseX, mouseY);
         }));
