@@ -108,9 +108,9 @@ public abstract class BaseWidget extends Screen {
      */
     public void renderToolTip(GuiGraphics graphics, int mouseX, int mouseY) {
         if (toolTip != null && !toolTip.isEmpty())
-            graphics.renderTooltip(this.font, toolTip, Optional.empty(), mouseX, mouseY);
+            graphics.renderTooltip(fontRenderer, toolTip, Optional.empty(), mouseX, mouseY);
         else if (getDynamicToolTip(mouseX, mouseY) != null)
-            graphics.renderTooltip(this.font, getDynamicToolTip(mouseX, mouseY), Optional.empty(), mouseX, mouseY);
+            graphics.renderTooltip(fontRenderer, getDynamicToolTip(mouseX, mouseY), Optional.empty(), mouseX, mouseY);
 
     }
 

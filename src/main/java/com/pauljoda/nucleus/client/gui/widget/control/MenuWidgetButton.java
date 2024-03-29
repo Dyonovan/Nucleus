@@ -128,7 +128,7 @@ public abstract class MenuWidgetButton extends BaseWidget {
             RenderUtils.restoreColor();
             float size = fontRenderer.width(label);
             matrixStack.translate(xPos + (width / 2F - size / 2F), yPos + 6, 0);
-            graphics.drawString(font, label, 0, 0, Color.DARK_GRAY.getRGB());
+            graphics.drawString(fontRenderer, label, 0, 0, Color.DARK_GRAY.getRGB());
             RenderUtils.restoreColor();
             RenderUtils.restoreRenderState();
             matrixStack.popPose();
