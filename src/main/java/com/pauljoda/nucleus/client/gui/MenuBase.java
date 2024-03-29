@@ -228,8 +228,6 @@ public abstract class MenuBase<T extends AbstractContainerMenu> extends Abstract
     }
 
     /**
-     * The main draw call. The super will handle calling the background and foreground layers. Then our extra code will run
-     * <p>
      * Used mainly to attach tool tips as they will always be on the top
      *
      * @param mouseX The Mouse X Position
@@ -238,7 +236,7 @@ public abstract class MenuBase<T extends AbstractContainerMenu> extends Abstract
     public void drawTopLayer(GuiGraphics graphics, int mouseX, int mouseY) {
         PoseStack matrixStack = graphics.pose();
         matrixStack.pushPose();
-        matrixStack.translate(leftPos, topPos, 0);
+        //matrixStack.translate(leftPos, topPos, 0);
         components.forEach((baseComponent -> {
             RenderUtils.prepareRenderState();
             baseComponent.renderOverlay(graphics, leftPos, topPos, mouseX, mouseY);
